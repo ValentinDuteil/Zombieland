@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+model User {
+  id_USER      Int           @id @default(autoincrement())
+  email        String        @unique
+  firstname    String
+  lastname     String
+  password     String
+  role         Role          @default(MEMBER)
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  reservations Reservation[]
+}
+
+model Ticket {
+  id_TICKET    Int           @id @default(autoincrement())
+  label        String
+  amount       Decimal       @db.Decimal(10, 2)
+  description  String?
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  reservations Reservation[]
+}
+
+model Attraction {
+  id_ATTRACTION Int      @id @default(autoincrement())
+  name          String
+  description   String?
+  image         String?
+  min_height    Int?
+  duration      Int?
+  capacity      Int?
+  intensity     Intensity @default(MEDIUM)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}
+
+model Reservation {
+  id_RESERVATION Int      @id @default(autoincrement())
+  nb_tickets     Int
+  date           DateTime @db.Date
+  total_amount   Decimal  @db.Decimal(10, 2)
+  status         Status   @default(CONFIRMED)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  id_USER        Int
+  id_TICKET      Int
+  user           User     @relation(fields: [id_USER], references: [id_USER], onDelete: Cascade)
+  ticket         Ticket   @relation(fields: [id_TICKET], references: [id_TICKET], onDelete: Restrict)
+}
+
+enum Role {
+  MEMBER
+  ADMIN
+}
+
+enum Intensity {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  CONFIRMED
+  CANCELLED
+}

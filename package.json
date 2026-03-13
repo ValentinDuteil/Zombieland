@@ -1,0 +1,32 @@
+{
+  "name": "Zombieland",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:client": "cd client && pnpm dev",
+    "dev:server": "cd server && pnpm dev",
+    "dev": "concurrently \"pnpm dev:client\" \"pnpm dev:server\"",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "prepare": "husky",
+    "run": "pnpm db:up && pnpm dev",
+    "start": "npm-run-all --parallel dev:client dev:server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.28.2",
+  "dependencies": {
+    "@chakra-ui/react": "^3.34.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "framer-motion": "^12.36.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.4",
+    "@commitlint/config-conventional": "^20.4.4",
+    "concurrently": "^9.2.1",
+    "husky": "^9.1.7"
+  }
+}

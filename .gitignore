@@ -1,2 +1,67 @@
-node_modules
+# ========================
+# Dépendances
+# ========================
+node_modules/
+.pnpm-store/
+ 
+# ========================
+# Variables d'environnement
+# ========================
 .env
+.env.local
+.env.production
+.env.development
+ 
+# ========================
+# Build / Compilation
+# ========================
+dist/
+build/
+client/dist/
+server/dist/
+ 
+# ========================
+# Prisma
+# ========================
+server/prisma/migrations/
+server/prisma/*.db
+server/prisma/*.db-journal
+ 
+# ========================
+# Logs
+# ========================
+*.log
+npm-debug.log*
+pnpm-debug.log*
+ 
+# ========================
+# IDE / Éditeurs
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+ 
+# ========================
+# OS
+# ========================
+Thumbs.db
+.DS_Store
+ 
+# ========================
+# Docker
+# ========================
+pgdata/
+ 
+# ========================
+# TypeScript
+# ========================
+*.tsbuildinfo
+ 
+# ========================
+# Tests / Coverage
+# ========================
+coverage/
+.nyc_output/
