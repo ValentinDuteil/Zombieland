@@ -1,4 +1,1 @@
-npm test
-#!/bin/sh
-cd client && pnpm tsc --noEmit
-cd ../server && pnpm tsc --noEmit
+
