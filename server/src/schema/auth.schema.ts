@@ -8,7 +8,7 @@ const UserSchema = z.object({
     .regex(/[A-Z]/, "votre mot de passe doit contenir au moins une majuscule")
     .regex(/[0-9]/, "votre mot de passe doit contenir au moins un chiffre")
     .regex(/[^a-zA-Z0-9]/, "votre mot de passe doit contenir au moins un caractère spécial"),
-//password confirmation checked by front not to overuse the back
+  //password confirmation checked by front not to overuse the back
 })
 
 export default UserSchema
