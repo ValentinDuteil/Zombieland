@@ -5,7 +5,7 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-import activitiesRoutes from './routes/activities.js'
+import attractionRoutes from './routes/attraction.js'
 
 const app = express()
 
@@ -13,7 +13,7 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(helmet())
-app.use("/activities", activitiesRoutes)
+app.use("/attractions", attractionRoutes)
 
 // Test route
 app.get('/', (req,res) => {
