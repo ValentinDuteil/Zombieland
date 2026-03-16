@@ -3,8 +3,7 @@
 // Ce sont les infos qu'on stocke dans le token JWT
 // quand un user se connecte (login)
 export interface JwtPayload {
-  id_USER: number
-  email: string
+  id: number
   role: string
 }
 
