@@ -1,5 +1,6 @@
 import { extendTheme } from "@chakra-ui/react";
 //Configuration du theme Chakra pour pouvoir l'utiliser dans les composants
+//penser à rester en version 2.10.9 de chakra pour éviter les problèmes de compatibilité car la v3 est moins stable et peut causer des bugs d'affichage
 const theme = extendTheme({
     colors: {
         zombieland: {

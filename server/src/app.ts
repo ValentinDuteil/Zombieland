@@ -3,7 +3,7 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-import activitiesRoutes from './routes/activities.js'
+import attractionRoutes from './routes/attraction.js'
 
 // import the reservations router
 import reservationsRouter from './routes/reservations.js'
@@ -14,7 +14,7 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(helmet())
-app.use("/activities", activitiesRoutes)
+app.use("/attractions", attractionRoutes)
 
 // Plug the router on /api/reservations
 app.use('/api/reservations', reservationsRouter)
