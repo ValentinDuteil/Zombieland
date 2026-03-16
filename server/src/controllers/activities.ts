@@ -1,0 +1,1 @@
+// Business logic for attractions : handles requests and responses

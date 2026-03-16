@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  
 }
 
 model User {
@@ -29,6 +28,14 @@ model Ticket {
   reservations Reservation[]
 }
 
+model Category {
+  id_CATEGORY  Int                   @id @default(autoincrement())
+  name         String
+  created_at   DateTime              @default(now())
+  updated_at   DateTime              @updatedAt
+  attractions  AttractionCategory[]
+}
+
 model Attraction {
   id_ATTRACTION Int      @id @default(autoincrement())
   name          String
@@ -40,6 +47,16 @@ model Attraction {
   intensity     Intensity @default(MEDIUM)
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
+  categories    AttractionCategory[]
+}
+
+model AttractionCategory {
+  id_ATTRACTION Int
+  id_CATEGORY   Int
+  attraction    Attraction @relation(fields: [id_ATTRACTION], references: [id_ATTRACTION], onDelete: Cascade)
+  category      Category   @relation(fields: [id_CATEGORY], references: [id_CATEGORY], onDelete: Cascade)
+
+  @@id([id_ATTRACTION, id_CATEGORY])
 }
 
 model Reservation {

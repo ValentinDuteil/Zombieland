@@ -1,0 +1,99 @@
+# 🧟 ZombieLand — Sprint 1
+
+**Durée :** 4 jours  
+**Objectif :** Avoir une première version fonctionnelle avec l'authentification et les attractions
+
+---
+
+## ⚙️ Prérequis — Jour 1 (toute l'équipe)
+
+> À valider ensemble avant de commencer à coder les features.
+
+```
+- Corriger le schema Prisma (ajout Category + table de jointure AttractionCategory)
+- Configurer les .env sur toutes les machines
+- Docker up + première migration Prisma (prisma migrate dev)
+- Vérifier que client ET serveur démarrent sur toutes les machines
+- Protéger les branches dev et main sur GitHub (Yohann)
+```
+
+---
+
+## 👤 Valentin — Product Owner
+
+### Backend
+- `POST /api/auth/register` → validation Zod + hash Argon2
+- `POST /api/auth/login` → génération token JWT
+- `GET /api/auth/me` → middleware d'authentification
+
+### Frontend
+- Page `/login` → formulaire + appel API
+- Page `/register` → formulaire + appel API
+
+---
+
+## 🧩 Peter — Scrum Master
+
+### Frontend
+- Setup thème Chakra UI (intégration charte graphique : couleurs, typo)
+- Setup React Router (toutes les routes de l'arborescence)
+- Page `/activities` → liste des attractions + filtre par catégorie
+
+### Backend
+- `GET /api/activities` → liste avec query params `?category=`
+
+---
+
+## ⚙️ Yohann — Lead Dev + Git Master
+
+### Setup Git
+- Configurer les règles de protection sur `dev` et `main` (pas de push direct sans PR)
+- Vérifier que Husky fonctionne sur toutes les machines
+
+### Backend
+- Correction schema Prisma + première migration
+- Middleware de protection des routes (rôles MEMBER / ADMIN)
+- `GET /api/activities/:id` → détail d'une attraction
+- `DELETE /api/reservations/:id` → annulation avec règle J-10
+
+### Frontend
+- Page `/activities/:id` → détail d'une attraction
+- Composant Card Attraction (réutilisable)
+
+---
+
+## 🎨 Daphné — Lead Dev
+
+### Backend
+- `POST /api/reservations` → création réservation (membre authentifié)
+- `GET /api/reservations` → liste des réservations du membre connecté
+
+### Frontend
+- Page `/reservation` → formulaire de réservation + calendrier
+- Page `/my-account/reservations` → liste des réservations + bouton annuler
+
+---
+
+## ✅ Définition of Done
+
+> Le sprint est terminé quand TOUT ce qui suit fonctionne :
+
+```
+[] Inscription fonctionnelle (création compte + hash du mot de passe)
+[] Connexion fonctionnelle (retour token JWT)
+[] Routes protégées rejettent les non-connectés (401)
+[] Liste des attractions s'affiche avec le filtre catégorie
+[] Détail d'une attraction accessible
+[] Réservation possible pour un membre connecté
+[] Annulation possible dans les délais (J-10)
+[] Tout le monde a touché front ET back ← important pour le RNCP
+```
+
+---
+
+## 📌 Rappels
+
+- Toute PR cible **`dev`**, jamais `main`
+- On ne merge **jamais** sa propre PR
+- Commits en lowercase : `feat: description`
+- En cas de blocage → pair programming plutôt que rester bloqué seul
