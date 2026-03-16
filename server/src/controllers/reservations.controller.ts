@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 // Talk to the db
 import { prisma } from '../lib/prisma.js'
 // Import the validation schema
-import { createReservationSchema } from "../schemas/reservation.js";
+import { createReservationSchema } from "../schemas/reservation.schema.js";
 
 // Retrieves all reservations for the logged-in member
 export const getReservations = async (req: Request, res: Response) => {
