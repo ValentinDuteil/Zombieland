@@ -1,41 +1,43 @@
-// Middleware for JWT token verification and permissions
+// Middleware for JWT token verification
 
-// server/src/middlewares/auth.middleware.ts
-
+// Import Express types for request, response and next function
 import { Request, Response, NextFunction } from "express"
+// Import jsonwebtoken library to verify JWT tokens
 import jwt from "jsonwebtoken"
+// Import our custom JwtPayload type that defines the shape of the decoded token
 import { JwtPayload } from "../types/express.js"
 
-// Le videur : vérifie que le visiteur a un badge valide (token JWT)
+// Middleware that checks if the user has a valid JWT token
 export function checkToken(req: Request, res: Response, next: NextFunction): void {
 
-  // 1. Récupérer le header Authorization du sac du visiteur
+  // Get the Authorization header from the request
   const authorization = req.headers.authorization
 
-  // 2. Vérifier qu'il existe et qu'il a le bon format
+  // Check if the header exists and starts with "Bearer "
   if (!authorization || !authorization.startsWith("Bearer ")) {
+    // No token provided → 401 Unauthorized
     res.status(401).json({ error: "Token manquant" })
     return
   }
 
-  // 3. Extraire le token (enlever le mot "Bearer ")
+  // Extract the token by removing the "Bearer " prefix
   const token = authorization.split(" ")[1]
 
   try {
-    // 4. Vérifier et décoder le token avec la clé secrète
+    // Verify and decode the token using the secret key from .env
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string
     ) as JwtPayload
 
-    // 5. Coller les infos du user sur la requête
+    // Attach the decoded user info to the request object
     req.user = decoded
 
-    // 6. Ouvrir la porte
+    // Token is valid → pass to the next middleware or controller
     next()
 
   } catch (error) {
-    // 7. Badge invalide ou expiré → dehors
+    // Token is invalid or expired → 401 Unauthorized
     res.status(401).json({ error: "Token invalide ou expiré" })
     return
   }

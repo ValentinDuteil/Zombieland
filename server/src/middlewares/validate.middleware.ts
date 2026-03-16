@@ -1,35 +1,45 @@
-// server/src/middlewares/validate.middleware.ts
+// Middleware for request body validation using Zod schemas
 
+// Import Express types for request, response and next function
 import { Request, Response, NextFunction } from "express"
-import { ZodType, ZodError } from "zod"
+// Import Zod types for schema validation
+import { ZodType, ZodError, ZodIssue } from "zod"
 
-// Un garde qui vérifie le contenu du formulaire avec Zod
-// Il prend un schéma en paramètre et vérifie que req.body correspond
+// Factory function that creates a validation middleware from any Zod schema
+// Usage: validate(RegisterSchema) returns a middleware that validates req.body
 export function validate(schema: ZodType) {
 
+  // Return the actual middleware function
   return (req: Request, res: Response, next: NextFunction): void => {
 
-    // safeParse vérifie les données sans planter
+    // safeParse validates the data without throwing an error
+    // Returns { success: true, data } or { success: false, error }
     const result = schema.safeParse(req.body)
 
+    // If validation failed
     if (!result.success) {
+      // Cast the error to ZodError to access its properties
       const zodError = result.error as ZodError
-      // Les données ne correspondent pas au schéma
-      // On renvoie les erreurs formatées
+
+      // Return 400 Bad Request with formatted error details
       res.status(400).json({
         error: "Données invalides",
-        details: zodError.issues.map((issue) => ({
+        // Map each validation issue to a clean format for the frontend
+        details: zodError.issues.map((issue: ZodIssue) => ({
+          // The field name that failed validation (e.g. "email", "password")
           champ: issue.path.join("."),
+          // The error message defined in the Zod schema
           message: issue.message,
         })),
       })
       return
     }
 
-    // Les données sont valides, on remplace req.body par les données nettoyées
-    // Zod enlève les champs non prévus dans le schéma (sécurité)
+    // Validation passed → replace req.body with the cleaned data
+    // Zod strips any extra fields not defined in the schema (security)
     req.body = result.data
 
+    // Pass to the next middleware or controller
     next()
   }
 }
