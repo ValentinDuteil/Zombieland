@@ -1,11 +1,12 @@
 // Express configuration : global middlewares, routes and error handling
 
-// Express configuration : global middlewares, routes and error handling
-
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import attractionRoutes from './routes/attraction.js'
+
+// import the reservations router
+import reservationsRouter from './routes/reservations.js'
 
 const app = express()
 
@@ -14,6 +15,9 @@ app.use(express.json())
 app.use(cors())
 app.use(helmet())
 app.use("/attractions", attractionRoutes)
+
+// Plug the router on /api/reservations
+app.use('/api/reservations', reservationsRouter)
 
 // Test route
 app.get('/', (req,res) => {
