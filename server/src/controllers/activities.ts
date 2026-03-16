@@ -1,7 +1,7 @@
 // Business logic for attractions : handles requests and responses
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+// import { PrismaClient } from "@prisma/client"
+import { prisma } from '../lib/prisma.js'
+// const prisma = new PrismaClient()
 
 export const getActivities = async (req, res) => {
     try {
