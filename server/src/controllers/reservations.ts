@@ -47,7 +47,8 @@ export const createReservation = async (req: Request, res: Response) => {
         // Return the created reservation with a 201 status
         res.status(201).json(reservation)
 
-    } catch {
+    } catch (error) {
+        console.error(error)
         // In case of server error, return a 500 status
         res.status(500).json({ message: 'Internal server error' })
     }

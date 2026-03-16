@@ -15,7 +15,7 @@ app.use(cors())
 app.use(helmet())
 
 // Plug the router on /api/reservations
-app.use('api/reservations', reservationsRouter)
+app.use('/api/reservations', reservationsRouter)
 
 // Test route
 app.get('/', (req,res) => {
