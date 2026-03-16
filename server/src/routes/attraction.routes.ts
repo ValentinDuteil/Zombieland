@@ -1,6 +1,6 @@
 // Route definitions for attractions 
 import { Router } from "express";
-import { getAttraction, getFindAttraction } from "../controllers/attraction.js"
+import { getAttraction, getFindAttraction } from "../controllers/attraction.controller.js"
 
 const router = Router()
 
