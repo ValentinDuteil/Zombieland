@@ -23,15 +23,16 @@ const AttractionsPage = () => {
     }, []);
 
     return (
-        <Box>
+        <Box
+            display="flex"
+            flexDirection="column"
+            minHeight="100vh"
+        >
             <Header />
 
-            <Box p={4}>
-                <Text fontSize="2xl" fontWeight="bold" mb={4}>
-                    Attractions
-                </Text>
-
-                <Wrap gap={8} bg="#042032" p={4} color="#be0964ff">
+            {/* Contenu qui pousse le footer vers le bas */}
+            <Box flex="1" p={4}>
+                <Wrap>
                     {attractions.map((attraction) => (
                         <WrapItem key={attraction.id_ATTRACTION}>
                             <AttractionCard {...attraction} />
@@ -46,4 +47,5 @@ const AttractionsPage = () => {
 };
 
 export default AttractionsPage;
+
 
