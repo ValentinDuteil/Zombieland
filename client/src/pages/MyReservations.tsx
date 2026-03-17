@@ -13,7 +13,9 @@ function MyReservations() {
     // Fetch reservations when the page loads
     useEffect(() => {
         const fetchReservations = async () => {
-            const response = await fetch('http://localhost:3000/api/reservations')
+            // Call the backend API to retrieve the reservations
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations`)
+            // Convert the response to JSON
             const data = await response.json()
             setReservations(data)
         }
