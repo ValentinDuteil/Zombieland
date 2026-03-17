@@ -24,7 +24,7 @@ function Reservation() {
 
     //  handleSubmit is the function that runs when we click to "Confirm"
     const handleSubmit = async () => {
-        // Check if date is empty before sending
+        // check if date is empty before sending
         if (!date) {
             setMessage('Veuillez choisir une date.')
             return
@@ -58,8 +58,10 @@ function Reservation() {
             bgImage={`url(${bgImage})`}
             bgSize="cover"
             bgPosition="center"
+            bgAttachment={'fixed'}
             display="flex"
             flexDirection="column"
+            pt="80px" // Add padding top for the fixed header height to prevent content from hiding behind it
         >
             <Header />
 
@@ -68,11 +70,11 @@ function Reservation() {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
+                minH={"70vh"}
             >
                 <Box
                     w="500px"
                     p={10}
-                    bg="zombieland.secondary"
                     borderRadius="md"
                 >
                     <Heading
@@ -85,41 +87,53 @@ function Reservation() {
                         Réservation
                     </Heading>
 
-                    <Text mb={2} color="zombieland.white">Nombre de billets</Text>
+                    <Text mb={2} color="zombieland.white" fontWeight="300">Nombre de billets</Text>
                     <Input
                         type="number"
                         min={1}
                         value={nbTickets}
                         onChange={(e) => setNbTickets(Number(e.target.value))}
-                        bg="zombieland.bgsecondary"
+                        bg="rgba(0,0,0,0.3)"
                         color="zombieland.white"
                         borderColor="zombieland.primary"
+                        boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
                         mb={4}
                     />
 
-                    <Text mb={2} color="zombieland.white">Date de la visite</Text>
+                    <Text mb={2} color="zombieland.white" fontWeight="300">Date de la visite</Text>
                     <Input
                         type="date"
                         value={date}
                         min={today}
                         onChange={(e) => setDate(e.target.value)}
-                        bg="zombieland.bgsecondary"
+                        bg="rgba(0,0,0,0.3)"
                         color="zombieland.white"
                         borderColor="zombieland.primary"
+                        boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
                         mb={6}
                     />
+                </Box>
+            </Box>
 
+            <Box
+                display="flex"
+                flexDirection="column"
+                alignItems={{ base: 'center', lg: 'flex-end' }}
+                px={10}
+                pb={{ base: 28, lg: 6 }}
+            >
+                <Box display="flex" flexDirection="column" alignItems="center">
                     <Button
                         onClick={handleSubmit}
-                        w="100%"
                         bgImage={`url(${bgBouton})`}
                         color="zombieland.secondary"
                         _hover={{ bg: "zombieland.cta2orange" }}
                         fontFamily="body"
                         fontSize="20px"
-                        py={8}
+                        py={6}
+                        px={3}
                         borderRadius="full"
-                        letterSpacing="3px"
+                        letterSpacing="1px"
                         fontWeight="bold"
                         boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
                         textTransform="uppercase"
@@ -131,7 +145,9 @@ function Reservation() {
                         <Text
                             mt={4}
                             textAlign="center"
-                            color={message.includes('confirmée') ? 'zombieland.successprimary' : 'zombieland.warningprimary'}
+                            fontFamily="body"
+                            fontWeight="300"
+                            color={message.includes('confirmée') ? 'zombieland.white' : 'zombieland.warningprimary'}
                         >
                             {message}
                         </Text>

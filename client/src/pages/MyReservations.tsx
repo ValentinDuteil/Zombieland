@@ -1,57 +1,118 @@
 // My reservations page - list of reservations with cancel button
 
-// Import useEffect to run the code when the page loads
-// Import useState to store data
 import { useEffect, useState } from 'react'
-// Import Chakra UI components for styling
-import { Box, Button, Heading, Text } from '@chakra-ui/react'
+import { Box, Button, Heading, Text, Flex } from '@chakra-ui/react'
+import bgImage from '../assets/bg-image.png'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 function MyReservations() {
     // reservations stores the list of reservations retrieved from the API
-    // Initialilze with an empty array because we don't have data yet
     const [reservations, setReservations] = useState([])
 
-    // We retrieve the reservations when the page loads
+    // Fetch reservations when the page loads
     useEffect(() => {
-        // Function that retrieves reservations from the API
         const fetchReservations = async () => {
             // Call the backend API to retrieve the reservations
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations`)
             // Convert the response to JSON
             const data = await response.json()
-            // Update the state with the retrieved reservations
             setReservations(data)
         }
-        // Call the function
         fetchReservations()
-    }, []) // Means useEffect only runs once
+    }, []) // Runs only once on mount
 
     return (
-        <Box p={8}>
+        <Box
+            minH="100vh"
+            bgImage={`url(${bgImage})`}
+            bgSize="cover"
+            bgAttachment="fixed"
+            bgPosition="center"
+            display="flex"
+            flexDirection="column"
+            pt="80px" // Offset for the fixed header height to prevent content from hiding behind it
+        >
+            <Header />
 
-            <Heading
-                mb={6}
-                fontFamily="heading"
-                fontSize="64px"
-                textAlign="center"
+            <Box
+                flex={1}
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                px={8}
+                py={10}
+                minH="70vh"
             >
-                Mes réservations
-            </Heading>
+                <Heading
+                    mb={10}
+                    fontFamily="heading"
+                    fontSize="54px"
+                    textAlign="center"
+                    color="zombieland.white"
+                >
+                    Mes réservations
+                </Heading>
 
-            {reservations.length === 0 ? (
-                <Text>Vous n'avez pas encore de réservations.</Text>
-            ) : (
-                reservations.map((reservation: any) => (
-                    <Box key={reservation.id_RESERVATION} mb={4} p={4} borderWidth={1}>
-                        <Text>Date : {new Date(reservation.date).toLocaleDateString()}</Text>
-                        <Text>Billets : {reservation.nb_tickets}</Text>
-                        <Text>Statut : {reservation.status}</Text>
-                        <Button mt={2} colorScheme="red">
-                            Annuler
-                        </Button>
-                    </Box>
-                ))
-            )}
+                {reservations.length === 0 ? (
+                    <Text color="zombieland.white" fontFamily="body" fontWeight="300">
+                        Vous n'avez pas encore de réservations.
+                    </Text>
+                ) : (
+                    reservations.map((reservation: any) => (
+                        <Box
+                            key={reservation.id_RESERVATION}
+                            mb={4}
+                            p={6}
+                            w="100%"
+                            maxW="500px"
+                            borderRadius="md"
+                            bg="rgba(0,0,0,0.3)"
+                            boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+                            borderLeft="3px solid"
+                            borderColor="zombieland.primary"
+                            transition="all 0.3s ease" // Smooth animation on hover
+                            _hover={{
+                                transform: "translateY(-4px)", // Slight lift effect
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                                borderColor: "zombieland.cta1orange", // Border changes color on hover
+                                bg: "rgba(0,0,0,0.5)"
+                            }}
+                            cursor="pointer"
+                        >
+                            {/* Reservation details */}
+                            <Text color="zombieland.white" fontFamily="body" fontWeight="300" mb={1}>
+                                - Date : {new Date(reservation.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            </Text>
+                            <Text color="zombieland.white" fontFamily="body" fontWeight="300" mb={1}>
+                                - Billets : {reservation.nb_tickets}
+                            </Text>
+                            <Text color="zombieland.white" fontFamily="body" fontWeight="300" mb={4}>
+                                - Statut : {reservation.status}
+                            </Text>
+
+                            {/* Cancel button aligned to the right */}
+                            <Flex justifyContent="flex-end">
+                                <Button
+                                    bgImage="url('/src/assets/deleteBouton.png')"
+                                    bgSize="cover"
+                                    bgPosition="center"
+                                    color="zombieland.white"
+                                    fontFamily="body"
+                                    borderRadius="full"
+                                    size="sm"
+                                    border="none"
+                                    _hover={{ opacity: 0.8 }}
+                                >
+                                    Annuler
+                                </Button>
+                            </Flex>
+                        </Box>
+                    ))
+                )}
+            </Box>
+
+            <Footer />
         </Box>
     )
 }
