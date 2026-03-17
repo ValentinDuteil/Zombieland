@@ -43,7 +43,7 @@ export const getFindAttraction = async (req: Request, res: Response, next: NextF
             return res.status(400).json({
                 error: "Incorrect Attraction"
             })
-        }
+        };
 
         // Search the database for the attraction with this id
         const findAttraction = await prisma.attraction.findUnique({
