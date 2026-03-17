@@ -15,11 +15,11 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(helmet())
-app.use("/api/attractions", attractionRoutes)
 
 // Authtication
 app.use('/api/auth', authRoutes)
 
+app.use("/api/attractions", attractionRoutes)
 // Plug the router on /api/reservations
 app.use('/api/reservations', reservationsRouter)
 
