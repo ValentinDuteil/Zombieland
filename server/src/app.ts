@@ -3,10 +3,10 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-import attractionRoutes from './routes/attraction.js'
+import attractionRoutes from './routes/attraction.routes.js'
 
 // import the reservations router
-import reservationsRouter from './routes/reservations.js'
+import reservationsRouter from './routes/reservations.routes.js'
 
 const app = express()
 
