@@ -12,7 +12,7 @@ const router = Router()
 // When someone calls GET /api/reservations execute getReservations
 router.get('/', getReservations)
 // When someone calls POST /api/reservations, execute createReservation
-router.post('/', createReservation)
+router.post('/', checkToken, createReservation)
 //When someone calls DELETE /api/reservations/:id, execute deleteReservation
 router.delete('/:id', checkToken, deleteReservation)
 

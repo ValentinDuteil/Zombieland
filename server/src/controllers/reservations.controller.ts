@@ -40,7 +40,7 @@ export const createReservation = async (req: Request, res: Response) => {
                 nb_tickets,
                 date: new Date(date),
                 id_TICKET,
-                id_USER: 1,
+                id_USER: req.user?.id ?? 1, 
                 total_amount: 0,
             }
         })
