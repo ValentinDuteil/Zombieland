@@ -51,9 +51,19 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     }
   })
 
-  //7.security, confirmed to the client the creation without returning the password
+  //7.adding a token using JWT
+  const token = jwt.sign(
+    {
+      id: newUser.id_USER,
+      role: newUser.role
+    },
+    process.env.JWT_SECRET!,
+    { expiresIn: '7d' },
+  )
+
+  //8.security, confirmed to the client the creation without returning the password
   const { password: _, ...userWithoutPassword } = newUser
-  return res.status(201).json(userWithoutPassword);
+  return res.status(201).json({userWithoutPassword,  token: token });
 }
 
 

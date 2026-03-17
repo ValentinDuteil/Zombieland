@@ -6,6 +6,7 @@ const router = Router()
 
 // Get all attractions
 router.get('/', getAttraction)
+
 // Get a single attraction by its id
 router.get('/:id', getFindAttraction)
 
