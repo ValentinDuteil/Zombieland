@@ -18,15 +18,29 @@ const theme = extendTheme({
         }
     },
     fonts: {
-        heading: "'creepster', sans-serif",
-        body: "'oswald', sans-serif"
+        heading: "'Creepster', sans-serif",
+        body: "'Oswald', sans-serif"
     },
     styles: {
         global: {
             body: {
                 bg: "zombieland.bgprimary",
                 color: "zombieland.white"
-            }
+            },
+            // Custom scroll bar
+            '::-webkit-scrollbar': {
+                width: '8px',
+            },
+            '::-webkit-scrollbar-track': {
+                bg: 'zombieland.secondary',
+            },
+            '::-webkit-scrollbar-thumb': {
+                bg: 'zombieland.primary',
+                borderRadius: 'full',
+            },
+            '::-webkit-scrollbar-thumb:hover': {
+                bg: 'zombieland.cta1orange',
+            },
         }
     }
 });
