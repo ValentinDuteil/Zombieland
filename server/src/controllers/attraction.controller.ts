@@ -21,7 +21,11 @@ export const getAttraction = async (req: Request, res: Response, next: NextFunct
             include: {
                 categories: { include: { category: true } }
             }
+<<<<<<< HEAD
+        })
+=======
 })
+>>>>>>> e5dcee35c4852798cc8e0c4593cfe607094ed5b1
         // Send the result back to the client as JSON
         res.json(attractions)
     } catch (error) {
@@ -34,7 +38,10 @@ export const getAttraction = async (req: Request, res: Response, next: NextFunct
     }
 }
 
+<<<<<<< HEAD
+=======
 // Find a single attraction by its ID
+>>>>>>> e5dcee35c4852798cc8e0c4593cfe607094ed5b1
 export const getFindAttraction = async (req: Request, res: Response, next: NextFunction) => {
     try {
         // Get the id from the URL parameters and convert it to a number
@@ -53,8 +60,17 @@ export const getFindAttraction = async (req: Request, res: Response, next: NextF
             where: {
                 id_ATTRACTION: attractionParam,
             },
+<<<<<<< HEAD
+            include: {
+                categories: {
+                    include: { category: true }
+                }
+            }
+        })
+=======
             include: {categories: { include : {category: true}
     }}})
+>>>>>>> e5dcee35c4852798cc8e0c4593cfe607094ed5b1
 
         // Check if the attraction was not found in the database
         if (findAttraction === null) {
@@ -76,6 +92,10 @@ export const getFindAttraction = async (req: Request, res: Response, next: NextF
         })
     }
 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> e5dcee35c4852798cc8e0c4593cfe607094ed5b1
 
 
 
