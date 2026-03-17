@@ -25,7 +25,6 @@ const App = () => {
 
         fetchAttractions();
     }, []);
-console.log("Attractions:", attractions);
     return (
         <Routes>
             <Route
