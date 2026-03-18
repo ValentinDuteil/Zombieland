@@ -1,5 +1,5 @@
 // Entry point for application routes
-
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 // Import the register page
 import Register from './pages/Register'
 //Import the login page
@@ -10,22 +10,21 @@ import Reservation from './pages/Reservation'
 import MyReservations from './pages/MyReservations'
 // Import the attractions page
 import AttractionsPage from "./pages/Attractions"
-import { BrowserRouter, Route, Routes } from 'react-router'
-
+// Import the Faq end ML page
+import Faq from "./pages/Faq"
 
 const App = () => {
-
-
     return (
         <BrowserRouter>
-            <Routes>
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/reservation" element={<Reservation />} />
-                <Route path="/my-account/reservations" element={<MyReservations />} />
-                <Route path="/attractions" element={<AttractionsPage />} />
-            </Routes>
-        </BrowserRouter>
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/reservation" element={<Reservation />} />
+        <Route path="/my-account/reservations" element={<MyReservations />} />
+        <Route path="/attractions" element={<AttractionsPage />} />
+        <Route path="/faq" element={<Faq />} />
+      </Routes>
+    </BrowserRouter>
     );
 };
 
