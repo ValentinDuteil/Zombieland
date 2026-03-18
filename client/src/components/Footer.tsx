@@ -2,7 +2,7 @@
 
 import { Box, Flex, Text, Image } from '@chakra-ui/react'
 import { FaFacebook, FaInstagram, FaTiktok, FaYoutube } from 'react-icons/fa'
-import parkImage from '../assets/zombieland.png'
+import parkImage from '../../public/assets/zombieland.png'
 
 function Footer() {
     return (
