@@ -3,7 +3,7 @@
 import { Box, Flex, Image, Text, IconButton, VStack } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
-import logo from '../assets/logo.png'
+import logo from '../../public/assets/logo.png'
 
 function Header() {
     // State to manage the burger menu open/close

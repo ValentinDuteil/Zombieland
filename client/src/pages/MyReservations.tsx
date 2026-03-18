@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Box, Button, Heading, Text, Flex } from '@chakra-ui/react'
-import bgImage from '../assets/bg-image.png'
+import bgImage from '../../public/assets/bg-image.png'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
