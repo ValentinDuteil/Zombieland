@@ -33,15 +33,13 @@ function Reservation() {
         // Send the form data to the back via fetch
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations`, {
             method: 'POST', // Create a new reservation
-            headers: {
-                'Content-Type': 'application/json', // Send JSON
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
+            headers: { 'Content-Type': 'application/json' }, // Send JSON},
             body: JSON.stringify({
                 nb_tickets: nbTickets, // The number of the tickets
                 date: date, // The chosen date
                 id_TICKET: 1
-            })
+            }),
+            credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
         })
 
         // The response is ok (status 200-299), success message

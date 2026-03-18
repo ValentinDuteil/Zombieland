@@ -1,7 +1,6 @@
 // Register page - to be connected
 
 //To be changed as an overlay/pop-up later for a better UX
-//Waiting for a refacto with cookies httpOnly instead of localstorage
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { Box, Button, Heading, Flex, Input, Text } from '@chakra-ui/react'
@@ -23,12 +22,11 @@ function Register() {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstname: form.firstname, lastname: form.lastname, email: form.email, password: form.password })
+        body: JSON.stringify({ firstname: form.firstname, lastname: form.lastname, email: form.email, password: form.password }),
+        credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
       })
       //only if response is ok the connection is allowed
       if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
         setMessage(' Bienvenu : compte créé !');
         navigate('/reservation');
       } else {
