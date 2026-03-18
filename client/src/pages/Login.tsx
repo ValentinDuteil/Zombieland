@@ -4,9 +4,9 @@
 //Waiting for a refacto with cookies httpOnly instead of localstorage
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
-import { Box, Button, Center, Heading, Input, Text } from '@chakra-ui/react'
-import bgImage from '../assets/bg-image.png'
-import bgBouton from '../assets/bg-bouton.png'
+import { Box, Button, Heading, Input, Text } from '@chakra-ui/react'
+import bgImage from '../../public/assets/bg-image.png'
+import bgBouton from '../../public/assets/bg-bouton.png'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 

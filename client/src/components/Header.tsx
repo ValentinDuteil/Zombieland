@@ -11,7 +11,7 @@ function Header() {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
-        <Box isolation="isolate">
+        <Box>
             <Box
                 bg="#1A1A1A"
                 px={8}
