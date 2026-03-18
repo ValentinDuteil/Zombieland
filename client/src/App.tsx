@@ -12,8 +12,6 @@ import MyReservations from './pages/MyReservations'
 import AttractionsPage from "./pages/Attractions"
 
 const App = () => {
-    
-
     return (
         <BrowserRouter>
       <Routes>
