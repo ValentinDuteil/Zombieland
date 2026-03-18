@@ -12,18 +12,15 @@ import { UnauthorizedError } from "../utils/AppError.js"
 // Middleware that checks if the user has a valid JWT token
 export function checkToken(req: Request, res: Response, next: NextFunction): void {
 
-  // Get the Authorization header from the request
-  const authorization = req.headers.authorization
+  // Get the Token from the cookie created in auth.controller (register ou login)
+  const token = req.cookies.token
 
-  // Check if the header exists and starts with "Bearer "
-  if (!authorization || !authorization.startsWith("Bearer ")) {
+  // Check if the token exists
+  if (!token) {
     // Token is invalid or expired → 401 Unauthorized
     next(new UnauthorizedError("Token manquant"))
     return
   }
-
-  // Extract the token by removing the "Bearer " prefix
-  const token = authorization.split(" ")[1]
 
   try {
     // Verify and decode the token using the secret key from .env
