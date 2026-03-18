@@ -6,6 +6,8 @@ import { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 // Import our custom JwtPayload type that defines the shape of the decoded token
 import { JwtPayload } from "../types/express.js"
+// Import de la gestion des erreurs
+import { UnauthorizedError } from "../utils/AppError.js"
 
 // Middleware that checks if the user has a valid JWT token
 export function checkToken(req: Request, res: Response, next: NextFunction): void {
@@ -15,8 +17,8 @@ export function checkToken(req: Request, res: Response, next: NextFunction): voi
 
   // Check if the header exists and starts with "Bearer "
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    // No token provided → 401 Unauthorized
-    res.status(401).json({ error: "Token manquant" })
+    // Token is invalid or expired → 401 Unauthorized
+    next(new UnauthorizedError("Token manquant"))
     return
   }
 
@@ -38,7 +40,7 @@ export function checkToken(req: Request, res: Response, next: NextFunction): voi
 
   } catch (error) {
     // Token is invalid or expired → 401 Unauthorized
-    res.status(401).json({ error: "Token invalide ou expiré" })
+    next(new UnauthorizedError("Token invalide ou expiré"))
     return
   }
 }
