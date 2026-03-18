@@ -43,6 +43,7 @@ const AttractionsPage = () => {
             display="flex"
             flexDirection="column"
             minHeight="100vh"
+            bgAttachment="fixed"
             bgImage={`url(${bgImage})`}
         >
             <Header />
