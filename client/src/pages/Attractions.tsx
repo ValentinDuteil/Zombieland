@@ -4,19 +4,19 @@ import AttractionCard from "../components/AttractionsCard";
 import type { Attraction } from "@types";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import bgImage from '../../public/assets/bg-image.png';
+import bgImage from '../assets/bg-image.png';
 
 const AttractionsPage = () => {
     const [attractions, setAttractions] = useState<Attraction[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     const attractionImages: Record<number, string> = {
-        1: "/assets/spectacle.png",
-        2: "/assets/dead rise.png",
-        3: "/assets/foret.png",
-        4: "/assets/granderoue.png",
-        5: "/assets/piscine.png",
-        6: "/assets/ghost-train-landscape.png",
+        1: "src/assets/spectacle.png",
+        2: "src/assets/dead rise.png",
+        3: "src/assets/foret.png",
+        4: "src/assets/granderoue.png",
+        5: "src/assets/piscine.png",
+        6: "src/assets/ghost-train-landscape.png",
     };
 
     useEffect(() => {
@@ -35,7 +35,7 @@ const AttractionsPage = () => {
 
     // Filtrage des attractions
     const filteredAttractions = selectedCategory
-        ? attractions.filter(a => a.categorie === selectedCategory)
+        ? attractions.filter(a => a.intensity === selectedCategory)
         : attractions;
 
     return (

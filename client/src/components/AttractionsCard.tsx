@@ -1,6 +1,6 @@
 import { Box, Image, Heading, Text, Badge, Button } from "@chakra-ui/react";
 import type { Attraction } from "@/types";
-import Card from '../../public/assets/Card.png';
+import Card from '../assets/Card.png';
 
 interface AttractionCardProps extends Attraction {
     image: string;
@@ -12,8 +12,8 @@ const categoryColors: Record<string, string> = {
     "Peur Mortelle": "red",
 };
 
-const AttractionCard = ({ name, description, categorie, image }: AttractionCardProps) => {
-    const cat = categorie ?? "Peur Acceptable";
+const AttractionCard = ({ name, description, intensity, image }: AttractionCardProps) => {
+    const cat = intensity ?? "Peur Acceptable";
 
     return (
         <Box
