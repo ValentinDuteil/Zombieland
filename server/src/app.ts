@@ -3,6 +3,7 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import { errorHandler } from './middlewares/errorHandler.js'
 import authRoutes from './routes/auth.routes.js'
 import attractionRoutes from './routes/attraction.routes.js'
 
@@ -27,5 +28,8 @@ app.use('/api/reservations', reservationsRouter)
 app.get('/', (req,res) => {
     res.json({ message: 'Zombieland API is running'})
 })
+
+//ErrorHandler
+app.use(errorHandler)
 
 export default app
