@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Box, Wrap, WrapItem, Menu, MenuButton, MenuList, MenuItem, Button } from "@chakra-ui/react";
-import AttractionCard from "./AttractionsCard";
+import { Box, Wrap, WrapItem, Menu, MenuButton, MenuList, MenuItem} from "@chakra-ui/react";
+import AttractionCard from "../components/AttractionsCard";
 import type { Attraction } from "@types";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
