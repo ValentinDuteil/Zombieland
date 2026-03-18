@@ -34,7 +34,8 @@ function Reservation() {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations`, {
             method: 'POST', // Create a new reservation
             headers: {
-                'Content-Type': 'application/json' // Send JSON
+                'Content-Type': 'application/json', // Send JSON
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             body: JSON.stringify({
                 nb_tickets: nbTickets, // The number of the tickets

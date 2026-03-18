@@ -4,7 +4,11 @@
 //Waiting for a refacto with cookies httpOnly instead of localstorage
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
-import { Box, Button, Heading, Input, Text } from '@chakra-ui/react'
+import { Box, Button, Center, Heading, Input, Text } from '@chakra-ui/react'
+import bgImage from '../assets/bg-image.png'
+import bgBouton from '../assets/bg-bouton.png'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 function Login() {
   //setting the changing of the inputs and the validation message as well
@@ -26,38 +30,123 @@ function Login() {
       setMessage('Connexion confirmée !');
       navigate('/reservation');
     } else {
-    //otherwise displaying an error message
+      //otherwise displaying an error message
       setMessage('Une erreur est survenue, veuillez réessayer.')
     }
   }
 
   return (
-    <Box p={8}>
-      <Heading mb={6}>Connexion</Heading>
 
-      {/* Input Email */}
-      <Input
-        type="email"
-        placeholder="Votre email"
-        value={form.email}
-        //using spread operator to update only one field but keeping what's left intact
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-      />
+    <Box
+      minH="100vh"
+      bgImage={`url(${bgImage})`}
+      bgSize="cover"
+      bgPosition="center"
+      bgAttachment="fixed"
+      display="flex"
+      flexDirection="column"
+      pt="80px"
+    >
+      <Header />
 
-      {/* Input Password */} 
-      <Input
-        type="password"
-        placeholder="Votre Mot de Passe"
-        value={form.password}
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-      />
+      <Box
+        flex={1}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        minH="70vh"
+      >
+        <Box
+          w="500px"
+          p={10}
+          borderRadius="md"
+        >
+          <Heading
+            mb={8}
+            textAlign="center"
+            fontFamily="heading"
+            fontSize="54px"
+            color="zombieland.white"
+          >
+            Connexion
+          </Heading>
 
-      <Button onClick={handleSubmit}>
-        Rejoindre l'horreur
-      </Button>
-      {/* Pop on screen only and only if the message isn't empty */}
-      {message && <Text mt={4}>{message}</Text>}
-    </Box>)
+          {/* Input Email */}
+          <Text mb={2} color="zombieland.white" fontWeight="300">Email</Text>
+          <Input
+            type="email"
+            placeholder="Votre email"
+            value={form.email}
+            _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            bg="rgba(0,0,0,0.3)"
+            color="zombieland.white"
+            borderColor="zombieland.primary"
+            boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+            mb={4}
+          />
+
+          {/* Input Password */}
+          <Text mb={2} color="zombieland.white" fontWeight="300">Mot de passe</Text>
+          <Input
+            type="password"
+            placeholder="Votre mot de passe"
+            value={form.password}
+            _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            bg="rgba(0,0,0,0.3)"
+            color="zombieland.white"
+            borderColor="zombieland.primary"
+            boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+            mb={6}
+          />
+        </Box>
+      </Box>
+
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems={{ base: 'center', lg: 'flex-end' }}
+        px={10}
+        pb={{ base: 28, lg: 6 }}
+      >
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Button
+            onClick={handleSubmit}
+            bgImage={`url(${bgBouton})`}
+            color="zombieland.secondary"
+            _hover={{ bg: "zombieland.cta2orange" }}
+            fontFamily="body"
+            fontSize="20px"
+            py={6}
+            px={3}
+            borderRadius="full"
+            letterSpacing="1px"
+            fontWeight="bold"
+            boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+            textTransform="uppercase"
+          >
+            → REJOINDRE L'HORREUR
+          </Button>
+
+          {/* Pop on screen only and only if the message isn't empty */}
+          {message && (
+            <Text
+              mt={4}
+              textAlign="center"
+              fontFamily="body"
+              fontWeight="300"
+              color={message.includes('confirmée') ? 'zombieland.white' : 'zombieland.warningprimary'}
+            >
+              {message}
+            </Text>
+          )}
+        </Box>
+      </Box>
+
+      <Footer />
+    </Box>
+  )
 }
 
 export default Login

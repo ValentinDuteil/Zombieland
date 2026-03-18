@@ -22,6 +22,25 @@ function MyReservations() {
         fetchReservations()
     }, []) // Runs only once on mount
 
+    // Cancel a reservation by sending a delete request to the api
+    const handleCancel = async (id: number) => {
+        const response = await fetch(`http://localhost:3000/api/reservations/${id}`, {
+            method: 'DELETE',
+            headers: {
+                // send the token jwt in the request header to authentificate the user
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+
+        if (response.ok) {
+            // remove the canceled reservation from the list without reloading the page
+            setReservations(reservations.filter((r: any) => r.id_RESERVATION !== id))
+        } else {
+            const data = await response.json()
+            alert(data.error)
+        }
+    }
+
     return (
         <Box
             minH="100vh"
@@ -94,6 +113,8 @@ function MyReservations() {
                             {/* Cancel button aligned to the right */}
                             <Flex justifyContent="flex-end">
                                 <Button
+                                    // trigger the cancel function when the button is clicked
+                                    onClick={() => handleCancel(reservation.id_RESERVATION)}
                                     bgImage="url('/src/assets/deleteBouton.png')"
                                     bgSize="cover"
                                     bgPosition="center"

@@ -9,6 +9,7 @@ import { UserSchema, LoginSchema } from '../schemas/auth.schema.js';
 import * as argon2 from 'argon2';
 import { prisma } from '../lib/prisma.js';
 import jwt from 'jsonwebtoken';
+import { BadRequestError, UnauthorizedError, NotFoundError, ConflictError } from "../utils/AppError.js";
 
 export async function register(req: Request, res: Response, next: NextFunction) {
 
@@ -20,11 +21,9 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   //safeParse() returns "{ success: true/false, data, error }"
   const data = UserSchema.safeParse(req.body);
 
-  //3.conditions
+  //3.if the data is invalid, return a 400 error
   if (!data.success) {
-    console.error("Form content is not approuved ");
-    //waiting for refacto after setting of an error handler
-    return res.status(400).json(data.error);
+    throw new BadRequestError("Données invalides")
   }
 
   const parsedBody = data.data
@@ -35,7 +34,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   })
 
   if (existingUser) {
-    return res.status(409).json({ message: 'Email already exists' })
+    throw new ConflictError('Email already exists')
   }
 
   //5.password hash required before pushing in db
@@ -70,31 +69,32 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 export async function login(req: Request, res: Response, next: NextFunction) {
 
   //1.fetching the parameters we need in the body (given by the user inputs)
-  //and validation by zod schema
+  //plus validation by zod schema, 
+  //and if the data is invalid, return a 400 error
   const data = LoginSchema.safeParse(req.body);
 
   if (!data.success) {
-    console.error("Form content is not approuved ");
-    //waiting for refacto after setting of an error handler
-    return res.status(400).json(data.error);
+    throw new BadRequestError("Contenu du formulaire non approuvé")
   }
 
   const parsedBody = data.data
 
-  //4.check if the email already exists
+  //4.check if the email already exists 
+  //if not, return a 401
   const existingUser = await prisma.user.findUnique({
     where: { email: parsedBody.email }
   })
 
   if (!existingUser) {
-    return res.status(401).json({ message: 'Invalid credentials' })
+    throw new UnauthorizedError('Identifiants invalides')
   }
 
   //5.confirmed the hash is the same
+  //if not, return a 401
   const rightPassword = await argon2.verify(existingUser.password, parsedBody.password)
 
   if (!rightPassword) {
-    return res.status(401).json({ message: 'Invalid credentials' })
+    throw new UnauthorizedError('Identifiants invalides')
   }
 
   //6.adding a token using JWT
@@ -111,16 +111,16 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function me(req: Request, res: Response, next: NextFunction) {
-  //.fetch user informations and checking if user is undefined
+  //1.fetch user informations and checking if user is undefined
   if (!req.user) {
-    return res.status(401).json({ message: 'Unauthorized' })
+    throw new UnauthorizedError('Accès refusé')
   }
   const user = await prisma.user.findUnique({
     where: { id_USER: req.user.id }
   })
   //2.checking if userExist
   if (!user) {
-    return res.status(404).json({ message: 'User not found' })
+    throw new NotFoundError("Utilisateur introuvable")
   }
   //3.returning the informations to the user
   const { password: _, ...userWithoutPassword } = user
