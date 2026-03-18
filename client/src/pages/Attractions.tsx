@@ -4,7 +4,7 @@ import AttractionCard from "./AttractionsCard";
 import type { Attraction } from "@types";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
+import bgImage from '../../public/assets/bg-image.png'
 
 const AttractionsPage = () => {
     const [attractions, setAttractions] = useState<Attraction[]>([]);
@@ -36,6 +36,7 @@ const AttractionsPage = () => {
             display="flex"
             flexDirection="column"
             minHeight="100vh"
+            bgImage={`url(${bgImage})`}
         >
             <Header />
 

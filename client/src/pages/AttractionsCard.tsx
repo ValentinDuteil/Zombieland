@@ -1,11 +1,11 @@
 import { Box, Image, Heading, Text, Badge, Button } from "@chakra-ui/react";
 import type { Attraction } from "@/types";
+import Card from '../../public/assets/Card.png';
 
 interface AttractionCardProps extends Attraction {
-    image: string; // ton image locale
+    image: string;
 }
 
-// Couleurs des badges selon la catégorie
 const categoryColors: Record<string, string> = {
     "Peur Acceptable": "green",
     "Peur Survivable": "orange",
@@ -13,60 +13,86 @@ const categoryColors: Record<string, string> = {
 };
 
 const AttractionCard = ({ name, description, categorie, image }: AttractionCardProps) => {
-    // Sécurise la catégorie si elle est absente
     const cat = categorie ?? "Peur Acceptable";
 
     return (
         <Box
             width="300px"
+            height="400px"                 // 🔥 hauteur FIXE pour toutes les cartes
             borderRadius="lg"
             overflow="hidden"
             boxShadow="0 0 15px rgba(0,0,0,0.5)"
-            bg="#1a1a1a"
+            bgImage={`url(${Card})`}
+            bgSize="cover"
+            bgPosition="center"
             color="white"
+            display="flex"
+            flexDirection="column"         // 🔥 structure en colonne
         >
-            {/* Image centrée avec marge */}
-            <Box display="flex" justifyContent="center" mt={4}>
-                <Image
-                    src={image}
-                    alt={name}
-                    width="90%"
-                    height="180px"
-                    objectFit="cover"
-                    borderRadius="md"
-                />
-            </Box>
+            {/* Image + badge positionné dessus */}
+<Box
+    width="100%"
+    height="180px"
+    overflow="hidden"
+    display="flex"
+    justifyContent="center"
+    alignItems="center"
+    mt={4}
+    position="relative"          // 🔥 nécessaire pour positionner le badge
+>
+    {/* Badge sur l’image */}
+    <Badge
+        position="absolute"
+        top="8px"
+        left="8px"
+        color="zombieland.white"
+        colorScheme={categoryColors[cat] || "gray"}
+        px={3}
+        py={1}
+        borderRadius="md"
+        fontSize="0.8rem"
+        zIndex={2}                // au-dessus de l’image
+        bg={`${categoryColors[cat]}.500`} // couleur solide
+    >
+        {cat.toUpperCase()}
+    </Badge>
 
-            <Box p={4}>
-                {/* Badge catégorie */}
-                <Badge
-                    colorScheme={categoryColors[cat] || "gray"}
-                    mb={2}
-                    px={3}
-                    py={1}
-                    borderRadius="md"
-                    fontSize="0.8rem"
-                >
-                    {cat.toUpperCase()}
-                </Badge>
+    <Image
+        src={image}
+        alt={name}
+        width="90%"
+        height="100%"
+        objectFit="cover"
+        borderRadius="md"
+    />
+</Box>
 
-                {/* Titre */}
+
+
+            {/* Contenu */}
+            <Box
+                p={4}
+                display="flex"
+                flexDirection="column"
+                flex="1"                     // occupe tout l’espace restant
+            >
+
                 <Heading size="md" mb={2}>
                     {name.toUpperCase()}
                 </Heading>
 
-                {/* Description */}
-                <Text noOfLines={3} mb={4}>
+                <Text noOfLines={3} mb={4} flex="1">
                     {description}
                 </Text>
 
-                {/* Bouton */}
                 <Button
                     borderRadius="15px"
-                    width="30%"
+                    width="27%"
                     bg="zombieland.cta1orange"
                     color="white"
                     _hover={{ bg: "zombieland.cta2orange" }}
+                    mt="auto"                 // pousse le bouton en bas
+                    alignSelf="flex-end"
                 >
                     VOIR PLUS
                 </Button>
@@ -76,4 +102,3 @@ const AttractionCard = ({ name, description, categorie, image }: AttractionCardP
 };
 
 export default AttractionCard;
-
