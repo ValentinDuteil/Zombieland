@@ -18,7 +18,7 @@ const AttractionCard = ({ name, description, categorie, image }: AttractionCardP
     return (
         <Box
             width="300px"
-            height="400px"                 // 🔥 hauteur FIXE pour toutes les cartes
+            height="400px"                 // hauteur FIXE pour toutes les cartes
             borderRadius="lg"
             overflow="hidden"
             boxShadow="0 0 15px rgba(0,0,0,0.5)"
@@ -27,47 +27,45 @@ const AttractionCard = ({ name, description, categorie, image }: AttractionCardP
             bgPosition="center"
             color="white"
             display="flex"
-            flexDirection="column"         // 🔥 structure en colonne
+            flexDirection="column"         // structure en colonne
         >
             {/* Image + badge positionné dessus */}
-<Box
-    width="100%"
-    height="180px"
-    overflow="hidden"
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-    mt={4}
-    position="relative"          // 🔥 nécessaire pour positionner le badge
->
-    {/* Badge sur l’image */}
-    <Badge
-        position="absolute"
-        top="8px"
-        left="8px"
-        color="zombieland.white"
-        colorScheme={categoryColors[cat] || "gray"}
-        px={3}
-        py={1}
-        borderRadius="md"
-        fontSize="0.8rem"
-        zIndex={2}                // au-dessus de l’image
-        bg={`${categoryColors[cat]}.500`} // couleur solide
-    >
-        {cat.toUpperCase()}
-    </Badge>
+            <Box
+                width="100%"
+                height="180px"
+                overflow="hidden"
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                mt={8}
+                position="relative"          // nécessaire pour positionner le badge
+            >
+                {/* Badge sur l’image */}
+                <Badge
+                    position="absolute"
+                    top="8px"
+                    left="8px"
+                    color="zombieland.white"
+                    colorScheme={categoryColors[cat] || "gray"}
+                    px={3}
+                    py={1}
+                    borderRadius="md"
+                    fontSize="0.8rem"
+                    zIndex={2}                // au-dessus de l’image
+                    bg="zombieland.successsecondary"
+                >
+                    {cat.toUpperCase()}
+                </Badge>
 
-    <Image
-        src={image}
-        alt={name}
-        width="90%"
-        height="100%"
-        objectFit="cover"
-        borderRadius="md"
-    />
-</Box>
-
-
+                <Image
+                    src={image}
+                    alt={name}
+                    width="90%"
+                    height="100%"
+                    objectFit="cover"
+                    borderRadius="md"
+                />
+            </Box>
 
             {/* Contenu */}
             <Box
@@ -87,12 +85,12 @@ const AttractionCard = ({ name, description, categorie, image }: AttractionCardP
 
                 <Button
                     borderRadius="15px"
-                    width="27%"
+                    width="32%"
                     bg="zombieland.cta1orange"
                     color="white"
                     _hover={{ bg: "zombieland.cta2orange" }}
                     mt="auto"                 // pousse le bouton en bas
-                    alignSelf="flex-end"
+                    alignSelf="flex-end" // aligne le bouton à droite
                 >
                     VOIR PLUS
                 </Button>
