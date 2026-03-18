@@ -10,6 +10,8 @@ import Reservation from './pages/Reservation'
 import MyReservations from './pages/MyReservations'
 // Import the attractions page
 import AttractionsPage from "./pages/Attractions"
+// Import the Faq end ML page
+import Faq from "./pages/Faq"
 
 const App = () => {
     return (
@@ -20,6 +22,7 @@ const App = () => {
         <Route path="/reservation" element={<Reservation />} />
         <Route path="/my-account/reservations" element={<MyReservations />} />
         <Route path="/attractions" element={<AttractionsPage />} />
+        <Route path="/faq" element={<Faq />} />
       </Routes>
     </BrowserRouter>
     );
