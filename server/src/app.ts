@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser'
 import { errorHandler } from './middlewares/errorHandler.js'
 // Routes
 import authRoutes from './routes/auth.routes.js'
+import usersRoutes from './routes/users.routes.js'
 import attractionRoutes from './routes/attraction.routes.js'
 import reservationsRouter from './routes/reservations.routes.js'
 
@@ -26,10 +27,12 @@ app.use(cors({
 app.use(helmet())
 app.use(cookieParser())
 
-// Authtication
+// Authentication
 app.use('/api/auth', authRoutes)
-
+// Plug the router on api/attractions
 app.use("/api/attractions", attractionRoutes)
+// Plug the router on api/users
+app.use('/api/users', usersRoutes)
 // Plug the router on /api/reservations
 app.use('/api/reservations', reservationsRouter)
 
