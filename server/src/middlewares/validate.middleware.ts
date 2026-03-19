@@ -4,6 +4,7 @@
 import { Request, Response, NextFunction } from "express"
 // Import Zod types for schema validation
 import { ZodType, ZodError, ZodIssue } from "zod"
+import { BadRequestError } from "../utils/AppError.js"
 
 // Factory function that creates a validation middleware from any Zod schema
 // Usage: validate(RegisterSchema) returns a middleware that validates req.body
@@ -22,17 +23,14 @@ export function validate(schema: ZodType) {
       const zodError = result.error as ZodError
 
       // Return 400 Bad Request with formatted error details
-      res.status(400).json({
-        error: "Données invalides",
-        // Map each validation issue to a clean format for the frontend
-        details: zodError.issues.map((issue: ZodIssue) => ({
-          // The field name that failed validation (e.g. "email", "password")
-          champ: issue.path.join("."),
-          // The error message defined in the Zod schema
-          message: issue.message,
-        })),
-      })
-      return
+      // Map each validation issue to a clean format for the frontend
+      const details = zodError.issues.map((issue: ZodIssue) => ({
+        // The field name that failed validation (e.g. "email", "password")
+        champ: issue.path.join("."),
+        // The error message defined in the Zod schema
+        message: issue.message,
+      }))
+      throw new BadRequestError("Données invalides", details)
     }
 
     // Validation passed → replace req.body with the cleaned data

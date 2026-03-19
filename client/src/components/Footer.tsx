@@ -2,7 +2,8 @@
 
 import { Box, Flex, Text, Image } from '@chakra-ui/react'
 import { FaFacebook, FaInstagram, FaTiktok, FaYoutube } from 'react-icons/fa'
-import parkImage from '../../public/assets/zombieland.png'
+import parkImage from '../assets/zombieland.png'
+import { Link } from 'react-router-dom'
 
 function Footer() {
     return (
@@ -46,9 +47,11 @@ function Footer() {
 
                 {/* Legal mentions on the right */}
                 <Box textAlign="right">
-                    <Text color="zombieland.white" cursor="pointer" mb={2} fontFamily="body">
-                        FAQ - Mentions légales
-                    </Text>
+                    <Link to="/faq">
+                        <Text color="zombieland.white" cursor="pointer" mb={2} fontFamily="body">
+                            FAQ - Mentions légales
+                        </Text>
+                    </Link>
                     <Text color="zombieland.white" fontFamily="body">
                         © 2026 Zombieland. Tous droits réservés.
                     </Text>
@@ -110,9 +113,9 @@ function Footer() {
                 />
 
                 {/* Legal mentions */}
-                <Text color="zombieland.white" cursor="pointer" fontFamily="body">
-                    FAQ - Mentions légales
-                </Text>
+                <Link to="/faq">
+                    <Text color="zombieland.white" cursor="pointer" fontFamily="body">FAQ - Mentions légales</Text>
+                </Link>
                 <Text color="zombieland.white" fontFamily="body" textAlign="center">
                     © 2026 Zombieland. Tous droits réservés.
                 </Text>

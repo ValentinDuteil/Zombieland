@@ -2,6 +2,8 @@
 
 // Import Express types for request, response and next function
 import { Request, Response, NextFunction } from "express"
+// Import de la gestion des erreurs
+import { UnauthorizedError, ForbiddenError } from "../utils/AppError.js"
 
 // Factory function that creates a middleware to check the user's role
 // Usage: checkRole("ADMIN") returns a middleware that only allows admins
@@ -16,14 +18,14 @@ export function checkRole(requiredRole: string) {
     // If no user info → the request didn't pass through checkToken first
     if (!user) {
       // 401 = not authenticated
-      res.status(401).json({ error: "Non authentifié" })
+      next(new UnauthorizedError("Token manquant ou invalide"))
       return
     }
 
     // Check if the user's role matches the required role
     if (user.role !== requiredRole) {
       // 403 = authenticated but not authorized (wrong role)
-      res.status(403).json({ error: "Accès interdit : rôle non autorisé" })
+      next(new ForbiddenError("Accès interdit : rôle non autorisé"))
       return
     }
 

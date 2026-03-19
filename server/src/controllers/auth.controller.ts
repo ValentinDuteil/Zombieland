@@ -60,9 +60,17 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     { expiresIn: '7d' },
   )
 
-  //8.security, confirmed to the client the creation without returning the password
+  //8.putting the token in a cookie httpOnly
+  res.cookie('token', token, {
+    httpOnly: true,                 // JavaScript can't read it → protection XSS
+    secure: false,                  // false for dev (HTTP, localhost), true for prod (HTTPS uniquement)
+    sameSite: 'lax',                // cookie is send only from the same website → CSRF protection
+    maxAge: 7 * 24 * 60 * 60 * 1000 // durée de vie en millisecondes
+  })
+
+  //9.security, confirmed to the client the creation without returning the password
   const { password: _, ...userWithoutPassword } = newUser
-  return res.status(201).json({userWithoutPassword,  token: token });
+  return res.status(201).json({ userWithoutPassword });
 }
 
 
@@ -107,7 +115,15 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     { expiresIn: '7d' },
   )
 
-  return res.status(200).json({ token: token });
+  //7.putting the token in a cookie httpOnly
+  res.cookie('token', token, {
+    httpOnly: true,                 // JavaScript can't read it → protection XSS
+    secure: false,                  // false for dev (HTTP, localhost), true for prod (HTTPS uniquement)
+    sameSite: 'lax',                // cookie is send only from the same website → CSRF protection
+    maxAge: 7 * 24 * 60 * 60 * 1000 // durée de vie en millisecondes
+  })
+
+  return res.status(200).json({ message: "Connexion réussie" });
 }
 
 export async function me(req: Request, res: Response, next: NextFunction) {

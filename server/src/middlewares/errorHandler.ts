@@ -7,7 +7,8 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
   console.error(err)
   if (err instanceof AppError) {
     // error is anticipated → using the statusCode in AppError utils to identify it
-    return res.status(err.statusCode).json({ message: err.message });
+    // displaying the message error + the details only if it's a zod error that was catched
+    return res.status(err.statusCode).json({ message: err.message, ...(err.details && { details: err.details })});
   } else {
     // bug isn't planned → returning a global 500
     return res.status(500).json({message: 'Erreur Serveur'});
