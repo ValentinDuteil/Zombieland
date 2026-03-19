@@ -1,22 +1,31 @@
 import { useEffect, useState } from "react";
-import { Box, Wrap, WrapItem, Menu, MenuButton, MenuList, MenuItem} from "@chakra-ui/react";
+import { Box, Wrap, WrapItem, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import AttractionCard from "../components/AttractionsCard";
 import type { Attraction } from "@types";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import bgImage from '../assets/bg-image.png';
+import img1 from '../assets/spectacle.png';
+import img2 from '../assets/dead-rise.png';
+import img3 from '../assets/foret.png';
+import img4 from '../assets/granderoue.png';
+import img5 from '../assets/piscine.png';
+import img6 from '../assets/ghost-train-landscape.png';
+
+
 
 const AttractionsPage = () => {
     const [attractions, setAttractions] = useState<Attraction[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     const attractionImages: Record<number, string> = {
-        1: "src/assets/spectacle.png",
-        2: "src/assets/dead rise.png",
-        3: "src/assets/foret.png",
-        4: "src/assets/granderoue.png",
-        5: "src/assets/piscine.png",
-        6: "src/assets/ghost-train-landscape.png",
+        1: img1,
+        2: img2,
+        3: img3,
+        4: img4,
+        5: img5,
+        6: img6,
+
     };
 
     useEffect(() => {
@@ -57,7 +66,7 @@ const AttractionsPage = () => {
                             color="zombieland.white"
                             px={4}
                             py={2}
-                            border="2px solid white"                            
+                            border="2px solid white"
                         >
                             Filtrer par catégorie
                         </MenuButton>

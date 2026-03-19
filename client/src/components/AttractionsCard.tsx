@@ -1,7 +1,6 @@
 import { Box, Image, Heading, Text, Badge, Button } from "@chakra-ui/react";
 import type { Attraction } from "@/types";
 import Card from '../assets/Card.png';
-import { useNavigate, useParams } from "react-router";
 
 interface AttractionCardProps extends Attraction {
     image: string;

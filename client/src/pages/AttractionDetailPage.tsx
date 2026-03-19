@@ -4,13 +4,14 @@ import type { AttractionWithCategories } from "@/types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
-import { Badge, Box, Button, Heading, Image, Text, Wrap, WrapItem } from "@chakra-ui/react";
+import { Badge, Box, Button, Heading, Image, Text } from "@chakra-ui/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
 import laboImage from '../assets/laboratoirez.png'
 import Card from '../assets/Card.png';
+import { API_URL } from '../config/api.ts'
 
 const categoryColors: Record<string, string> = {
   "Peur Acceptable": "green",
@@ -35,7 +36,7 @@ const AttractionDetailPage = () => {
     setIsLoading(true);
     const axiosAttraction = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/attractions/${id}`);
+        const res = await axios.get(`${API_URL}/api/attractions/${id}`);
         if (!res)
           throw new Error("Erreur lors de la récupération d'une attraction");
         setAttraction(res.data);

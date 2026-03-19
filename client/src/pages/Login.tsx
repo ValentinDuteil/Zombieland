@@ -3,7 +3,7 @@
 //To be changed as an overlay/pop-up later for a better UX
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
-import { Box, Button, Center, Heading, Input, Text } from '@chakra-ui/react'
+import { Box, Button, Heading, Input, Text } from '@chakra-ui/react'
 import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
 import Header from '../components/Header'

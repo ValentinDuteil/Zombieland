@@ -28,6 +28,10 @@ async function main() {
 
     const user1 = await prisma.user.findUnique({ where: { email: 'john.doe@example.com' } });
     const user2 = await prisma.user.findUnique({ where: { email: 'jane.smith@example.com' } });
+    // Vérifier que les users existent avant de continuer
+if (!user1 || !user2) {
+    throw new Error("Erreur : les utilisateurs n'ont pas été créés");
+}
 
     const ticket1 = await prisma.ticket.create({
         data: {
