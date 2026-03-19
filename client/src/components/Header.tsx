@@ -3,12 +3,27 @@
 import { Box, Flex, Image, Text, IconButton, VStack } from '@chakra-ui/react'
 import { Drawer, DrawerBody, DrawerOverlay, DrawerContent } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import logo from '../assets/logo.png'
 
 function Header() {
     // State to manage the burger menu open/close
     const [isOpen, setIsOpen] = useState(false)
+
+    const [firstname, setFirstname] = useState<string | null>(null)
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
+                credentials: 'include'
+            })
+            if (response.ok) {
+                const data = await response.json()
+                setFirstname(data.firstname)
+            }
+        }
+        fetchUser()
+    }, [])
 
     return (
         <Box>
@@ -50,12 +65,22 @@ function Header() {
 
                     {/* Login and register links on the right - hidden on mobile */}
                     <Flex gap={6} display={{ base: 'none', lg: 'flex' }}>
-                        <Link to="/login">
-                            <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Connexion</Text>
-                        </Link>
-                        <Link to="/register">
-                            <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Inscription</Text>
-                        </Link>
+                        {firstname ? (
+                            <Link to="/my-account">
+                                <Text color="zombieland.white" fontWeight="bold" fontFamily="body">
+                                    Bienvenue {firstname} !
+                                </Text>
+                            </Link>
+                        ) : (
+                            <>
+                                <Link to="/login" onClick={() => setIsOpen(false)}>
+                                    <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Connexion</Text>
+                                </Link>
+                                <Link to="/register" onClick={() => setIsOpen(false)}>
+                                    <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Inscription</Text>
+                                </Link>
+                            </>
+                        )}
                     </Flex>
 
                     {/* Burger menu button - visible on mobile only */}
@@ -78,8 +103,8 @@ function Header() {
             <Drawer isOpen={isOpen} placement="right" onClose={() => setIsOpen(false)} size="xs">
                 <DrawerOverlay />
                 <DrawerContent bg="rgba(26, 26, 26, 0.3)" backdropFilter="blur(8px)">
-                    <DrawerBody display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-                        <VStack alignItems="center" gap={4} w="100%">
+                    <DrawerBody display="flex" flexDirection="column" justifyContent="space-between" alignItems="center">
+                        <VStack alignItems="center" gap={4} w="100%" mt="auto">
                             <Link to="/" onClick={() => setIsOpen(false)}>
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Accueil</Text>
                             </Link>
@@ -95,13 +120,25 @@ function Header() {
                             <Link to="/contact">
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Contact</Text>
                             </Link>
-                            <Link to="/login" onClick={() => setIsOpen(false)}>
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Connexion</Text>
-                            </Link>
-                            <Link to="/register" onClick={() => setIsOpen(false)}>
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Inscription</Text>
-                            </Link>
                         </VStack>
+
+                            <Box mt="auto" pb={4} w="100%" textAlign="center">
+                                {firstname ? (
+                                    <Link to="/my-account" onClick={() => setIsOpen(false)}>
+                                        <Text color="zombieland.white" fontWeight="bold" fontFamily="body">Mon compte</Text>
+                                    </Link>
+                                ) : (
+                                    <VStack gap={4}>
+                                        <Link to="/login" onClick={() => setIsOpen(false)}>
+                                            <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Connexion</Text>
+                                        </Link>
+                                        <Link to="/register" onClick={() => setIsOpen(false)}>
+                                            <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Inscription</Text>
+                                        </Link>
+                                    </VStack>
+                                )}
+                            </Box>
+
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
