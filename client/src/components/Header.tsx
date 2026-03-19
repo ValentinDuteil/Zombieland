@@ -1,16 +1,17 @@
 // Header component - navigation bar
 
-import { Box, Flex, Image, Text, IconButton, VStack } from '@chakra-ui/react'
-import { Drawer, DrawerBody, DrawerOverlay, DrawerContent } from '@chakra-ui/react'
+import { Box, Flex, Image, Text, IconButton, Menu, MenuItem, MenuList, MenuButton } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import logo from '../assets/logo.png'
+import { FaUserCircle } from 'react-icons/fa'
 
 function Header() {
     // State to manage the burger menu open/close
-    const [isOpen, setIsOpen] = useState(false)
-
+    const [isOpn, setIsOpen] = useState(false)
     const [firstname, setFirstname] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -21,6 +22,7 @@ function Header() {
                 const data = await response.json()
                 setFirstname(data.firstname)
             }
+            setIsLoading(false)
         }
         fetchUser()
     }, [])
@@ -38,24 +40,21 @@ function Header() {
                 zIndex={100}
             >
                 <Flex alignItems="center" justifyContent="space-between">
-
                     {/* Logo + navigation links grouped on the left */}
                     <Flex alignItems="center" gap={8}>
                         <Image src={logo} alt="ZombieLand" h="50px" />
-
-                        {/* Navigation links - hidden on mobile */}
                         <Flex alignItems="center" gap={8} display={{ base: 'none', lg: 'flex' }}>
                             <Link to="/">
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Accueil</Text>
+                            </Link>
+                            <Link to="/reservation">
+                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Réservation</Text>
                             </Link>
                             <Link to="/attractions">
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Attractions</Text>
                             </Link>
                             <Link to="/plan">
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Plan</Text>
-                            </Link>
-                            <Link to="/reservation">
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Réserver</Text>
                             </Link>
                             <Link to="/contact">
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Contact</Text>
@@ -64,86 +63,87 @@ function Header() {
                     </Flex>
 
                     {/* Login and register links on the right - hidden on mobile */}
-                    <Flex gap={6} display={{ base: 'none', lg: 'flex' }}>
-                        {firstname ? (
-                            <Link to="/my-account">
-                                <Text color="zombieland.white" fontWeight="bold" fontFamily="body">
-                                    Bienvenue {firstname} !
-                                </Text>
-                            </Link>
-                        ) : (
+                    <Flex gap={6} display={{ base: 'none', lg: 'flex' }} marginLeft="auto">
+                        {isLoading ? (
+                            <Box w="120px" h="24px" />
+                        ) : !firstname ? (
                             <>
-                                <Link to="/login" onClick={() => setIsOpen(false)}>
+                                <Link to="/login">
                                     <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Connexion</Text>
                                 </Link>
-                                <Link to="/register" onClick={() => setIsOpen(false)}>
+                                <Link to="/register">
                                     <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Inscription</Text>
                                 </Link>
                             </>
-                        )}
+                        ) : null}
                     </Flex>
 
-                    {/* Burger menu button - visible on mobile only */}
-                    <IconButton
-                        // responsive
-                        display={{ base: 'flex', lg: 'none' }} // mobile 
-                        aria-label="Menu"
-                        variant="ghost"
-                        color="zombieland.white"
-                        fontSize="24px"
-                        icon={<Text>☰</Text>}
-                        onClick={() => setIsOpen(!isOpen)}
 
-                    />
+                    <Flex alignItems="center" gap={3}>
+                        {!isLoading && firstname && (
+                            <Menu>
+                                <MenuButton
+                                    as={IconButton}
+                                    mt="8px"
+                                    display="flex"
+                                    aria-label="Mon compte"
+                                    variant="ghost"
+                                    color="zombieland.white"
+                                    fontSize="24px"
+                                    icon={<FaUserCircle />}
+                                    _hover={{ bg: 'whiteAlpha.200' }}
+                                    _active={{ bg: 'whiteAlpha.300' }}
+                                />
+                                <MenuList bg="#1A1A1A" borderColor="whiteAlpha.300">
+                                    <MenuItem
+                                        bg="#1A1A1A"
+                                        color="zombieland.white"
+                                        fontWeight="bold"
+                                        fontFamily="body"
+                                        _hover={{ bg: 'whiteAlpha.200' }}
+                                        as={Link}
+                                        to="/my-account"
+                                    >
+                                        Mon profil
+                                    </MenuItem>
+                                    <MenuItem
+                                        bg="#1A1A1A"
+                                        color="zombieland.white"
+                                        fontWeight="bold"
+                                        fontFamily="body"
+                                        _hover={{ bg: 'whiteAlpha.200' }}
+                                    >
+                                        Se déconnecter
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
+                        )}
+
+                        {/* Burger menu - visible on mobile only */}
+                        <Menu>
+                            <MenuButton
+                                as={IconButton}
+                                display={{ base: 'flex', lg: 'none' }}
+                                aria-label="Menu"
+                                variant="ghost"
+                                color="zombieland.white"
+                                fontSize="24px"
+                                icon={<Text>☰</Text>}
+                            />
+                            <MenuList bg="rgba(26, 26, 26, 0.95)" borderColor="whiteAlpha.300" minW="200px" p={2}>
+                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/">Accueil</MenuItem>
+                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/reservation">Réserver</MenuItem>
+                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/attractions">Attractions</MenuItem>
+                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/plan">Plan</MenuItem>
+                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/contact">Contact</MenuItem>
+                            </MenuList>
+                        </Menu>
+                    </Flex>
                 </Flex>
             </Box>
-            {/* slides in from the right on mobile, takes 1/3 of screen width */}
-
-            {/* for burger menu ok */}
-            <Drawer isOpen={isOpen} placement="right" onClose={() => setIsOpen(false)} size="xs">
-                <DrawerOverlay />
-                <DrawerContent bg="rgba(26, 26, 26, 0.3)" backdropFilter="blur(8px)">
-                    <DrawerBody display="flex" flexDirection="column" justifyContent="space-between" alignItems="center">
-                        <VStack alignItems="center" gap={4} w="100%" mt="auto">
-                            <Link to="/" onClick={() => setIsOpen(false)}>
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Accueil</Text>
-                            </Link>
-                            <Link to="/attractions" onClick={() => setIsOpen(false)}>
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Attractions</Text>
-                            </Link>
-                            <Link to="/plan">
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Plan</Text>
-                            </Link>
-                            <Link to="/reservation" onClick={() => setIsOpen(false)}>
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Réserver</Text>
-                            </Link>
-                            <Link to="/contact">
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Contact</Text>
-                            </Link>
-                        </VStack>
-
-                            <Box mt="auto" pb={4} w="100%" textAlign="center">
-                                {firstname ? (
-                                    <Link to="/my-account" onClick={() => setIsOpen(false)}>
-                                        <Text color="zombieland.white" fontWeight="bold" fontFamily="body">Mon compte</Text>
-                                    </Link>
-                                ) : (
-                                    <VStack gap={4}>
-                                        <Link to="/login" onClick={() => setIsOpen(false)}>
-                                            <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Connexion</Text>
-                                        </Link>
-                                        <Link to="/register" onClick={() => setIsOpen(false)}>
-                                            <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Inscription</Text>
-                                        </Link>
-                                    </VStack>
-                                )}
-                            </Box>
-
-                    </DrawerBody>
-                </DrawerContent>
-            </Drawer>
         </Box>
     )
 }
+
 
 export default Header
