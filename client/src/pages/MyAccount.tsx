@@ -77,13 +77,13 @@ function MyAccount() {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${currentUser?.id_USER}/profile`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         //undefined if empty, Prisma doesn't update it
         //thanks to "UserSchema.partial()" used in updateProfile
         //partial() turns the fields as "optionnal"
         //so, if they're undefined, Prisma ignore them
-        firstname: form.firstname || undefined, 
-        lastname: form.lastname || undefined, 
+        firstname: form.firstname || undefined,
+        lastname: form.lastname || undefined,
         password: form.password || undefined
       }),
       credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
@@ -100,19 +100,61 @@ function MyAccount() {
 
   const handleDelete = async () => {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${currentUser?.id_USER}`, {
-        method: 'DELETE',
-        credentials: 'include'
+      method: 'DELETE',
+      credentials: 'include'
     })
 
     if (response.ok) {
-        // if the account is deleted we send the user on the HomePage
-        navigate('/')
+      // if the account is deleted we send the user on the HomePage
+      navigate('/')
     } else {
-        setMessage('Une erreur est survenue.')
+      setMessage('Une erreur est survenue.')
     }
-}
+  }
 
   return (
+    <Box>
+      <Header />
+
+      <Input />
+      <Input />
+      <Input />
+      <Input />
+
+      <Button
+        onClick={handleUpdate}
+      >
+        Modifier mes informations
+      </Button>
+      <Button
+        onClick={handleDelete}
+      >
+        ⚠️☠️ Supprimer mon profile ☠️⚠️
+      </Button>
+
+      {reservations.length === 0 ? (
+        <Box>
+          <Text>Vous n'avez pas de réservations plannifiées.</Text>
+          <Text>👻</Text>
+        </Box>
+      ) : (
+        //Slice(0, 3) limit to 3 tickets and gives the preview 
+        reservations.slice(0, 3).map((r: any) => (
+          <Box key={r.id_RESERVATION}>
+            <Text>Date : {new Date(r.date).toLocaleDateString('fr-FR')}</Text>
+            <Text>Billets : {r.nb_tickets}</Text>
+          </Box>
+        ))
+      )}
+
+      <Button
+        onClick={() => navigate('/my-account/reservations')}
+      >
+        Voir l'historique de mes réservations
+      </Button>
+
+      <Footer />
+    </Box>
 
   )
 }
