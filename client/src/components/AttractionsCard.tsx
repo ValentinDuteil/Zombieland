@@ -1,7 +1,7 @@
 import { Box, Image, Heading, Text, Badge, Button } from "@chakra-ui/react";
 import type { Attraction } from "@/types";
 import Card from '../assets/Card.png';
-import { useNavigate, useParams } from "react-router";
+import bgBouton from '../assets/bg-bouton.png'
 
 interface AttractionCardProps extends Attraction {
     image: string;
@@ -86,15 +86,25 @@ const AttractionCard = ({ name, description, intensity, image }: AttractionCardP
                 </Text>
 
                 <Button
-                    borderRadius="15px"
-                    width="32%"
-                    bg="zombieland.cta1orange"
-                    color="white"
+                    borderRadius="full"
+                    bg="transparent"
+                    bgImage={`url(${bgBouton})`}
+                    bgSize="cover"
+                    bgPosition="center"
+                    color="zombieland.secondary"
+                    fontFamily="body"
+                    fontWeight="bold"
+                    letterSpacing="1px"
+                    fontSize="16px"
+                    px={4}
+                    py={4}
                     _hover={{ bg: "zombieland.cta2orange" }}
-                    mt="auto"                 // pousse le bouton en bas
-                    alignSelf="flex-end" // aligne le bouton à droite
+                    boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+                    textTransform="uppercase"
+                    mt="auto"
+                    alignSelf="flex-end"
                 >
-                    VOIR PLUS
+                    → VOIR PLUS
                 </Button>
             </Box>
         </Box>

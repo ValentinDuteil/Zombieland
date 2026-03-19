@@ -4,7 +4,7 @@ import type { AttractionWithCategories } from "@/types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
-import { Badge, Box, Button, Heading, Image, Text, Wrap, WrapItem } from "@chakra-ui/react";
+import { Badge, Box, Button, Heading, Image, Text } from "@chakra-ui/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import bgImage from '../assets/bg-image.png'
