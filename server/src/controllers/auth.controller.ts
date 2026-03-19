@@ -127,7 +127,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function me(req: Request, res: Response, next: NextFunction) {
-  
+
   //1.fetch user informations and checking if user is undefined
   if (!req.user) {
     throw new UnauthorizedError('Accès refusé')
@@ -142,4 +142,12 @@ export async function me(req: Request, res: Response, next: NextFunction) {
   //3.returning the informations to the user
   const { password: _, ...userWithoutPassword } = user
   return res.status(200).json(userWithoutPassword)
+}
+
+export async function logout(req: Request, res: Response, next: NextFunction) {
+
+  //1.Logout
+  res.clearCookie('token')
+  //2.returning the informations to the user
+  return res.status(200).json('Déconnexion')
 }
