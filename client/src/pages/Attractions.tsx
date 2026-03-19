@@ -12,7 +12,11 @@ import img4 from '../assets/granderoue.png';
 import img5 from '../assets/piscine.png';
 import img6 from '../assets/ghost-train-landscape.png';
 
-
+const categoryToEnum: Record<string, string> = {
+    "Peur Acceptable": "LOW",
+    "Peur Survivable": "MEDIUM",
+    "Peur Mortelle": "HIGH",
+};
 
 const AttractionsPage = () => {
     const [attractions, setAttractions] = useState<Attraction[]>([]);
@@ -44,7 +48,7 @@ const AttractionsPage = () => {
 
     // Filtrage des attractions
     const filteredAttractions = selectedCategory
-        ? attractions.filter(a => a.intensity === selectedCategory)
+        ? attractions.filter(a => a.intensity === categoryToEnum[selectedCategory])
         : attractions;
 
     return (
