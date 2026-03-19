@@ -22,30 +22,34 @@ const AttractionCard = ({ name, description, intensity, image }: AttractionCardP
             width="300px"
             height="400px"                 // hauteur FIXE pour toutes les cartes
             borderRadius="lg"
-            overflow="hidden"
+            overflow="visible"
             boxShadow="0 0 15px rgba(0,0,0,0.5)"
             bgImage={`url(${Card})`}
             bgSize="cover"
             bgPosition="center"
             color="white"
             display="flex"
-            flexDirection="column"         // structure en colonne
+            flexDirection="column"
+            position="relative"      // structure en colonne
         >
+
+
             {/* Image + badge positionné dessus */}
             <Box
                 width="100%"
                 height="180px"
-                overflow="hidden"
+                overflow="visible"
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                mt={8}
+                mt={10}
                 position="relative"          // nécessaire pour positionner le badge
             >
+
                 {/* Badge sur l’image */}
                 <Badge
                     position="absolute"
-                    top="8px"
+                    top="-12px"
                     left="8px"
                     color="zombieland.white"
                     colorScheme={categoryColors[cat] || "gray"}
