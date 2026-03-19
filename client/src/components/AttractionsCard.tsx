@@ -1,28 +1,47 @@
 import { Box, Image, Heading, Text, Badge, Button } from "@chakra-ui/react";
 import type { Attraction } from "@/types";
+<<<<<<< fix-refacto-image
+import Card from "../assets/Card.png";
+=======
 import Card from '../assets/Card.png';
 import { useNavigate, useParams } from "react-router";
 import AttractionDetailPage from "@/pages/AttractionDetailPage";
+>>>>>>> dev
 
 interface AttractionCardProps extends Attraction {
     image: string;
 }
 
-const categoryColors: Record<string, string> = {
-    "Peur Acceptable": "green",
-    "Peur Survivable": "orange",
-    "Peur Mortelle": "red",
+// Mapping API → labels internes
+const intensityMap: Record<string, string> = {
+    LOW: "Peur Acceptable",
+    MEDIUM: "Peur Survivable",
+    HIGH: "Peur Mortelle",
+
 };
 
+// Couleurs Chakra (ou custom si tu veux)
+const categoryColors: Record<string, string> = {
+    "Peur Acceptable": "#556739",
+    "Peur Survivable": "#AA9430",
+    "Peur Mortelle": "#F4902B",
+};
+
+<<<<<<< fix-refacto-image
+const AttractionCard = ({ name, description, intensity, image }: AttractionCardProps) => {
+    // Convertit "low/medium/high" → label interne
+    const cat = intensityMap[intensity] ?? "Peur Acceptable";
+=======
 const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: AttractionCardProps) => {
     const cat = intensity ?? "Peur Acceptable";
     const navigate = useNavigate()
     
+>>>>>>> dev
 
     return (
         <Box
             width="300px"
-            height="400px"                 // hauteur FIXE pour toutes les cartes
+            height="400px"
             borderRadius="lg"
             overflow="hidden"
             boxShadow="0 0 15px rgba(0,0,0,0.5)"
@@ -31,9 +50,9 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: 
             bgPosition="center"
             color="white"
             display="flex"
-            flexDirection="column"         // structure en colonne
+            flexDirection="column"
         >
-            {/* Image + badge positionné dessus */}
+            {/* Image + badge */}
             <Box
                 width="100%"
                 height="180px"
@@ -42,21 +61,20 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: 
                 justifyContent="center"
                 alignItems="center"
                 mt={8}
-                position="relative"          // nécessaire pour positionner le badge
+                position="relative"
             >
-                {/* Badge sur l’image */}
+                {/* Badge dynamique */}
                 <Badge
                     position="absolute"
                     top="8px"
                     left="8px"
-                    color="zombieland.white"
-                    colorScheme={categoryColors[cat] || "gray"}
+                    color="white"
+                    bg={categoryColors[cat] || "gray"}   // couleur dynamique
                     px={3}
                     py={1}
                     borderRadius="md"
                     fontSize="0.8rem"
-                    zIndex={2}                // au-dessus de l’image
-                    bg="zombieland.successsecondary"
+                    zIndex={2}
                 >
                     {cat.toUpperCase()}
                 </Badge>
@@ -72,13 +90,7 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: 
             </Box>
 
             {/* Contenu */}
-            <Box
-                p={4}
-                display="flex"
-                flexDirection="column"
-                flex="1"                     // occupe tout l’espace restant
-            >
-
+            <Box p={4} display="flex" flexDirection="column" flex="1">
                 <Heading size="md" mb={2}>
                     {name.toUpperCase()}
                 </Heading>
@@ -93,9 +105,14 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: 
                     bg="zombieland.cta1orange"
                     color="white"
                     _hover={{ bg: "zombieland.cta2orange" }}
+<<<<<<< fix-refacto-image
+                    mt="auto"
+                    alignSelf="flex-end"
+=======
                     mt="auto"                 // pousse le bouton en bas
                     alignSelf="flex-end" // aligne le bouton à droite
                     onClick={() => navigate(`/attractions/${id_ATTRACTION}`)}
+>>>>>>> dev
                 >
                     VOIR PLUS
                 </Button>
