@@ -2,8 +2,8 @@ import { Box, Image, Heading, Text, Badge, Button } from "@chakra-ui/react";
 import type { Attraction } from "@/types";
 import Card from '../assets/Card.png';
 import bgBouton from '../assets/bg-bouton.png'
-import { useNavigate, useParams } from "react-router";
-import AttractionDetailPage from "@/pages/AttractionDetailPage";
+import { useNavigate } from "react-router";
+
 
 interface AttractionCardProps extends Attraction {
     image: string;
@@ -27,9 +27,8 @@ const categoryColors: Record<string, string> = {
 
 
 const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: AttractionCardProps) => {
-    const cat = intensity ?? "Peur Acceptable";
     const navigate = useNavigate()
-    
+    const cat = intensityMap[intensity] ?? "Peur Acceptable";
 
 
     return (
@@ -114,8 +113,7 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: 
                     boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
                     textTransform="uppercase"
                     mt="auto"
-                    alignSelf="flex-end"
-                    mt="auto"                 // pousse le bouton en bas
+                    // pousse le bouton en bas
                     alignSelf="flex-end" // aligne le bouton à droite
                     onClick={() => navigate(`/attractions/${id_ATTRACTION}`)}
 
