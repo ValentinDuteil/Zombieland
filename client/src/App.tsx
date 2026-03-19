@@ -11,6 +11,7 @@ import MyReservations from './pages/MyReservations'
 // Import the attractions page
 import AttractionsPage from "./pages/Attractions"
 import { BrowserRouter, Route, Routes } from 'react-router'
+import AttractionDetailPage from './pages/AttractionDetailPage'
 
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
                 <Route path="/reservation" element={<Reservation />} />
                 <Route path="/my-account/reservations" element={<MyReservations />} />
                 <Route path="/attractions" element={<AttractionsPage />} />
+                <Route path="/attractions/:id" element={<AttractionDetailPage/>}/>
             </Routes>
         </BrowserRouter>
     );

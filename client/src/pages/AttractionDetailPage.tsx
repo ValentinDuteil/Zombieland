@@ -1,37 +1,30 @@
 // Attrtaction Detail Page
 
-import type { Attraction } from "@/types";
+import type { AttractionWithCategories } from "@/types";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 import { Badge, Box, Button, Heading, Image, Text, Wrap, WrapItem } from "@chakra-ui/react";
-import bgImage from '../../public/assets/bg-image.png';
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
-const AttractionDetailPAge = () => {
+const AttractionDetailPage = () => {
   //slug
-  const { slug } = useParams();
+  const { id } = useParams();
   // attrctation type
-  const [attraction, setAttraction] = useState<Attraction[]>([]);
+  const [attraction, setAttraction] = useState<AttractionWithCategories | null>(null);
   // loading prepare
   const [isLoading, setIsLoading] = useState(true)
   //error
-  const [error, setError] = useState<String | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate();
 
-  const attractionImages: Record<number, string> = {
-    1: "/assets/spectacle.png",
-    2: "/assets/dead rise.png",
-    3: "/assets/foret.png",
-    4: "/assets/granderoue.png",
-    5: "/assets/piscine.png",
-    6: "/assets/ghost-train-landscape.png",
-  };
   // refact fetch with axios
   useEffect(() => {
     setIsLoading(true);
     const axiosAttraction = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/attractions/${slug}`);
+        const res = await axios.get(`http://localhost:3000/api/attractions/${id}`);
         if (!res)
           throw new Error("Erreur lors de la récupération d'une attraction");
         setAttraction(res.data);
@@ -44,45 +37,67 @@ const AttractionDetailPAge = () => {
     };
     axiosAttraction();
 
-  }, [slug]);
+  }, [id]);
 
-  if (!isLoading) {
-    return <p>Chargement de l'attraction'...</p>;
+  if (isLoading) {
+    return <p>Chargement de l'attraction...</p>;
+  }
+  if (error) {
+    return <p>Erreur</p>
+  }
+  if (!attraction) {
+    return <p>Attraction non trouvé</p>
   }
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      minHeight="100vh"
-      bgImage={`url(${bgImage})`}
+
     >
       <Header />
 
-      <Image width={100} borderRadius={8} src={image}/>
-      <Heading>nom de l'attraction</Heading>
+      <Image width={100} borderRadius={8} src="laboratoirez.png" />
+      <Heading>{attraction.name}</Heading>
       <Badge colorScheme="blue"></Badge>
       <Text noOfLines={3} mb={4} flex="1">
-        {description}
+        {attraction.description}
       </Text>
-      <Text>xx minutes durée</Text>
-      <Text>xx personnes capacité</Text>
-      <Text>taille minimal</Text>
-      <Badge>catégories</Badge>
+      <Text>{attraction.duration} minutes</Text>
+      <Text>{attraction.capacity} personnes</Text>
+      <Text>taille minimal {attraction.min_height} cm</Text>
+      {attraction.categories.map(ac =>
+      <Badge key={ac.category.id_CATEGORY}
+        position="absolute"
+        top="8px"
+        left="8px"
+        color="zombieland.white"
+        // colorScheme={categoryColors[cat] || "gray"}
+        px={3}
+        py={1}
+        borderRadius="md"
+        fontSize="0.8rem"
+        zIndex={2}                // au-dessus de l’image
+        bg="zombieland.successsecondary">{ac.category.name}</Badge>
+      )}
       <Button
-          borderRadius="15px"
-          width="32%"
-          bg="zombieland.cta1orange"
-          color="white"
-          _hover={{ bg: "zombieland.cta2orange" }}
-          mt="auto"                 // pousse le bouton en bas
-          alignSelf="flex-end" // aligne le bouton à droite
-          >
-          retour
-        </Button>
+        // bgImage={`url(${bgBouton})`}
+        color="zombieland.secondary"
+        _hover={{ bg: "zombieland.cta2orange" }}
+        fontFamily="body"
+        fontSize="20px"
+        py={6}
+        px={3}
+        borderRadius="full"
+        letterSpacing="1px"
+        fontWeight="bold"
+        boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+        textTransform="uppercase"
+        onClick={() => navigate("/attractions")}
+      >
+        → REJOINDRE L'HORREUR
+      </Button>
 
-
+      <Footer />
     </Box >
   );
 };
 
-export default AttractionDetailPAge;
+export default AttractionDetailPage;
