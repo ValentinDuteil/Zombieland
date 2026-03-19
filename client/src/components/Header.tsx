@@ -36,10 +36,15 @@ function Header() {
                             <Link to="/attractions">
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Attractions</Text>
                             </Link>
-                            <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Plan</Text>
+                            <Link to="/plan">
+                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Plan</Text>
+                            </Link>
                             <Link to="/reservation">
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Réserver</Text>
-                            </Link>                        <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Contact</Text>
+                            </Link>
+                            <Link to="/contact">
+                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Contact</Text>
+                            </Link>
                         </Flex>
                     </Flex>
 
@@ -56,7 +61,7 @@ function Header() {
                     {/* Burger menu button - visible on mobile only */}
                     <IconButton
                         // responsive
-                        display={{ base: 'flex', lg: 'none'}} // mobile 
+                        display={{ base: 'flex', lg: 'none' }} // mobile 
                         aria-label="Menu"
                         variant="ghost"
                         color="zombieland.white"
@@ -81,11 +86,15 @@ function Header() {
                             <Link to="/attractions" onClick={() => setIsOpen(false)}>
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Attractions</Text>
                             </Link>
-                            <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Plan</Text>
+                            <Link to="/plan">
+                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Plan</Text>
+                            </Link>
                             <Link to="/reservation" onClick={() => setIsOpen(false)}>
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Réserver</Text>
                             </Link>
-                            <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Contact</Text>
+                            <Link to="/contact">
+                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Contact</Text>
+                            </Link>
                             <Link to="/login" onClick={() => setIsOpen(false)}>
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Connexion</Text>
                             </Link>
