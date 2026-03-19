@@ -3,6 +3,7 @@
 // Prisma-like Attraction type (without relations)
 
 export interface Attraction {
+    // categories: any
     id_ATTRACTION: number
     name: string
     description?: string

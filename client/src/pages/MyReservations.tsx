@@ -1,25 +1,47 @@
 // My reservations page - list of reservations with cancel button
 
 import { useEffect, useState } from 'react'
-import { Box, Button, Heading, Text, Flex } from '@chakra-ui/react'
+import { Box, Button, Heading, Text, Flex, Spinner } from '@chakra-ui/react'
 import bgImage from '../assets/bg-image.png'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
+// defines the shape of a reservation object
+// use an interface instead of any allows ts to check that we are accessing valid fiels
+interface Reservation {
+    id_RESERVATION: number
+    nb_tickets: number
+    date: string
+    total_amount: string
+    status: string
+    created_at: string
+    updated_at: string
+    id_USER: number
+    id_TICKET: number
+}
+
 function MyReservations() {
     // reservations stores the list of reservations retrieved from the API
-    const [reservations, setReservations] = useState([])
+    // tells ts that this state is always an aray of reservation objects
+    const [reservations, setReservations] = useState<Reservation[]>([])
+    // loading stores the loading state of the page
+    const [loading, setLoading] = useState(true)
 
     // Fetch reservations when the page loads
     useEffect(() => {
         const fetchReservations = async () => {
             // Call the backend API to retrieve the reservations
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations`, {
-                credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
-                })
-            // Convert the response to JSON
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations/me`, {
+                credentials: 'include' // Send the cookie to authenticate the user
+            })
             const data = await response.json()
+            if (!response.ok) {
+                setLoading(false)
+                return
+
+            }
             setReservations(data)
+            setLoading(false)
         }
         fetchReservations()
     }, []) // Runs only once on mount
@@ -33,13 +55,14 @@ function MyReservations() {
 
         if (response.ok) {
             // remove the canceled reservation from the list without reloading the page
-            setReservations(reservations.filter((r: any) => r.id_RESERVATION !== id))
+            setReservations(reservations.filter((r: Reservation) => r.id_RESERVATION !== id))
         } else {
             const data = await response.json()
             alert(data.error)
         }
     }
 
+    const activeReservations = reservations.filter((r: Reservation) => r.status !== 'CANCELLED')
     return (
         <Box
             minH="100vh"
@@ -72,12 +95,15 @@ function MyReservations() {
                     Mes réservations
                 </Heading>
 
-                {reservations.length === 0 ? (
+                {loading ? (
+                    <Spinner color="zombieland.white" size="xl" />
+
+                ) : activeReservations.length === 0 ? (
                     <Text color="zombieland.white" fontFamily="body" fontWeight="300">
                         Vous n'avez pas encore de réservations.
                     </Text>
                 ) : (
-                    reservations.map((reservation: any) => (
+                    activeReservations.map((reservation: Reservation) => (
                         <Box
                             key={reservation.id_RESERVATION}
                             mb={4}
@@ -114,7 +140,7 @@ function MyReservations() {
                                 <Button
                                     // trigger the cancel function when the button is clicked
                                     onClick={() => handleCancel(reservation.id_RESERVATION)}
-                                    bgImage="url('/src/assets/deleteBouton.png')"
+                                    bgImage="url('/assets/deleteBouton.png')"
                                     bgSize="cover"
                                     bgPosition="center"
                                     color="zombieland.white"

@@ -7,11 +7,21 @@ import { prisma } from '../lib/prisma.js'
 import { createReservationSchema } from "../schemas/reservation.schema.js";
 import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } from "../utils/AppError.js";
 
-// Retrieves all reservations for the logged-in member
-export const getReservations = async (req: Request, res: Response, next: NextFunction) => {
+// Retrieves all reservations for admin
+export const getAllReservations = async (req: Request, res: Response, next: NextFunction) => {
     // Query the db to retrieve all reservations
     const reservations = await prisma.reservation.findMany()
     // Return reservations with a 200 status (success)
+    res.status(200).json(reservations)
+}
+ // Retrieves reservation for the logged-in member
+export const getMyReservations = async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+        throw new UnauthorizedError("L'utilisateur n'existe pas")
+    }
+    const reservations = await prisma.reservation.findMany({
+        where: { id_USER: req.user.id }
+    })
     res.status(200).json(reservations)
 }
 
