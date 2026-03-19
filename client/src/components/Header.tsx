@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import logo from '../assets/logo.png'
 import { FaUserCircle } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 function Header() {
     // State to manage the burger menu open/close
@@ -42,7 +43,15 @@ function Header() {
                 <Flex alignItems="center" justifyContent="space-between">
                     {/* Logo + navigation links grouped on the left */}
                     <Flex alignItems="center" gap={8}>
-                        <Image src={logo} alt="ZombieLand" h="50px" />
+                        <Link to="/">
+                            <Image
+                                src={logo}
+                                alt="ZombieLand"
+                                h="50px"
+                                cursor="pointer"
+                            />
+                        </Link>
+
                         <Flex alignItems="center" gap={8} display={{ base: 'none', lg: 'flex' }}>
                             <Link to="/">
                                 <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Accueil</Text>
@@ -141,7 +150,7 @@ function Header() {
                     </Flex>
                 </Flex>
             </Box>
-        </Box>
+        </Box >
     )
 }
 
