@@ -10,21 +10,22 @@ import Reservation from './pages/Reservation'
 import MyReservations from './pages/MyReservations'
 // Import the attractions page
 import AttractionsPage from "./pages/Attractions"
-// Import the Faq end ML page
-import Faq from "./pages/Faq"
+
+import AttractionDetailPage from './pages/AttractionDetailPage'
+
 
 const App = () => {
     return (
         <BrowserRouter>
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/reservation" element={<Reservation />} />
-        <Route path="/my-account/reservations" element={<MyReservations />} />
-        <Route path="/attractions" element={<AttractionsPage />} />
-        <Route path="/faq" element={<Faq />} />
-      </Routes>
-    </BrowserRouter>
+            <Routes>
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/reservation" element={<Reservation />} />
+                <Route path="/my-account/reservations" element={<MyReservations />} />
+                <Route path="/attractions" element={<AttractionsPage />} />
+                <Route path="/attractions/:id" element={<AttractionDetailPage/>}/>
+            </Routes>
+        </BrowserRouter>
     );
 };
 
