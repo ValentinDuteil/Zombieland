@@ -7,7 +7,7 @@ import { prisma } from '../lib/prisma.js';
 import { BadRequestError, UnauthorizedError, NotFoundError } from "../utils/AppError.js";
 
 export async function getProfile(req: Request, res: Response, next: NextFunction) {
-  
+
   //1.fetching the user with req.user.id (beacause we already have the cookie) 
   //and checking if the user exists
   if (!req.user) {
@@ -29,6 +29,9 @@ export async function updateProfile(req: Request, res: Response, next: NextFunct
 
   //1.getProfile
   if (!req.user) throw new UnauthorizedError('Accès refusé')
+  //telling to TypeScript "trust me" it's a string  
+  const id = parseInt(req.params.id as string)
+  if (isNaN(id)) throw new BadRequestError("Id invalide")
 
   //2.check the informations with the zodSchema and making it optionnal
   //partial() makes the fields optionnal
@@ -47,9 +50,12 @@ export async function updateProfile(req: Request, res: Response, next: NextFunct
   if (!parsedBody) {
     throw new UnauthorizedError('Accès refusé')
   }
-    //if the user gave a ne password, hash is the new password (but clear), 
-    //if not, hash is undefined
-  let hash = parsedBody.password 
+  //if the user gave a new password, hash is the new password (but clear), 
+  //if not, hash is undefined
+  // ⚠️ DETTE TECHNIQUE
+  // Ajouter vérification du mot de passe actuel avant modification
+  // Nécessite : nouveau champ "currentPassword" dans le body + argon2.verify()
+  let hash = parsedBody.password
   if (parsedBody.password) {
     //here wer hash the new one
     hash = await argon2.hash(parsedBody.password);
@@ -57,7 +63,7 @@ export async function updateProfile(req: Request, res: Response, next: NextFunct
 
   //5.updating the DB with Prisma
   const newUser = await prisma.user.update({
-    where: {id_USER: req.user.id },
+    where: { id_USER: req.user.id },
     data: {
       email: parsedBody.email,
       lastname: parsedBody.lastname,
@@ -75,6 +81,9 @@ export async function deleteProfile(req: Request, res: Response, next: NextFunct
 
   //1.getProfile
   if (!req.user) throw new UnauthorizedError('Accès refusé')
+  //telling to TypeScript "trust me" it's a string  
+  const id = parseInt(req.params.id as string)
+  if (isNaN(id)) throw new BadRequestError("Id invalide")
 
   //2.check if it exists
   const user = await prisma.user.findUnique({
@@ -88,7 +97,8 @@ export async function deleteProfile(req: Request, res: Response, next: NextFunct
 
   //4.delete
   await prisma.user.delete({
-    where: {id_USER: req.user.id }})
+    where: { id_USER: req.user.id }
+  })
 
   //5.returning confirmation
   return res.status(200).json('☠️ Ton profile a bien été supprimé ☠️')
