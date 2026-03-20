@@ -5,11 +5,10 @@ import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import logo from '../assets/logo.png'
 import { FaUserCircle } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
 
 function Header() {
     // State to manage the burger menu open/close
-    const [isOpn, setIsOpen] = useState(false)
+    
     const [firstname, setFirstname] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
