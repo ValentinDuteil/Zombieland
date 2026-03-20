@@ -79,8 +79,8 @@ function Register() {
               <Input
                 type="text"
                 placeholder="Doe"
-                value={form.firstname}
-                onChange={(e) => setForm({ ...form, firstname: e.target.value })}
+                value={form.lastname}
+                onChange={(e) => setForm({ ...form, lastname: e.target.value })}
                 bg="rgba(0,0,0,0.3)"
                 color="zombieland.white"
                 borderColor="zombieland.primary"
@@ -93,8 +93,8 @@ function Register() {
               <Input
                 type="text"
                 placeholder="John"
-                value={form.lastname}
-                onChange={(e) => setForm({ ...form, lastname: e.target.value })}
+                value={form.firstname}
+                onChange={(e) => setForm({ ...form, firstname: e.target.value })}
                 bg="rgba(0,0,0,0.3)"
                 color="zombieland.white"
                 borderColor="zombieland.primary"

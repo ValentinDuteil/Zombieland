@@ -2,7 +2,7 @@
 
 import type { AttractionWithCategories } from "@/types";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Badge, Box, Button, Heading, Image, Text } from "@chakra-ui/react";
 import Header from "@/components/Header";
