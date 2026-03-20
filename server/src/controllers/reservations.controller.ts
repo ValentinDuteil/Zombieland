@@ -4,7 +4,6 @@ import type { Request, Response, NextFunction } from "express";
 // Talk to the db
 import { prisma } from '../lib/prisma.js'
 // Import the validation schema
-import { createReservationSchema } from "../schemas/reservation.schema.js";
 import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } from "../utils/AppError.js";
 
 // Retrieves all reservations for admin
@@ -28,15 +27,8 @@ export const getMyReservations = async (req: Request, res: Response, next: NextF
 // Create a new reservation
 export const createReservation = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) throw new UnauthorizedError('Accès refusé')
-    // Validate the received data with Zod
-    const result = createReservationSchema.safeParse(req.body)
 
-    // If the data is invalid, return a 400 error
-    if (!result.success) {
-        throw new BadRequestError("Données invalides")
-    }
-
-    const { nb_tickets, date, id_TICKET } = result.data
+    const { nb_tickets, date, id_TICKET } = req.body
 
     // Create the reservation in the database
     const reservation = await prisma.reservation.create({
