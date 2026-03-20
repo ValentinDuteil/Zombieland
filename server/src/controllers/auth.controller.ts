@@ -70,7 +70,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 
   //9.security, confirmed to the client the creation without returning the password
   const { password: _, ...userWithoutPassword } = newUser
-  return res.status(201).json({ userWithoutPassword });
+  return res.status(201).json( userWithoutPassword );
 }
 
 

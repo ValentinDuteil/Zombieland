@@ -59,6 +59,7 @@ function MyReservations() {
         } else {
             const data = await response.json()
             alert(data.error)
+            console.log(data)
         }
     }
 

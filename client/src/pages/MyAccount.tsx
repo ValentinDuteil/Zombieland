@@ -26,11 +26,11 @@ function MyAccount() {
   //null by default before we fetch
   const [currentUser, setCurrentUser] = useState<{ id_USER: number } | null>(null)
   //what the user is writting in the inputs
-  const [form, ] = useState({ firstname: '', lastname: '', password: '', confirmPassword: '' })
+  const [form, setForm ] = useState({ firstname: '', lastname: '', password: '', confirmPassword: '' })
   //The reservations we want to display
   const [reservations, setReservations] = useState([])
   const navigate = useNavigate();
-  const [_, setMessage] = useState('')
+  const [message, setMessage] = useState('')
 
   //What we want only once "on mount" thanks to "[]" at the end of the useEffect
   //Can countain 2 fetches
