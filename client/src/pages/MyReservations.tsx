@@ -61,7 +61,7 @@ function MyReservations() {
             setMessage('Votre annulation a bien été prise en compte.')
         } else {
             const data = await response.json()
-            setMessage(data.message)
+            alert(data.error)
         }
     }
 
