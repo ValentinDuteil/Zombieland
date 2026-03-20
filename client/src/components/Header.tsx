@@ -32,8 +32,7 @@ function Header() {
             <Box
                 bg="#1A1A1A"
                 px={8}
-                py={4}
-                position="fixed"
+                py={4}                
                 top={0}
                 left={0}
                 right={0}

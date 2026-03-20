@@ -2,7 +2,7 @@
 
 import type { AttractionWithCategories } from "@/types";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Badge, Box, Button, Heading, Image, Text } from "@chakra-ui/react";
 import Header from "@/components/Header";
@@ -69,7 +69,7 @@ const AttractionDetailPage = () => {
       bgAttachment="fixed"
       display="flex"
       flexDirection="column"
-      pt="80px"
+      
     >
       <Header />
       <Box
@@ -143,20 +143,7 @@ const AttractionDetailPage = () => {
               <Text>{attraction.duration} minutes</Text>
               <Text>{attraction.capacity} personnes</Text>
               <Text>taille minimal {attraction.min_height} cm</Text>
-              {attraction.categories.map(ac =>
-                <Badge key={ac.category.id_CATEGORY}
-                  position="absolute"
-                  top="8px"
-                  left="8px"
-                  color="zombieland.white"
-                  // colorScheme={categoryColors[cat] || "gray"}
-                  px={3}
-                  py={1}
-                  borderRadius="md"
-                  fontSize="0.8rem"
-                  zIndex={2}                // au-dessus de l’image
-                  bg="zombieland.successsecondary">{ac.category.name}</Badge>
-              )}
+              
               <Button
                 bgImage={`url(${bgBouton})`}
                 color="zombieland.secondary"

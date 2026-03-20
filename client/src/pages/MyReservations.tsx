@@ -29,6 +29,7 @@ function MyReservations() {
     // loading stores the loading state of the page
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
+    const [message, setMessage] = useState('')
 
     // Fetch reservations when the page loads
     useEffect(() => {
@@ -59,7 +60,11 @@ function MyReservations() {
         if (response.ok) {
             // remove the canceled reservation from the list without reloading the page
             setReservations(reservations.filter((r: Reservation) => r.id_RESERVATION !== id))
-            navigate('/my-account',{ state: { refresh: Date.now() } } )
+            if (response.ok) {
+                setReservations(reservations.filter((r: Reservation) => r.id_RESERVATION !== id))
+                setMessage('Votre annulation a bien été prise en compte.')
+                navigate('/my-account', { state: { refresh: Date.now() } })
+            }
         } else {
             const data = await response.json()
             alert(data.error)
@@ -72,11 +77,11 @@ function MyReservations() {
             minH="100vh"
             bgImage={`url(${bgImage})`}
             bgSize="cover"
-            bgAttachment="fixed"
+            // bgAttachment="fixed"
             bgPosition="center"
             display="flex"
             flexDirection="column"
-            pt="80px" // Offset for the fixed header height to prevent content from hiding behind it
+        // pt="80px" // Offset for the fixed header height to prevent content from hiding behind it
         >
             <Header />
 
@@ -185,7 +190,17 @@ function MyReservations() {
                     ))
                 )}
             </Box>
-
+            {message && (
+                <Text
+                    mt={4}
+                    textAlign="center"
+                    fontFamily="body"
+                    fontWeight="300"
+                    color="zombieland.white"
+                >
+                    {message}
+                </Text>
+            )}
             <Footer />
         </Box>
     )

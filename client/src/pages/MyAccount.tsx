@@ -164,9 +164,9 @@ function MyAccount() {
           borderColor="zombieland.primary"
           boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
         >
-                    <Text color="zombieland.white" fontFamily="body" fontWeight="bold" fontSize="18px" mb={4} textAlign="center">
-                        Modifier mes informations
-                    </Text>          <Text mb={2} color="zombieland.white" fontFamily="body" fontWeight="300">Prénom</Text>
+          <Text color="zombieland.white" fontFamily="body" fontWeight="bold" fontSize="18px" mb={4} textAlign="center">
+            Modifier mes informations
+          </Text>          <Text mb={2} color="zombieland.white" fontFamily="body" fontWeight="300">Prénom</Text>
           <Input
             placeholder="Ex: Jean"
             value={form.firstname}
