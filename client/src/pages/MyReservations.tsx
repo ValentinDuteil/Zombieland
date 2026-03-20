@@ -165,14 +165,17 @@ function MyReservations() {
                                 <Button
                                     // trigger the cancel function when the button is clicked
                                     onClick={() => handleCancel(reservation.id_RESERVATION)}
-                                    bgImage="url('/assets/deleteBouton.png')"
+                                    bgImage={`url(${bgBouton})`}
                                     bgSize="cover"
                                     bgPosition="center"
-                                    color="zombieland.white"
+                                    color="zombieland.secondary"
                                     fontFamily="body"
+                                    fontWeight="bold"
+                                    fontSize="14px"
+                                    py={3}
+                                    px={4}
                                     borderRadius="full"
-                                    size="sm"
-                                    border="none"
+                                    boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
                                     _hover={{ opacity: 0.8 }}
                                 >
                                     Annuler
