@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Wrap, WrapItem, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Box, Wrap, WrapItem, Menu, MenuButton, MenuList, MenuItem, Text } from "@chakra-ui/react";
 import AttractionCard from "../components/AttractionsCard";
 import type { Attraction } from "@types";
 import Header from "../components/Header";
@@ -21,6 +21,7 @@ const categoryToEnum: Record<string, string> = {
 const AttractionsPage = () => {
     const [attractions, setAttractions] = useState<Attraction[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null)
 
     const attractionImages: Record<number, string> = {
         1: img1,
@@ -40,7 +41,7 @@ const AttractionsPage = () => {
                 const data: Attraction[] = await res.json();
                 setAttractions(data);
             } catch (err) {
-                console.error(err);
+                setError("Erreur lors de la récupération des attractions")
             }
         };
         fetchAttractions();
@@ -128,6 +129,8 @@ const AttractionsPage = () => {
                 </Wrap>
             </Box>
 
+            {error && <Text>{error}</Text>}
+                    
             <Footer />
         </Box>
     );
