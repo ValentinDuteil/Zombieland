@@ -26,6 +26,8 @@ function MyReservations() {
     const [reservations, setReservations] = useState<Reservation[]>([])
     // loading stores the loading state of the page
     const [loading, setLoading] = useState(true)
+    //Displaying message after deletion
+    const [message, setMessage] = useState('')
 
     // Fetch reservations when the page loads
     useEffect(() => {
@@ -56,9 +58,10 @@ function MyReservations() {
         if (response.ok) {
             // remove the canceled reservation from the list without reloading the page
             setReservations(reservations.filter((r: Reservation) => r.id_RESERVATION !== id))
+            setMessage('Votre annulation a bien été prise en compte.')
         } else {
             const data = await response.json()
-            alert(data.error)
+            setMessage(data.message)
         }
     }
 
@@ -157,7 +160,17 @@ function MyReservations() {
                     ))
                 )}
             </Box>
-
+            {message && (
+                <Text
+                    mt={4}
+                    textAlign="center"
+                    fontFamily="body"
+                    fontWeight="300"
+                    color="zombieland.white"
+                >
+                    {message}
+                </Text>
+            )}
             <Footer />
         </Box>
     )

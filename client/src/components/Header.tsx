@@ -8,7 +8,7 @@ import { FaUserCircle } from 'react-icons/fa'
 
 function Header() {
     // State to manage the burger menu open/close
-    
+
     const [firstname, setFirstname] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
@@ -143,14 +143,21 @@ function Header() {
                                 <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/attractions">Attractions</MenuItem>
                                 <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/plan">Plan</MenuItem>
                                 <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/contact">Contact</MenuItem>
+
+                                {/* Show connexion/inscription only if not logged in */}
+                                {!firstname && (
+                                    <>
+                                        <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/login">Connexion</MenuItem>
+                                        <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/register">Inscription</MenuItem>
+                                    </>
+                                )}
                             </MenuList>
                         </Menu>
                     </Flex>
                 </Flex>
             </Box>
-        </Box >
+        </Box>
     )
 }
-
 
 export default Header

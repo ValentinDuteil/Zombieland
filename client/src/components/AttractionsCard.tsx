@@ -2,7 +2,7 @@ import { Box, Image, Heading, Text, Badge, Button } from "@chakra-ui/react";
 import type { Attraction } from "@/types";
 import Card from '../assets/Card.png';
 import bgBouton from '../assets/bg-bouton.png'
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 
 interface AttractionCardProps extends Attraction {
