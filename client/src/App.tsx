@@ -16,6 +16,7 @@ import AttractionsPage from "./pages/Attractions"
 import AttractionDetailPage from './pages/AttractionDetailPage'
 
 import Faq from './pages/Faq'
+import HomePage from './pages/HomePage'
 
 
 const App = () => {
@@ -30,6 +31,7 @@ const App = () => {
                 <Route path="/attractions" element={<AttractionsPage />} />
                 <Route path="/attractions/:id" element={<AttractionDetailPage/>}/>
                 <Route path='/faq' element={<Faq />}/>
+                <Route path='/' element={<HomePage />}/>
             </Routes>
         </BrowserRouter>
     );
