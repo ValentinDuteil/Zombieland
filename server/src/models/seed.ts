@@ -1,11 +1,14 @@
 import { Role, Intensity, Status } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
-
+import * as argon2 from 'argon2';
 
 
 
 async function main() {
     console.log('🌱 Seeding database...');
+
+    const adminPassword = await argon2.hash('monMotDePasse')
+    const memberPassword = await argon2.hash('monMotDePasse')
 
     await prisma.user.createMany({
         data: [
@@ -13,14 +16,14 @@ async function main() {
                 email: 'john.doe@example.com',
                 firstname: 'John',
                 lastname: 'Doe',
-                password: 'hashedpassword123',
+                password: adminPassword,
                 role: Role.ADMIN,
             },
             {
                 email: 'jane.smith@example.com',
                 firstname: 'Jane',
                 lastname: 'Smith',
-                password: 'hashedpassword456',
+                password: memberPassword,
                 role: Role.MEMBER,
             },
         ],

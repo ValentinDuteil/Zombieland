@@ -3,7 +3,7 @@
 // Import useState to manage from data
 import { useState } from 'react'
 // Import Chakra UI components for styling
-import { Box, Button, Heading, Input, Text } from '@chakra-ui/react'
+import { Box, Button, Checkbox, Heading, Input, Text, Flex, FormControl, FormLabel } from '@chakra-ui/react'
 
 import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
@@ -12,7 +12,7 @@ import Footer from '../components/Footer'
 
 function Reservation() {
     // nbTickets store the number of tickets chosen by the user (1 by default)
-    const [nbTickets, setNbTickets] = useState(1)
+    const [nbTickets, setNbTickets] = useState(0)
     // date stores the chosen visit date (empty by default)
     const today = new Date().toISOString().split('T')[0] // get today's date in YYYY-MM-DD format as default value
 
@@ -22,11 +22,24 @@ function Reservation() {
     // message stores the text to display after from submission
     const [message, setMessage] = useState('')
 
+    // Price per ticket in euros
+    const TICKET_PRICE = 66.66
+
+    // confirmed stores whether the user has checked the confirmation checkbox
+    const [confirmed, setConfirmed] = useState(false)
+
     //  handleSubmit is the function that runs when we click to "Confirm"
     const handleSubmit = async () => {
         // check if date is empty before sending
         if (!date) {
             setMessage('Veuillez choisir une date.')
+            return
+        }
+
+        // Check if the user has confirmed their reservation details
+
+        if (!confirmed) {
+            setMessage("Veuillez confirmer vos informations avant de rejoindre l'horreur.")
             return
         }
 
@@ -69,92 +82,257 @@ function Reservation() {
                 alignItems="center"
                 justifyContent="center"
                 minH={"70vh"}
+                px={{ base: 4, md: 8 }}
+                py={8}
             >
-                <Box
-                    w="500px"
-                    p={10}
-                    borderRadius="md"
-                >
+                <Box w="100%" maxW="1000px">
+                    {/* Title at the top center */}
                     <Heading
-                        mb={8}
+                        mb={12}
                         textAlign="center"
                         fontFamily="heading"
-                        fontSize="54px"
+                        fontSize={{ base: '36px', md: '54px' }}
                         color="zombieland.white"
+                        textShadow="2px 2px 4px rgba(0,0,0,0.5)"
                     >
                         Réservation
                     </Heading>
 
-                    <Text mb={2} color="zombieland.white" fontWeight="300">Nombre de billets</Text>
-                    <Input
-                        type="number"
-                        min={1}
-                        value={nbTickets}
-                        onChange={(e) => setNbTickets(Number(e.target.value))}
-                        bg="rgba(0,0,0,0.3)"
-                        color="zombieland.white"
-                        borderColor="zombieland.primary"
-                        boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
-                        mb={4}
-                    />
+                    <Flex
+                        gap={{ base: 6, lg: 10 }}
+                        alignItems="stretch"
+                        flexDirection={{ base: 'column', lg: 'row' }}
+                        w="100%"
+                    >
+                        {/* Left - Form */}
+                        <Box 
+                            flex={1}
+                            p={{ base: 6, md: 8 }}
+                            borderRadius="lg"
+                            bg="rgba(0,0,0,0.08)"
+                            backdropFilter="blur(10px)"
+                            border="1px solid"
+                            borderColor="rgba(250, 235, 220, 0.1)"
+                            boxShadow="0 8px 32px rgba(0,0,0,0.3)"
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="center"
+                            alignItems="center"
+                        >
+                            <Box w="100%" maxW="300px">
+                                <FormControl mb={6}>
+                                    <FormLabel color="zombieland.white" fontWeight="600" mb={3} fontSize="16px">
+                                        Nombre de billets
+                                    </FormLabel>
+                                    <Input
+                                        type="number"
+                                        min={1}
+                                        value={nbTickets}
+                                        onChange={(e) => {
+                                            const num = parseInt(e.target.value) || 1;
+                                            setNbTickets(Math.max(1, num));
+                                        }}
+                                        bg="rgba(0,0,0,0.3)"
+                                        color="zombieland.white"
+                                        borderColor="zombieland.primary"
+                                        borderWidth="2px"
+                                        transition="all 0.3s ease"
+                                        _focus={{
+                                            borderColor: "zombieland.primary",
+                                            boxShadow: "0 0 0 3px rgba(250, 235, 220, 0.1)",
+                                            bg: "rgba(0,0,0,0.4)"
+                                        }}
+                                        _hover={{
+                                            borderColor: "zombieland.primary"
+                                        }}
+                                        fontSize="16px"
+                                        py={3}
+                                        pl={4}
+                                    />
+                                </FormControl>
 
-                    <Text mb={2} color="zombieland.white" fontWeight="300">Date de la visite</Text>
-                    <Input
-                        type="date"
-                        value={date}
-                        min={today}
-                        onChange={(e) => setDate(e.target.value)}
-                        bg="rgba(0,0,0,0.3)"
-                        color="zombieland.white"
-                        borderColor="zombieland.primary"
-                        boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
-                        mb={6}
-                    />
+                                <FormControl>
+                                    <FormLabel color="zombieland.white" fontWeight="600" mb={3} fontSize="16px">
+                                        Date de la visite
+                                    </FormLabel>
+                                    <Input
+                                        type="date"
+                                        value={date}
+                                        min={today}
+                                        onChange={(e) => setDate(e.target.value)}
+                                        bg="rgba(0,0,0,0.3)"
+                                        color="zombieland.white"
+                                        borderColor="zombieland.primary"
+                                        borderWidth="2px"
+                                        transition="all 0.3s ease"
+                                        _focus={{
+                                            borderColor: "zombieland.primary",
+                                            boxShadow: "0 0 0 3px rgba(250, 235, 220, 0.1)",
+                                            bg: "rgba(0,0,0,0.4)"
+                                        }}
+                                        _hover={{
+                                            borderColor: "zombieland.primary"
+                                        }}
+                                        fontSize="16px"
+                                        py={3}
+                                        pl={4}
+                                    />
+                                </FormControl>
+                            </Box>
+                        </Box>
+
+                        {/* Right - Summary */}
+                        <Box 
+                            flex={1}
+                            p={{ base: 6, md: 8 }}
+                            borderRadius="lg"
+                            bg="rgba(0,0,0,0.08)"
+                            backdropFilter="blur(10px)"
+                            border="1px solid"
+                            borderColor="rgba(250, 235, 220, 0.15)"
+                            boxShadow="0 8px 32px rgba(0,0,0,0.3)"
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="space-between"
+                        >
+                            <Box>
+                                <Text 
+                                    color="zombieland.white" 
+                                    fontFamily="heading"
+                                    fontWeight="bold" 
+                                    mb={6} 
+                                    fontSize="20px"
+                                    textTransform="uppercase"
+                                    letterSpacing="1px"
+                                    textAlign="center"
+                                >
+                                    Récapitulatif
+                                </Text>
+                                <Flex flexDirection="column" gap={4}>
+                                    <Box>
+                                        <Text color="rgba(250, 235, 220, 0.6)" fontFamily="body" fontWeight="500" fontSize="13px" mb={1}>
+                                            Date de visite
+                                        </Text>
+                                        <Text color="zombieland.white" fontFamily="body" fontWeight="300" fontSize="16px">
+                                            {new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                        </Text>
+                                    </Box>
+                                    <Box>
+                                        <Text color="rgba(250, 235, 220, 0.6)" fontFamily="body" fontWeight="500" fontSize="13px" mb={1}>
+                                            Nombre de billets
+                                        </Text>
+                                        <Text color="zombieland.white" fontFamily="body" fontWeight="300" fontSize="16px">
+                                            {nbTickets} {nbTickets > 1 ? 'billets' : 'billet'}
+                                        </Text>
+                                    </Box>
+                                </Flex>
+                            </Box>
+
+                            <Box 
+                                pt={6}
+                                borderTop="1px solid"
+                                borderColor="rgba(250, 235, 220, 0.1)"
+                            >
+                                <Text color="rgba(250, 235, 220, 0.6)" fontFamily="body" fontWeight="500" fontSize="13px" mb={2}>
+                                    Prix unitaire
+                                </Text>
+                                <Text color="zombieland.white" fontFamily="body" fontWeight="300" fontSize="14px" mb={4}>
+                                    {TICKET_PRICE.toFixed(2)} € / billet
+                                </Text>
+
+                                <Box 
+                                    p={4}
+                                    borderRadius="md"
+                                    bg="rgba(250, 235, 220, 0.06)"
+                                    border="1px solid rgba(250, 235, 220, 0.2)"
+                                >
+                                    <Text color="rgba(250, 235, 220, 0.6)" fontFamily="body" fontWeight="500" fontSize="13px" mb={2}>
+                                        Total
+                                    </Text>
+                                    <Text color="zombieland.white" fontFamily="heading" fontWeight="bold" fontSize="28px">
+                                        {(nbTickets * TICKET_PRICE).toFixed(2)} €
+                                    </Text>
+                                </Box>
+                            </Box>
+
+                            <Text color="zombieland.warningprimary" fontFamily="body" fontWeight="500" fontSize="11px" mt={6} textAlign="center">
+                                Annulation possible jusqu'à 10 jours avant la date de visite
+                            </Text>
+                        </Box>
+                    </Flex>
                 </Box>
             </Box>
 
             <Box
                 display="flex"
                 flexDirection="column"
-                alignItems={{ base: 'center', lg: 'flex-end' }}
-                px={10}
-                pb={{ base: 28, lg: 6 }}
+                alignItems="center"
+                px={{ base: 4, md: 10 }}
+                pb={{ base: 28, lg: 8 }}
+                gap={6}
             >
-                <Box display="flex" flexDirection="column" alignItems="center">
-                    <Button
-                        onClick={handleSubmit}
-                        bgImage={`url(${bgBouton})`}
-                        color="zombieland.secondary"
-                        _hover={{ bg: "zombieland.cta2orange" }}
-                        fontFamily="body"
-                        fontSize="20px"
-                        py={6}
-                        px={3}
-                        borderRadius="full"
-                        letterSpacing="1px"
-                        fontWeight="bold"
-                        boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
-                        textTransform="uppercase"
-                    >
-                        → REJOINDRE L'HORREUR
-                    </Button>
+                {/* checkbox before button */}
+                <Checkbox
+                    isChecked={confirmed}
+                    onChange={(e) => setConfirmed(e.target.checked)}
+                    colorScheme="orange"
+                    size="lg"
+                >
+                    <Text color="zombieland.white" fontFamily="body" fontWeight="400" fontSize="15px" ml={2}>
+                        Je confirme que les dates et billets choisis sont corrects
+                    </Text>
+                </Checkbox>
 
-                    {message && (
+                <Button
+                    onClick={handleSubmit}
+                    bgImage={`url(${bgBouton})`}
+                    bgSize="cover"
+                    bgPosition="center"
+                    color="zombieland.secondary"
+                    fontFamily="heading"
+                    fontSize={{ base: '16px', md: '20px' }}
+                    py={{ base: 5, md: 7 }}
+                    px={{ base: 6, md: 12 }}
+                    borderRadius="full"
+                    letterSpacing="2px"
+                    fontWeight="bold"
+                    boxShadow="0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)"
+                    textTransform="uppercase"
+                    transition="all 0.3s ease"
+                    _hover={{
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 12px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3)",
+                    }}
+                    _active={{
+                        transform: "translateY(0px)",
+                    }}
+                >
+                    → REJOINDRE L'HORREUR
+                </Button>
+
+                {message && (
+                    <Box
+                        p={4}
+                        borderRadius="md"
+                        bg="rgba(0,0,0,0.2)"
+                        border="1px solid rgba(250, 235, 220, 0.2)"
+                        minW="300px"
+                    >
                         <Text
-                            mt={4}
                             textAlign="center"
                             fontFamily="body"
-                            fontWeight="300"
-                            color={message.includes('confirmée') ? 'zombieland.white' : 'zombieland.warningprimary'}
+                            fontWeight="500"
+                            fontSize="14px"
+                            color="zombieland.white"
                         >
                             {message}
                         </Text>
-                    )}
-                </Box>
+                    </Box>
+                )}
             </Box>
 
             <Footer />
-        </Box>
+        </Box >
     )
 }
 export default Reservation
