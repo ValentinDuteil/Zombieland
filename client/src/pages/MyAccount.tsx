@@ -116,10 +116,24 @@ function MyAccount() {
     <Box>
       <Header />
 
-      <Input />
-      <Input />
-      <Input />
-      <Input />
+      <Input
+        placeholder="Prénom"
+        value={form.firstname}
+        onChange={(e) => setForm({ ...form, firstname: e.target.value })} />
+      <Input
+        placeholder="Nom"
+        value={form.lastname}
+        onChange={(e) => setForm({ ...form, lastname: e.target.value })} />
+      <Input
+        type="password"
+        placeholder="Nouveau mot de passe"
+        value={form.password}
+        onChange={(e) => setForm({ ...form, password: e.target.value })} />
+      <Input
+        type="password"
+        placeholder="Confirmer le mot de passe"
+        value={form.confirmPassword}
+        onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} />
 
       <Button
         onClick={handleUpdate}
@@ -129,7 +143,7 @@ function MyAccount() {
       <Button
         onClick={handleDelete}
       >
-        ⚠️☠️ Supprimer mon profile ☠️⚠️
+        ⚠️☠️ Supprimer mon profil ☠️⚠️
       </Button>
 
       {reservations.length === 0 ? (
@@ -152,6 +166,8 @@ function MyAccount() {
       >
         Voir l'historique de mes réservations
       </Button>
+
+      {message && <Text>{message}</Text>}
 
       <Footer />
     </Box>
