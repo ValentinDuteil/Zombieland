@@ -4,7 +4,7 @@ import { prisma } from '../lib/prisma.js'
 import { Request, Response, NextFunction } from 'express';
 import { BadRequestError, NotFoundError } from "../utils/AppError.js";
 // const prisma = new PrismaClient()
-export const getAttraction = async (req: Request, res: Response, next: NextFunction) => {
+export const getAttractions = async (req: Request, res: Response, next: NextFunction) => {
     // Extract the "category" query parameter from the request
     const categoryParam = req.query.category
     // Ensure the category is a string (req.query can return string | string[] | undefined)
@@ -27,7 +27,7 @@ export const getAttraction = async (req: Request, res: Response, next: NextFunct
 }
 
 // Find a single attraction by its ID
-export const getFindAttraction = async (req: Request, res: Response, next: NextFunction) => {
+export const getAttractionById = async (req: Request, res: Response, next: NextFunction) => {
     // Get the id from the URL parameters and convert it to a number
     const attractionParam = parseInt(req.params.id as string);
 
