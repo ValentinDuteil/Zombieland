@@ -211,7 +211,7 @@ function Faq() {
 
                     <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary">
                         <Text color="zombieland.white" fontFamily="body" fontWeight="bold" mb={2}>Hébergement</Text>
-                        <Text color="zombieland.white" fontFamily="body" fontWeight="300">OVH SAS — 2 rue Kellermann, 59100 Roubaix</Text>
+                        <Text color="zombieland.white" fontFamily="body" fontWeight="300">OVH SAS — 13 Rue des Morts-Vivants, 75013 Paris</Text>
                     </Box>
 
                     <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary">
