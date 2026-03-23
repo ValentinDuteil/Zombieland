@@ -123,22 +123,25 @@ function Reservation() {
                             flex={1}
                             p={{ base: 6, md: 8 }}
                             borderRadius="lg"
-                            bgImage={`url(${Card})`}
-                            bgSize="cover"
-                            bgPosition="center"
-                            backdropFilter="blur(10px)"
-                            border="1px solid"
-                            borderColor="rgba(250, 235, 220, 0.1)"
-                            boxShadow="0 8px 32px rgba(0,0,0,0.3)"
+                            bg="rgba(0,0,0,0.3)"
+                            borderLeft="3px solid"
+                            borderColor="zombieland.primary"
+                            boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+                            transition="all 0.3s ease"
+                            _hover={{
+                                transform: "translateY(-4px)",
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                                borderColor: "zombieland.cta1orange",
+                                bg: "rgba(0,0,0,0.5)"
+                            }}
                             display="flex"
-                            flexDirection="column"
-                            justifyContent="center"
                             alignItems="center"
+                            justifyContent="center"
                         >
-                            <Box w="100%" maxW="300px">
-                                <FormControl mb={6}>
+                            <Box w="100%" maxW="350px" mx="auto">
+                                <FormControl mb={8}>
                                     <FormLabel color="zombieland.white" fontWeight="600" mb={3} fontSize="16px">
-                                        Nombre de billets
+                                        Nombre de billets souhaités ?
                                     </FormLabel>
                                     <Input
                                         type="number"
@@ -169,7 +172,7 @@ function Reservation() {
 
                                 <FormControl>
                                     <FormLabel color="zombieland.white" fontWeight="600" mb={3} fontSize="16px">
-                                        Date de la visite
+                                        Quand souhaitez-vous venir ? 
                                     </FormLabel>
                                     <Input
                                         type="date"
@@ -202,16 +205,17 @@ function Reservation() {
                             flex={1}
                             p={{ base: 6, md: 8 }}
                             borderRadius="lg"
-                            bgImage={`url(${Card})`}
-                            bgSize="cover"
-                            bgPosition="center"
-                            backdropFilter="blur(10px)"
-                            border="1px solid"
-                            borderColor="rgba(250, 235, 220, 0.15)"
-                            boxShadow="0 8px 32px rgba(0,0,0,0.3)"
-                            display="flex"
-                            flexDirection="column"
-                            justifyContent="space-between"
+                            bg="rgba(0,0,0,0.3)"
+                            borderLeft="3px solid"
+                            borderColor="zombieland.primary"
+                            boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+                            transition="all 0.3s ease"
+                            _hover={{
+                                transform: "translateY(-4px)",
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                                borderColor: "zombieland.cta1orange",
+                                bg: "rgba(0,0,0,0.5)"
+                            }}
                         >
                             <Box>
                                 <Text
