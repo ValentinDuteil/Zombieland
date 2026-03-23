@@ -46,8 +46,8 @@ function Faq() {
                                 bg="rgba(0,0,0,0.3)"
                                 color="zombieland.white"
                                 borderRadius="md"
-                                _hover={{ bg: "rgba(0,0,0,0.5)" }}
-                                _expanded={{ bg: "rgba(71,97,130,0.4)", borderBottomRadius: "none" }}
+                                _hover={{ bg: "rgba(0,0,0,0.5)", borderLeft: "3px solid", borderColor: "zombieland.cta1orange" }}
+                                transition="all 0.3s ease"
                             >
                                 <Box flex="1" textAlign="left" fontFamily="body" fontWeight="300">
                                     Quels sont les horaires d'ouverture ?
@@ -64,8 +64,8 @@ function Faq() {
                                 bg="rgba(0,0,0,0.3)"
                                 color="zombieland.white"
                                 borderRadius="md"
-                                _hover={{ bg: "rgba(0,0,0,0.5)" }}
-                                _expanded={{ bg: "rgba(71,97,130,0.4)", borderBottomRadius: "none" }}
+                                _hover={{ bg: "rgba(0,0,0,0.5)", borderLeft: "3px solid", borderColor: "zombieland.cta1orange" }}
+                                transition="all 0.3s ease"
                             >
                                 <Box flex="1" textAlign="left" fontFamily="body" fontWeight="300">
                                     Quel est le prix d'un billet ?
@@ -82,8 +82,8 @@ function Faq() {
                                 bg="rgba(0,0,0,0.3)"
                                 color="zombieland.white"
                                 borderRadius="md"
-                                _hover={{ bg: "rgba(0,0,0,0.5)" }}
-                                _expanded={{ bg: "rgba(71,97,130,0.4)", borderBottomRadius: "none" }}
+                                _hover={{ bg: "rgba(0,0,0,0.5)", borderLeft: "3px solid", borderColor: "zombieland.cta1orange" }}
+                                transition="all 0.3s ease"
                             >
                                 <Box flex="1" textAlign="left" fontFamily="body" fontWeight="300">
                                     Y a-t-il un parking ?
@@ -100,8 +100,8 @@ function Faq() {
                                 bg="rgba(0,0,0,0.3)"
                                 color="zombieland.white"
                                 borderRadius="md"
-                                _hover={{ bg: "rgba(0,0,0,0.5)" }}
-                                _expanded={{ bg: "rgba(71,97,130,0.4)", borderBottomRadius: "none" }}
+                                _hover={{ bg: "rgba(0,0,0,0.5)", borderLeft: "3px solid", borderColor: "zombieland.cta1orange" }}
+                                transition="all 0.3s ease"
                             >
                                 <Box flex="1" textAlign="left" fontFamily="body" fontWeight="300">
                                     Puis-je annuler ma réservation ?
@@ -118,8 +118,8 @@ function Faq() {
                                 bg="rgba(0,0,0,0.3)"
                                 color="zombieland.white"
                                 borderRadius="md"
-                                _hover={{ bg: "rgba(0,0,0,0.5)" }}
-                                _expanded={{ bg: "rgba(71,97,130,0.4)", borderBottomRadius: "none" }}
+                                _hover={{ bg: "rgba(0,0,0,0.5)", borderLeft: "3px solid", borderColor: "zombieland.cta1orange" }}
+                                transition="all 0.3s ease"
                             >
                                 <Box flex="1" textAlign="left" fontFamily="body" fontWeight="300">
                                     Que faire en cas de météo défavorable ?
@@ -136,8 +136,8 @@ function Faq() {
                                 bg="rgba(0,0,0,0.3)"
                                 color="zombieland.white"
                                 borderRadius="md"
-                                _hover={{ bg: "rgba(0,0,0,0.5)" }}
-                                _expanded={{ bg: "rgba(71,97,130,0.4)", borderBottomRadius: "none" }}
+                                _hover={{ bg: "rgba(0,0,0,0.5)", borderLeft: "3px solid", borderColor: "zombieland.cta1orange" }}
+                                transition="all 0.3s ease"
                             >
                                 <Box flex="1" textAlign="left" fontFamily="body" fontWeight="300">
                                     Le parc est-il accessible aux personnes handicapées ?
@@ -154,8 +154,8 @@ function Faq() {
                                 bg="rgba(0,0,0,0.3)"
                                 color="zombieland.white"
                                 borderRadius="md"
-                                _hover={{ bg: "rgba(0,0,0,0.5)" }}
-                                _expanded={{ bg: "rgba(71,97,130,0.4)", borderBottomRadius: "none" }}
+                                _hover={{ bg: "rgba(0,0,0,0.5)", borderLeft: "3px solid", borderColor: "zombieland.cta1orange" }}
+                                transition="all 0.3s ease"
                             >
                                 <Box flex="1" textAlign="left" fontFamily="body" fontWeight="300">
                                     Y a-t-il un âge minimum pour les attractions ?
@@ -172,8 +172,8 @@ function Faq() {
                                 bg="rgba(0,0,0,0.3)"
                                 color="zombieland.white"
                                 borderRadius="md"
-                                _hover={{ bg: "rgba(0,0,0,0.5)" }}
-                                _expanded={{ bg: "rgba(71,97,130,0.4)", borderBottomRadius: "none" }}
+                                _hover={{ bg: "rgba(0,0,0,0.5)", borderLeft: "3px solid", borderColor: "zombieland.cta1orange" }}
+                                transition="all 0.3s ease"
                             >
                                 <Box flex="1" textAlign="left" fontFamily="body" fontWeight="300">
                                     Comment contacter le service client ?
@@ -201,7 +201,13 @@ function Faq() {
 
                 <Box w="100%" maxW="700px" mb={10}>
 
-                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary">
+                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary" transition="all 0.3s ease"
+                        _hover={{
+                            transform: "translateY(-4px)",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                            borderColor: "zombieland.cta1orange",
+                            bg: "rgba(0,0,0,0.5)"
+                        }}>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="bold" mb={2}>Éditeur du site</Text>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="300">Zombieland SAS — Capital social : 50 000€</Text>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="300">Siège social : 13 Rue des Morts-Vivants, 75013 Paris</Text>
@@ -209,22 +215,46 @@ function Faq() {
                         <Text color="zombieland.white" fontFamily="body" fontWeight="300">Directeur de publication : Petval Daphyohan</Text>
                     </Box>
 
-                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary">
+                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary" transition="all 0.3s ease"
+                        _hover={{
+                            transform: "translateY(-4px)",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                            borderColor: "zombieland.cta1orange",
+                            bg: "rgba(0,0,0,0.5)"
+                        }}>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="bold" mb={2}>Hébergement</Text>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="300">OVH SAS — 13 Rue des Morts-Vivants, 75013 Paris</Text>
                     </Box>
 
-                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary">
+                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary" transition="all 0.3s ease"
+                        _hover={{
+                            transform: "translateY(-4px)",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                            borderColor: "zombieland.cta1orange",
+                            bg: "rgba(0,0,0,0.5)"
+                        }}>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="bold" mb={2}>Données personnelles</Text>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="300">Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ces droits : contact@au-dela-des-morts.fr</Text>
                     </Box>
 
-                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary">
+                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary" transition="all 0.3s ease"
+                        _hover={{
+                            transform: "translateY(-4px)",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                            borderColor: "zombieland.cta1orange",
+                            bg: "rgba(0,0,0,0.5)"
+                        }}>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="bold" mb={2}>Cookies</Text>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="300">Le site utilise des cookies fonctionnels pour la gestion de votre session. Aucun cookie publicitaire n'est utilisé.</Text>
                     </Box>
 
-                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary">
+                    <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary" transition="all 0.3s ease"
+                        _hover={{
+                            transform: "translateY(-4px)",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                            borderColor: "zombieland.cta1orange",
+                            bg: "rgba(0,0,0,0.5)"
+                        }}>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="bold" mb={2}>Propriété intellectuelle</Text>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="300">L'ensemble du contenu du site (textes, images, logos) est la propriété exclusive de Zombieland SAS et est protégé par le droit d'auteur.</Text>
                     </Box>
