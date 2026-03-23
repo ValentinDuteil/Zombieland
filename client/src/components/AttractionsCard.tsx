@@ -32,6 +32,7 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: 
 
 
     return (
+
         <Box
             width="300px"
             height="400px"
@@ -44,7 +45,16 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: 
             color="white"
             display="flex"
             flexDirection="column"
-            position="relative"      // structure en colonne
+            position="relative"
+            transition="all 0.3s ease"
+            border="2px solid"
+            borderColor="zombieland.primary"
+            _hover={{
+                transform: "translateY(-4px)",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                borderColor: "zombieland.cta1orange",
+            }}
+            cursor="pointer"
         >
 
 
