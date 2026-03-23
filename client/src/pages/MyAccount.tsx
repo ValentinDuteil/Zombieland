@@ -128,7 +128,6 @@ function MyAccount() {
       bgAttachment="fixed"
       display="flex"
       flexDirection="column"
-      pt="80px"
     >
       <Header />
 
