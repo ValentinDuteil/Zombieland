@@ -94,7 +94,7 @@ export const deleteReservation = async (req: Request, res: Response, next: NextF
     // Check if the reservation is within 10 days (J-10 rule)
     if (resultDate <= 10) {
         // Return a 400 error if cancellation is too late
-        throw new BadRequestError("Annulation impossible")
+        throw new BadRequestError("Annulation impossible inférieur ou égal à 10jours")
     }
 
     // All checks passed: update the reservation status to CANCELLED
