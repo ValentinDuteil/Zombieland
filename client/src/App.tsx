@@ -12,8 +12,10 @@ import Reservation from './pages/Reservation'
 import MyReservations from './pages/MyReservations'
 // Import the attractions page
 import AttractionsPage from "./pages/Attractions"
-
+// Import the attractions detailpage
 import AttractionDetailPage from './pages/AttractionDetailPage'
+// Import the scroll to top component
+import ScrollToTop from './components/ScrollToTop'
 
 import Faq from './pages/Faq'
 import HomePage from './pages/HomePage'
@@ -25,6 +27,8 @@ import Plan from './pages/Plan'
 const App = () => {
     return (
         <BrowserRouter>
+            <ScrollToTop />
+            
             <Routes>
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
