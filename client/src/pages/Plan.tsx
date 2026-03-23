@@ -6,6 +6,7 @@ import planImage from '../assets/plan.png'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import bgBouton from '../assets/bg-bouton.png'
+import { useState } from 'react'
 
 // Park services
 const services = [
@@ -14,7 +15,11 @@ const services = [
     { number: 3, icon: "🛍️", name: "Boutique" },
 ]
 
+
 function Plan() {
+
+    const [downloaded, setDownloaded] = useState(false)
+
     return (
         <Box
             minH="100vh"
@@ -57,7 +62,7 @@ function Plan() {
                     boxShadow="0 0 30px rgba(0,0,0,0.7)"
                     transition="transform 0.3s ease"
                     _hover={{ transform: "scale(1.02)" }}
-                    cursor="zoom-in"
+                    cursor="pointer"
                 >
                     <Image
                         src={planImage}
@@ -78,7 +83,7 @@ function Plan() {
                     >
                         Services
                     </Text>
-                    <Flex gap={4} justifyContent="center" flexWrap="wrap">
+                    <Flex gap={4} justifyContent="center" textAlign="center" flexWrap="wrap">
                         {services.map((service) => (
                             <Box
                                 key={service.number}
@@ -95,7 +100,7 @@ function Plan() {
                             >
                                 <Text fontSize="18px">{service.icon}</Text>
                                 <Text color="zombieland.white" fontFamily="body" fontWeight="300" fontSize="14px">
-                                    {service.number} — {service.name}
+                                    {service.number} - {service.name}
                                 </Text>
                             </Box>
                         ))}
@@ -124,6 +129,14 @@ function Plan() {
                             borderLeft="3px solid"
                             borderColor="zombieland.primary"
                             boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+                            transition="all 0.3s ease"
+                            _hover={{
+                                transform: "translateY(-4px)",
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                                borderColor: "zombieland.cta1orange",
+                                bg: "rgba(0,0,0,0.5)"
+                            }}
+                            cursor="pointer"
                         >
                             <Text color="zombieland.cta1orange" fontFamily="body" fontWeight="bold" mb={2}>Adresse</Text>
                             <Text color="zombieland.white" fontFamily="body" fontWeight="300" fontSize="14px">
@@ -141,6 +154,14 @@ function Plan() {
                             borderLeft="3px solid"
                             borderColor="zombieland.primary"
                             boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+                            transition="all 0.3s ease"
+                            _hover={{
+                                transform: "translateY(-4px)",
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                                borderColor: "zombieland.cta1orange",
+                                bg: "rgba(0,0,0,0.5)"
+                            }}
+                            cursor="pointer"
                         >
                             <Text color="zombieland.cta1orange" fontFamily="body" fontWeight="bold" mb={2}>En voiture</Text>
                             <Text color="zombieland.white" fontFamily="body" fontWeight="300" fontSize="14px">
@@ -156,6 +177,14 @@ function Plan() {
                             borderLeft="3px solid"
                             borderColor="zombieland.primary"
                             boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+                            transition="all 0.3s ease"
+                            _hover={{
+                                transform: "translateY(-4px)",
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                                borderColor: "zombieland.cta1orange",
+                                bg: "rgba(0,0,0,0.5)"
+                            }}
+                            cursor="pointer"
                         >
                             <Text color="zombieland.cta1orange" fontFamily="body" fontWeight="bold" mb={2}>En transport</Text>
                             <Text color="zombieland.white" fontFamily="body" fontWeight="300" fontSize="14px">
@@ -167,9 +196,9 @@ function Plan() {
                     </SimpleGrid>
                 </Box>
 
-                {/* Download plan button */}
-                <Box mb={10}>
-                    <a href="/plan.png" download="plan-zombieland.png">
+                {/* Download plan */}
+                <Box mb={10} display="flex" flexDirection="column" alignItems="center">
+                    <a href="/plan.png" download="plan-zombieland.png" onClick={() => setDownloaded(true)}>
                         <Button
                             bgImage={`url(${bgBouton})`}
                             bgSize="cover"
@@ -189,11 +218,16 @@ function Plan() {
                             Télécharger le plan
                         </Button>
                     </a>
+                    {downloaded && (
+                        <Text mt={3} color="zombieland.white" fontFamily="body" fontWeight="300" fontSize="14px">
+                            Le plan a été téléchargé.
+                        </Text>
+                    )}
                 </Box>
             </Box>
 
             <Footer />
-        </Box>
+        </Box >
     )
 }
 
