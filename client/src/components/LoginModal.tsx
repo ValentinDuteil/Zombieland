@@ -31,11 +31,11 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
     //only if response is ok the connection is allowed
     if (response.ok) {
       setMessage('Connexion confirmée !');
-      onConfirm()
       setEmail('')
       setPassword('')
       setTimeout(() => { //giving the time to read the message before closing the modal
         onClose()
+        onConfirm()
       }, 1500)
     } else {
       //otherwise displaying an error message
