@@ -47,7 +47,6 @@ function Register() {
       bgAttachment="fixed"
       display="flex"
       flexDirection="column"
-      
     >
       <Header />
 

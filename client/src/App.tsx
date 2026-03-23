@@ -17,7 +17,9 @@ import AttractionDetailPage from './pages/AttractionDetailPage'
 
 import Faq from './pages/Faq'
 import HomePage from './pages/HomePage'
+import Contact from './pages/Contact'
 import Plan from './pages/Plan'
+
 
 
 const App = () => {
@@ -30,9 +32,10 @@ const App = () => {
                 <Route path="/reservation" element={<Reservation />} />
                 <Route path="/my-account/reservations" element={<MyReservations />} />
                 <Route path="/attractions" element={<AttractionsPage />} />
-                <Route path="/attractions/:id" element={<AttractionDetailPage/>}/>
-                <Route path='/faq' element={<Faq />}/>
-                <Route path='/' element={<HomePage />}/>
+                <Route path="/attractions/:id" element={<AttractionDetailPage />} />
+                <Route path='/faq' element={<Faq />} />
+                <Route path='/' element={<HomePage />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="/plan" element={<Plan />} />
             </Routes>
         </BrowserRouter>
