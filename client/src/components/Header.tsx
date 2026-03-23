@@ -14,13 +14,15 @@ function Header() {
     const [firstname, setFirstname] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const navigate = useNavigate()
+    const controller = new AbortController();
 
 
     useEffect(() => {
         const fetchUser = async () => {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
                 credentials: 'include'
-            })
+            },)
+            
             if (response.ok) {
                 const data = await response.json()
                 setFirstname(data.firstname)
@@ -36,8 +38,10 @@ function Header() {
             await axios.post(`${API_URL}/api/auth/logout`, 
                 {},
                 {
-                withCredentials: true
-            })
+                withCredentials: true,
+                signal: controller.signal
+  });
+            controller.abort()
             setFirstname(null);
             navigate('/')
         } catch (error) {
