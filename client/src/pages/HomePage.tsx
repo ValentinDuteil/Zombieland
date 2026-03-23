@@ -68,6 +68,7 @@ const HomePage = () => {
                 const data: Attraction[] = await res.json();
                 setAttractions(data);
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (err) {
                 setError("Erreur lors de la récupération des attractions");
             }
@@ -90,9 +91,9 @@ const HomePage = () => {
         <Box
             display="flex"
             flexDirection="column"
-            bgSize="cover"
             bgImage={`url(${bgImage})`}
-            overflow="visible"
+            bgAttachment="fixed"
+            
         >
             <Header />
 
@@ -115,7 +116,6 @@ const HomePage = () => {
                 bgSize="cover"
                 bgPosition="center"
                 mx="auto"
-                width="20%"
                 color="zombieland.secondary"
                 borderRadius="full"
                 _hover={{ bg: "zombieland.cta2orange" }}
