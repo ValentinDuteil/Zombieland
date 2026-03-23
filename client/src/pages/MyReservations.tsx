@@ -57,15 +57,15 @@ function MyReservations() {
             credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
         })
 
-        if (response.ok) {
-            // remove the canceled reservation from the list without reloading the page
 
+        // remove the canceled reservation from the list without reloading the page
+        if (response.ok) {
             setReservations(reservations.filter((r: Reservation) => r.id_RESERVATION !== id))
             setMessage('Votre annulation a bien été prise en compte.')
             navigate('/my-account', { state: { refresh: Date.now() } })
         } else {
             const data = await response.json()
-            alert(data.message)
+            setMessage(data.message)
         }
     }
 

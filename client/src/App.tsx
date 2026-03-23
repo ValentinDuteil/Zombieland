@@ -17,6 +17,7 @@ import AttractionDetailPage from './pages/AttractionDetailPage'
 
 import Faq from './pages/Faq'
 import HomePage from './pages/HomePage'
+import Plan from './pages/Plan'
 
 
 const App = () => {
@@ -32,6 +33,7 @@ const App = () => {
                 <Route path="/attractions/:id" element={<AttractionDetailPage/>}/>
                 <Route path='/faq' element={<Faq />}/>
                 <Route path='/' element={<HomePage />}/>
+                <Route path="/plan" element={<Plan />} />
             </Routes>
         </BrowserRouter>
     );
