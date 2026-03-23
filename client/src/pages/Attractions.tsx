@@ -59,6 +59,7 @@ const AttractionsPage = () => {
             minHeight="100vh"
             bgAttachment="fixed"
             bgImage={`url(${bgImage})`}
+            bgSize="cover"
         >
             <Header />
 
