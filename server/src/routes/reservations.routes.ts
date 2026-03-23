@@ -8,7 +8,7 @@ import { checkToken } from '../middlewares/auth.middleware.js'
 import { checkRole } from '../middlewares/role.middleware.js'
 
 import { validate } from '../middlewares/validate.middleware.js'
-import { createReservationSchema, updateReservationSchema } from '../schemas/reservation.schema.js'
+import { createReservationSchema, UpdateReservationSchema } from '../schemas/reservation.schema.js'
 
 // Create an router Express
 const router = Router()
@@ -22,6 +22,6 @@ router.post('/', checkToken, validate(createReservationSchema), createReservatio
 //When someone calls DELETE /api/reservations/:id, execute deleteReservation
 router.delete('/:id', checkToken, deleteReservation)
 //When someone calls PATCH /api/reservations/:id, execute updateReservation
-router.patch('/:id', checkToken, checkRole("ADMIN"), validate(updateReservationSchema), updateReservation)
+router.patch('/:id', checkToken, checkRole("ADMIN"), validate(UpdateReservationSchema), updateReservation)
 
 export default router

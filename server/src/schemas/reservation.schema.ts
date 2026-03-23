@@ -27,8 +27,8 @@ export const ReservationSchema = z.object({
     status: z.enum(["CONFIRMED", "CANCELLED"]).default("CONFIRMED")
 })
 
-export const updateReservationSchema = ReservationSchema.partial()
+export const UpdateReservationSchema = ReservationSchema.partial()
 
 // We automatically generate the TypeScript type from the schema
 export type CreateReservationInput = z.infer<typeof createReservationSchema>
-export type UpdateReservationInput = z.infer<typeof updateReservationSchema>
+export type UpdateReservationInput = z.infer<typeof UpdateReservationSchema>
