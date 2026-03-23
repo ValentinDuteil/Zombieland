@@ -11,12 +11,12 @@ import bgImage from '../assets/bg-image.png';
 import queue from '../assets/queue.jpg';
 import zombieactor from '../assets/zombie-actor.jpg';
 import parkEntryLandscape from '../assets/park-entry-landscape.png';
-import img1 from '../assets/spectacle.png';
-import img2 from '../assets/dead-rise.png';
-import img3 from '../assets/foret.png';
-import img4 from '../assets/granderoue.png';
-import img5 from '../assets/piscine.png';
-import img6 from '../assets/ghost-train-landscape.png';
+import img1 from "../assets/spectacle.png";
+import img2 from "../assets/dead-rise.png";
+import img3 from "../assets/fossecadavres.png";   // remplace foret.png
+import img4 from "../assets/grand8.png";           // remplace granderoue.png
+import img5 from "../assets/quarantaine.png";      // remplace piscine.png
+import img6 from "../assets/quarantaine.png";      // remplace piscine.png
 
 
 

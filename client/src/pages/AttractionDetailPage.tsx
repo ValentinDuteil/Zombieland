@@ -9,7 +9,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
-import laboImage from '../assets/laboratoirez.png'
+import laboImage from "../assets/centrerecherche.png";
 import Card from '../assets/Card.png';
 import { API_URL } from '../config/api.ts'
 

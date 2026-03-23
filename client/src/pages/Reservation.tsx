@@ -51,7 +51,7 @@ const [nbTickets, setNbTickets] = useState<string>('1')
             method: 'POST', // Create a new reservation
             headers: { 'Content-Type': 'application/json' }, // Send JSON},
             body: JSON.stringify({
-                nb_tickets: nbTickets, // The number of the tickets
+                nb_tickets: parseInt(nbTickets) || 1, // The number of the tickets
                 date: date, // The chosen date
                 id_TICKET: 1
             }),
