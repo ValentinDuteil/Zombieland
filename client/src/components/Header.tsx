@@ -1,16 +1,19 @@
 // Header component - navigation bar
 
 import { Box, Flex, Image, Text, IconButton, Menu, MenuItem, MenuList, MenuButton } from '@chakra-ui/react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import logo from '../assets/logo.png'
 import { FaUserCircle } from 'react-icons/fa'
+import axios from 'axios'
+import { API_URL } from '@/config/api'
 
 function Header() {
     // State to manage the burger menu open/close
 
     const [firstname, setFirstname] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
+    const navigate = useNavigate()
 
 
     useEffect(() => {
@@ -27,6 +30,21 @@ function Header() {
         fetchUser()
     }, [])
 
+    const handleLogout = async() => {
+        try {
+            
+            await axios.post(`${API_URL}/api/auth/logout`, 
+                {},
+                {
+                withCredentials: true
+            })
+            setFirstname(null);
+            navigate('/')
+        } catch (error) {
+            console.error(error)
+        }
+    }
+ 
     return (
         <Box>
             <Box
@@ -119,6 +137,7 @@ function Header() {
                                         fontWeight="bold"
                                         fontFamily="body"
                                         _hover={{ bg: 'whiteAlpha.200' }}
+                                        onClick={handleLogout}
                                     >
                                         Se déconnecter
                                     </MenuItem>
