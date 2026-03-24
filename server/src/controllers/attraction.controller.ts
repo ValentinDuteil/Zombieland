@@ -58,3 +58,26 @@ export const getAttractionById = async (req: Request, res: Response, next: NextF
     // Return the attraction data as JSON
     return res.json(findAttraction)
 }
+
+    // create a new attraction admin only
+    export const createAttraction = async (req: Request, res: Response, next: NextFunction) => {
+        const { name, description, min_height, duration, capacity, intensity } = req.body
+
+        // check if all required fields are presente 
+        if (!name || !description || !intensity) {
+            throw new BadRequestError("Données invalides")
+        }
+
+        // create the attraction in the db
+        const attraction = await prisma.attraction.create({
+            data: {
+                name,
+                description,
+                min_height: min_height || 0,
+                duration: duration || 0,
+                capacity: capacity || 0,
+                intensity,
+            }
+        })
+        return res.status(201).json(attraction)
+    }
