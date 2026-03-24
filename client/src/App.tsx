@@ -16,6 +16,13 @@ import AttractionsPage from "./pages/Attractions"
 import AttractionDetailPage from './pages/AttractionDetailPage'
 // Import the scroll to top component
 import ScrollToTop from './components/ScrollToTop'
+// Import the admin layout
+import AdminLayout from './components/AdminLayout'
+// Import the admin pages
+// import AdminDashboard from './pages/admin/AdminDashboard'
+// import AdminMembers from './pages/admin/AdminMembers'
+// import AdminAttractions from './pages/admin/AdminAttractions'
+// import AdminReservations from './pages/admin/AdminReservations'
 
 import Faq from './pages/Faq'
 import HomePage from './pages/HomePage'
@@ -28,8 +35,16 @@ const App = () => {
     return (
         <BrowserRouter>
             <ScrollToTop />
-            
+
             <Routes>
+                <Route path="/admin" element={<AdminLayout />}>
+                    {/* <Route index element={<AdminDashboard />} />
+                    <Route path="members" element={<AdminMembers />} />
+                    <Route path="attractions" element={<AdminAttractions />} />
+                    <Route path="reservations" element={<AdminReservations />} /> */}
+                </Route>
+
+
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/my-account" element={<MyAccount />} />

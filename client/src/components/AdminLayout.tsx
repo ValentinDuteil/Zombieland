@@ -1,0 +1,95 @@
+import { VStack, Flex, Box } from "@chakra-ui/react"
+// import { useEffect, useState } from "react"
+import { Outlet, NavLink } from "react-router-dom"
+
+export default function AdminLayout() {
+    // const navigate = useNavigate()
+    // const [loading, setLoading] = useState(true)
+
+    // useEffect(() => {
+    //     const checkAuth = async () => {
+    //         try {
+    //             const res = await fetch("/api/auth/me", {
+    //                 credentials: "include",
+    //             })
+
+    //             if (!res.ok) {
+    //                 navigate("/login")
+    //                 return
+    //             }
+
+    //             const user = await res.json()
+
+    //             if (user.role !== "ADMIN") {
+    //                 navigate("/")
+    //                 return
+    //             }
+
+    //             setLoading(false)
+    //         } catch (err) {
+    //             navigate("/login")
+    //         }
+    //     }
+
+    //     checkAuth()
+    // }, [navigate])
+
+    // if (loading) {
+    //     return (
+    //         <div style={{ padding: 40 }}>
+    //             Vérification des accès…
+    //         </div>
+    //     )
+    // }
+
+    return (
+        <Flex height="100vh">
+            {/* Sidebar */}
+            <VStack
+                width="240px"                
+                bg="gray.800"
+                color="white"
+                align="stretch"
+                spacing={8}
+                p={4}
+            >
+                <SidebarLink to="/admin">Dashboard</SidebarLink>
+                <SidebarLink to="/admin/attractions">Attractions</SidebarLink>
+                <SidebarLink to="/admin/members">Membres</SidebarLink>
+                <SidebarLink to="/admin/reservations">Réservations</SidebarLink>
+            </VStack>
+
+            {/* Contenu */}
+            <Flex flex="1" p={6} overflowY="auto">
+                <Outlet />
+            </Flex>
+        </Flex>
+    )
+}
+
+/* Composant réutilisable pour les liens */
+function SidebarLink({ to, children }: { to: string, children: React.ReactNode }) {
+    return (
+        <Box
+            as={NavLink}
+            to={to}
+            px={3}
+            py={2}
+            borderRadius="md"
+            _hover={{
+                border: "2px solid",
+                bg: "zombieland.cta1orange",
+                cursor: "pointer",
+            }}
+            _activeLink={{
+                bg: "gray.700",
+                fontWeight: "bold",
+                border: "2px solid",
+                borderColor: "orange.400",
+            }}
+        >
+            {children}
+        </Box>
+    )
+}
+

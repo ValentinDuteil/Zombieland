@@ -8,6 +8,7 @@ import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import AdminLayout from '@/components/AdminLayout';
 
 function Login() {
   //setting the changing of the inputs and the validation message as well
@@ -46,7 +47,7 @@ function Login() {
       
     >
       <Header />
-
+      
       <Box
         flex={1}
         display="flex"
