@@ -9,6 +9,7 @@ export const UserSchema = z.object({
     .regex(/[0-9]/, "votre mot de passe doit contenir au moins un chiffre")
     .regex(/[^a-zA-Z0-9]/, "votre mot de passe doit contenir au moins un caractère spécial"),
   //password confirmation checked by front not to overuse the back
+  role: z.enum(['ADMIN', 'MEMBER'])
 })
 
 export const LoginSchema = z.object({

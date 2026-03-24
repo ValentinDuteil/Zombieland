@@ -4,7 +4,29 @@ import { Request, Response, NextFunction } from 'express';
 import { UserSchema } from '../schemas/auth.schema.js';
 import * as argon2 from 'argon2';
 import { prisma } from '../lib/prisma.js';
-import { BadRequestError, UnauthorizedError, NotFoundError } from "../utils/AppError.js";
+import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } from "../utils/AppError.js";
+
+export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
+
+  //1.fetching the users with req.user.id (because we already have the cookie) 
+  //and checking if users exist
+  if (!req.user) {
+    throw new UnauthorizedError('Accès refusé')
+  }
+  const users = await prisma.user.findMany({
+  })
+  //2.if not valid, returning 404 error
+  if (!users.length) {
+    throw new NotFoundError("Utilisateurs introuvables")
+  }
+  //3.returning Users (without passwords)
+  // using the .map() to go throught the table 
+  // and stock the password in an non use variable "_" 
+  // then keeping the rest of the information thanks to the spread "..."user.
+  const usersWithoutPassword = users.map(({ password: _, ...user }) => user)
+  return res.status(200).json(usersWithoutPassword)
+}
+
 
 export async function getProfile(req: Request, res: Response, next: NextFunction) {
 
@@ -27,66 +49,86 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
 
 export async function updateProfile(req: Request, res: Response, next: NextFunction) {
 
-  //1.getProfile
-  if (!req.user) throw new UnauthorizedError('Accès refusé')
-  //telling to TypeScript "trust me" it's a string  
+  //1. Check if the user is connected via cookie
+  if (!req.user) {
+    throw new UnauthorizedError('Accès refusé')
+  }
+
+  //2. Get and validate the id from the URL
+  //parseInt() converts the string to a number
+  //"as string" tells TypeScript to trust me that "it's a string !"
   const id = parseInt(req.params.id as string)
-  if (isNaN(id)) throw new BadRequestError("Id invalide")
+  if (isNaN(id)) {
+    throw new BadRequestError("Id invalide")
+  }
 
-  //2.check the informations with the zodSchema and making it optionnal
-  //partial() makes the fields optionnal
+  //3. If "MEMBER" tries to update another profile → 403
+  // a "MEMBER" can only update his own profile (id from URL(req.params) has to be the same as id from cookie(req.user)
+  if (req.user.role !== 'ADMIN' && id !== req.user.id) {
+    throw new ForbiddenError('Accès interdit')
+  }
+
+  //4. Validate the data with Zod schema
+  //partial() makes all the fields optional → Prisma ignores the undefined fields
+  // safeParse() returns "{ success: true/false, data, error } " 
+  // and we stock the data in a variable "data"
   const UpdateSchema = UserSchema.partial()
-  //safeParse() returns "{ success: true/false, data, error }"
   const data = UpdateSchema.safeParse(req.body)
-  //using parsedBody instead of data.data
-  const parsedBody = data.data
-
-  //3.if the data is invalid, return a 400 error
   if (!data.success) {
     throw new BadRequestError("Données invalides")
   }
+  const parsedBody = data.data
 
-  //3.1 extracting currentPassword from req.body to check if the user is really the one who is updating the profile
-  const currentPassword = req.body.currentPassword
-  //3.2 checking user in DB
-  const user = await prisma.user.findUnique({
-    where: { id_USER: req.user.id }
-  })
-  //3.3 if user exist, checking if the password is correct with argon2.verify 
-  if (user) {
-    const rightPassword = await argon2.verify(user.password, currentPassword)
-    if (!rightPassword) {
-      throw new UnauthorizedError('Mot de passe incorrect')
+  //5 If "MEMBER" → check the current password before updating (security)
+  // "ADMIN" can update without password
+  if (req.user.role !== 'ADMIN') {
+    const currentPassword = req.body.currentPassword
+    // checking user in DB with hashed password, 
+    // because we need to compare the hash with the current password with argon2.verify()
+    const user = await prisma.user.findUnique({
+      where: { id_USER: req.user.id }
+    })
+    if (!user) {
+      throw new NotFoundError('Utilisateur introuvable')
     }
-  } else {
-    throw new NotFoundError("Utilisateur introuvable")
+    // if the user exist, we compare the clear hash and the current password with argon2.verify()
+    if (user) {
+      const rightPassword = await argon2.verify(user.password, currentPassword)
+      if (!rightPassword) {
+        throw new UnauthorizedError('Mot de passe incorrect')
+      }
+    }
   }
 
-  //4.if the password is given, using the hash
-  if (!parsedBody) {
-    throw new UnauthorizedError('Accès refusé')
+  //6. If "MEMBER" tries to change the role → 403
+  // only "ADMIN" can change the role
+  if (req.user.role !== 'ADMIN' && parsedBody.role) {
+    throw new ForbiddenError('Modification réservée aux Administrateurs')
   }
-  //if the user gave a new password, hash is the new password (but clear), 
-  //if not, hash is undefined and Prisma ignore it, 
-  //so the password stay the same in the DB
-  let hash = parsedBody.password
+
+  //7. If a new password is given → hash it with argon2 before storing it in the DB
+  // if not provided, parsedBody.password is undefined → Prisma ignores it 
+  // and the password stay the same in the DB
   if (parsedBody.password) {
-    //here wer hash the new one
-    hash = await argon2.hash(parsedBody.password);
+    parsedBody.password = await argon2.hash(parsedBody.password);
   }
 
-  //5.updating the DB with Prisma
+  //8. Updating the profile in the DB with Prisma
+  // thanks to the id from the URL(id = req.params) the "ADMIN" can also update other profiles
   const newUser = await prisma.user.update({
-    where: { id_USER: req.user.id },
+    where: { id_USER: id },
     data: {
       email: parsedBody.email,
       lastname: parsedBody.lastname,
       firstname: parsedBody.firstname,
-      password: hash,
+      password: parsedBody.password, // undefined if not provided → Prisma ignores it
+      role: parsedBody.role // undefined if not provided → Prisma ignores it
     }
   })
 
-  //6.returning User (without password)
+  //9.returning User (without password)
+  // we stock the password in an non use variable "_" 
+  // then we keep the rest of the information thanks to the spread "..."userWithoutPassword.
   const { password: _, ...userWithoutPassword } = newUser
   return res.status(200).json(userWithoutPassword)
 }
