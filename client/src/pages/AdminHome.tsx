@@ -77,16 +77,15 @@ const AdminReservations = () => {
         <Header />
 
         {/* MAIN LAYOUT : sidebar + content */}
-        <Flex flex="1" pt="80px" pb="80px">
+        <Flex flex="1">
 
             {/* LEFT SIDEBAR — 30% */}
             <Box
                 width={30}
                 minWidth="250px"
                 maxWidth="350px"
-                borderRight="1px solid rgba(255,255,255,0.1)"
-                
-               
+                borderRight="1px solid rgba(255,255,255,0.1)"                   
+
             >
                 <AdminMenu />
             </Box>

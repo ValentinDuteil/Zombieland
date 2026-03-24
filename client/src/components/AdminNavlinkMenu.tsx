@@ -43,15 +43,17 @@ export default function AdminMenu() {
     // }
 
     return (
-        <Flex >
+        <Flex height="100%">
             {/* Sidebar */}
             <VStack
                 width="240px"                
                 bg="gray.800"
                 color="white"
                 align="stretch"
+                height="100%" 
                 spacing={8}
                 p={4}
+                
             >
                 <SidebarLink to="/admin">Dashboard</SidebarLink>
                 <SidebarLink to="/admin/attractions">Attractions</SidebarLink>
