@@ -43,7 +43,7 @@ export default function AdminMenu() {
     // }
 
     return (
-        <Flex height="100vh">
+        <Flex >
             {/* Sidebar */}
             <VStack
                 width="240px"                
