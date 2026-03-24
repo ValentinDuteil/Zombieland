@@ -17,6 +17,7 @@ const router = Router()
 router.get('/me', checkToken, getMyReservations)
 // When someone calls GET /api/reservations execute getAllReservations (admin only)
 router.get('/', checkToken, checkRole("ADMIN"), getAllReservations)
+// When someone calls POST /api/admin execute createReservation
 router.post('/admin', checkToken, checkRole('ADMIN'), validate(AdminCreateReservationSchema), createReservation)
 // When someone calls POST /api/reservations, execute createReservation
 router.post('/', checkToken, validate(createReservationSchema), createReservation)

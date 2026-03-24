@@ -3,3 +3,7 @@ node_modules
 .env
 
 /generated/prisma
+
+cookies-member.txt
+cookies-render.txt
+cookies.txt
