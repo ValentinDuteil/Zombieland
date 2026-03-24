@@ -33,7 +33,7 @@ et que l'utilisateur n'est pas connecté
 🧩 Peter — Scrum Master
 Backend
 
-- Refacto `AttractionDetailPage.tsx` → Axios → fetch natif + `VITE_API_URL`
+- A voir pour le sprint 3 : Refacto `AttractionDetailPage.tsx` → Axios → fetch natif + `VITE_API_URL`
 - `GET /api/availabilities` → disponibilités du parc
 
 Frontend
