@@ -32,9 +32,9 @@ async function main() {
     const user1 = await prisma.user.findUnique({ where: { email: 'john.doe@example.com' } });
     const user2 = await prisma.user.findUnique({ where: { email: 'jane.smith@example.com' } });
     // Vérifier que les users existent avant de continuer
-if (!user1 || !user2) {
-    throw new Error("Erreur : les utilisateurs n'ont pas été créés");
-}
+    if (!user1 || !user2) {
+        throw new Error("Erreur : les utilisateurs n'ont pas été créés");
+    }
 
     const ticket1 = await prisma.ticket.create({
         data: {
@@ -54,47 +54,84 @@ if (!user1 || !user2) {
 
     const catThrill = await prisma.category.create({ data: { name: 'Sensations fortes' } });
     const catFamily = await prisma.category.create({ data: { name: 'Famille' } });
-    const catWater = await prisma.category.create({ data: { name: 'Attractions aquatiques' } });
+    const catImmersive = await prisma.category.create({ data: { name: 'Immersif' } });
 
-    const rollerCoaster = await prisma.attraction.create({
+    const reception = await prisma.attraction.create({
         data: {
-            name: 'Thunder Roller Coaster',
-            description: 'Un grand huit rapide et intense',
+            name: 'Zone de quarantaine',
+            description: 'L\entrée du parc. Préparez vous à être décontaminé avant de pénétrer dans Zombieland',
+            min_height: 0,
+            duration: 15,
+            capacity: 100,
+            intensity: Intensity.LOW,
+        },
+    });
+
+    const biomasse = await prisma.attraction.create({
+        data: {
+            name: 'Ride de la Biomasse',
+            description: 'Une attraction immersive dans les profondeurs d\'une masse organique vivante et terrifiante.',
+            min_height: 120,
+            duration: 30,
+            capacity: 20,
+            intensity: Intensity.HIGH,
+        },
+    });
+
+    const marche = await prisma.attraction.create({
+        data: {
+            name: 'L\'Allée Brisée',
+            description: 'Une ruelle dévastée abritant le Marché de Zombieland - boutiques et restauration au cœur du chaos.',
+            min_height: 0,
+            duration: 60,
+            capacity: 200,
+            intensity: Intensity.LOW,
+        },
+    });
+
+    const grand8 = await prisma.attraction.create({
+        data: {
+            name: 'Grand Huit',
+            description: 'Des rails tordus à travers une carcasse métallique géante...',
             min_height: 140,
-            duration: 120,
+            duration: 10,
             capacity: 24,
             intensity: Intensity.HIGH,
         },
     });
 
-    const carousel = await prisma.attraction.create({
+    const fosse = await prisma.attraction.create({
         data: {
-            name: 'Carrousel Magique',
-            description: 'Un manège classique pour toute la famille',
-            min_height: 0,
-            duration: 180,
-            capacity: 40,
-            intensity: Intensity.LOW,
+            name: 'La fosse aux cadavres',
+            description: 'Une fosse sans fond où les morts refusent de rester enterrés. Entrez si vous l\'osez.',
+            min_height: 130,
+            duration: 20,
+            capacity: 30,
+            intensity: Intensity.MEDIUM,
         },
     });
 
-    const waterSlide = await prisma.attraction.create({
+    const labo = await prisma.attraction.create({
         data: {
-            name: 'Aqua Splash',
-            description: 'Toboggan aquatique géant',
+            name: 'Le Centre de Recherche',
+            description: 'Le laboratoire secret à l\'origine de l\'épidémie. Découvrez les expériences qui ont tout déclenché.',
             min_height: 120,
-            duration: 90,
-            capacity: 20,
+            duration: 45,
+            capacity: 15,
             intensity: Intensity.MEDIUM,
         },
     });
 
     await prisma.attractionCategory.createMany({
         data: [
-            { id_ATTRACTION: rollerCoaster.id_ATTRACTION, id_CATEGORY: catThrill.id_CATEGORY },
-            { id_ATTRACTION: carousel.id_ATTRACTION, id_CATEGORY: catFamily.id_CATEGORY },
-            { id_ATTRACTION: waterSlide.id_ATTRACTION, id_CATEGORY: catWater.id_CATEGORY },
-            { id_ATTRACTION: waterSlide.id_ATTRACTION, id_CATEGORY: catFamily.id_CATEGORY },
+            { id_ATTRACTION: reception.id_ATTRACTION, id_CATEGORY: catFamily.id_CATEGORY },
+            { id_ATTRACTION: biomasse.id_ATTRACTION, id_CATEGORY: catThrill.id_CATEGORY },
+            { id_ATTRACTION: biomasse.id_ATTRACTION, id_CATEGORY: catImmersive.id_CATEGORY },
+            { id_ATTRACTION: marche.id_ATTRACTION, id_CATEGORY: catFamily.id_CATEGORY },
+            { id_ATTRACTION: grand8.id_ATTRACTION, id_CATEGORY: catThrill.id_CATEGORY },
+            { id_ATTRACTION: fosse.id_ATTRACTION, id_CATEGORY: catThrill.id_CATEGORY },
+            { id_ATTRACTION: fosse.id_ATTRACTION, id_CATEGORY: catImmersive.id_CATEGORY },
+            { id_ATTRACTION: labo.id_ATTRACTION, id_CATEGORY: catImmersive.id_CATEGORY },
         ],
     });
 
