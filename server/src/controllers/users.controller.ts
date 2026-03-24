@@ -6,6 +6,28 @@ import * as argon2 from 'argon2';
 import { prisma } from '../lib/prisma.js';
 import { BadRequestError, UnauthorizedError, NotFoundError } from "../utils/AppError.js";
 
+export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
+
+  //1.fetching the users with req.user.id (because we already have the cookie) 
+  //and checking if users exist
+  if (!req.user) {
+    throw new UnauthorizedError('Accès refusé')
+  }
+  const users = await prisma.user.findMany({
+  })
+  //2.if not valid, returning 404 error
+  if (!users.length) {
+    throw new NotFoundError("Utilisateurs introuvables")
+  }
+  //3.returning Users (without passwords)
+  // using the .map() to go throught the table 
+  // and stock the password in an non use variable "_" 
+  // then keeping the rest of the information thanks to the spread "..."user.
+  const usersWithoutPassword = users.map(( { password: _, ...user}) => user)
+  return res.status(200).json(usersWithoutPassword)
+}
+
+
 export async function getProfile(req: Request, res: Response, next: NextFunction) {
 
   //1.fetching the user with req.user.id (beacause we already have the cookie) 
