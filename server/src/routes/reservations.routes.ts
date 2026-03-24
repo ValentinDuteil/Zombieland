@@ -8,7 +8,7 @@ import { checkToken } from '../middlewares/auth.middleware.js'
 import { checkRole } from '../middlewares/role.middleware.js'
 
 import { validate } from '../middlewares/validate.middleware.js'
-import { createReservationSchema, UpdateReservationSchema } from '../schemas/reservation.schema.js'
+import { AdminCreateReservationSchema, createReservationSchema, UpdateReservationSchema } from '../schemas/reservation.schema.js'
 
 // Create an router Express
 const router = Router()
@@ -17,6 +17,8 @@ const router = Router()
 router.get('/me', checkToken, getMyReservations)
 // When someone calls GET /api/reservations execute getAllReservations (admin only)
 router.get('/', checkToken, checkRole("ADMIN"), getAllReservations)
+// When someone calls POST /api/admin execute createReservation
+router.post('/admin', checkToken, checkRole('ADMIN'), validate(AdminCreateReservationSchema), createReservation)
 // When someone calls POST /api/reservations, execute createReservation
 router.post('/', checkToken, validate(createReservationSchema), createReservation)
 //When someone calls DELETE /api/reservations/:id, execute deleteReservation
