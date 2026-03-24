@@ -1,6 +1,6 @@
 // Route definitions for attractions 
 import { Router } from "express";
-import { getAttractions, getAttractionById, createAttraction, deleteAttraction } from "../controllers/attraction.controller.js"
+import { getAttractions, getAttractionById, createAttraction, deleteAttraction, updateAttraction } from "../controllers/attraction.controller.js"
 import { checkToken } from "../middlewares/auth.middleware.js"
 import { checkRole } from "../middlewares/role.middleware.js"
 
@@ -16,5 +16,7 @@ router.get('/:id', getAttractionById)
 router.post('/', checkToken, checkRole("ADMIN"), createAttraction)
 // when someone calls delete /api/attractions/:id, execute deleteAttraction admin only
 router.delete('/:id', checkToken, checkRole("ADMIN"), deleteAttraction)
+// when someone calls patch /api/attractions/:id, execute updateAttraction admin only
+router.patch('/:id', checkToken, checkRole("ADMIN"), updateAttraction)
 
 export default router

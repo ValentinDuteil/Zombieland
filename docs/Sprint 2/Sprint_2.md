@@ -63,7 +63,7 @@ Backend
 
 - A5 `POST /api/attractions` → création attraction (admin) ✅
 - A6 `DELETE /api/attractions/:id` → suppression attraction (admin) ✅
-- A7 `PATCH /api/attractions/:id` → modification attraction (admin)
+- A7 `PATCH /api/attractions/:id` → modification attraction (admin) ✅
 
 Frontend
 
