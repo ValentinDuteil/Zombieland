@@ -33,7 +33,7 @@ et que l'utilisateur n'est pas connecté
 🧩 Peter — Scrum Master
 Backend
 
-- Refacto `AttractionDetailPage.tsx` → Axios → fetch natif + `VITE_API_URL`
+- A voir pour le sprint 3 : Refacto `AttractionDetailPage.tsx` → Axios → fetch natif + `VITE_API_URL`
 - `GET /api/availabilities` → disponibilités du parc
 
 Frontend
@@ -53,9 +53,9 @@ Backend
 
 Frontend
 
-- Page `/admin/planning` → gestion des réservations
 - P1 `/admin` Dashboard : stats (nb réservations, membres, attractions, revenu total) + tableau dernières réservations
 - P6 `/admin/reservations` Liste réservations + filtre + lien vers fiche membre
+- a voir pour le sprint 3 : mettre un calendrier avec les réservations (ex : FullCalendar) différente couleur selon le nombre de reservations ce jour-là, rouge si complet, vert si dispo, etc.
 
 🎨 Daphné — Lead Dev
 
