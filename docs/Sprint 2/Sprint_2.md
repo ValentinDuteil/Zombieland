@@ -61,13 +61,13 @@ Frontend
 
 Backend
 
-- A5 `POST /api/attractions` → création attraction (admin)
-- A6 `DELETE /api/attractions/:id` → suppression attraction (admin)
+- A5 `POST /api/attractions` → création attraction (admin) ✅
+- A6 `DELETE /api/attractions/:id` → suppression attraction (admin) ✅
 - A7 `PATCH /api/attractions/:id` → modification attraction (admin)
 
 Frontend
 
-- CSS : Pages manquantes (contact + plan)
+- CSS : Pages manquantes (contact + plan) ✅
 - P2 `/admin/attractions` Liste attractions + filtre + bouton modifier/supprimer
 - P3 `/admin/attractions/:id/edit` Formulaire modification attraction (tous les champs en input)
 
