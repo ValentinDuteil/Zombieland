@@ -93,7 +93,7 @@ const HomePage = () => {
             flexDirection="column"
             bgImage={`url(${bgImage})`}
             bgAttachment="fixed"
-            
+            bgSize="cover"
         >
             <Header />
 
