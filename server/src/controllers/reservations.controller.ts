@@ -13,7 +13,7 @@ export const getAllReservations = async (req: Request, res: Response, next: Next
     // Return reservations with a 200 status (success)
     res.status(200).json(reservations)
 }
- // Retrieves reservation for the logged-in member
+// Retrieves reservation for the logged-in member
 export const getMyReservations = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
         throw new UnauthorizedError("L'utilisateur n'existe pas")
@@ -26,24 +26,46 @@ export const getMyReservations = async (req: Request, res: Response, next: NextF
 
 // Create a new reservation
 export const createReservation = async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) throw new UnauthorizedError('Accès refusé')
+    // Check if the user is authenticated
+    if (!req.user) throw new UnauthorizedError('Accès refusé');
 
-    const { nb_tickets, date, id_TICKET } = req.body
+    // Destructure the request body to get the reservation details
+    // id_USER is optional: only provided when an admin creates for a member
+    const { nb_tickets, date, id_TICKET, id_USER } = req.body;
 
-    // Create the reservation in the database
-    const reservation = await prisma.reservation.create({
-        data: {
-            nb_tickets,
-            date: new Date(date),
-            id_TICKET,
-            id_USER: req.user.id,
-            total_amount: 0,
+    // If id_USER is provided, it means an admin is creating a reservation for a member
+    // We need to verify that this member actually exists in the database
+    if (id_USER) {
+        // Search for the member in the database
+        const findUser = await prisma.user.findUnique({ where: { id_USER } });
+        // If the member doesn't exist, return a 404 error
+        if(findUser === null){
+            // Return a 404 Not Found error
+            throw new NotFoundError('Utilisateur non trouvé')
         }
-    })
+    } ;
+    // Check if the ticket exists in the database (for both admin and member)
+    const ticket = await prisma.ticket.findUnique({ where: { id_TICKET } });
+    // If the ticket doesn't exist, return a 404 error
+    if(ticket === null){
+        // Return a 404 Not Found error
+        throw new NotFoundError('Ticket non trouvé')
+    };
 
-    // Return the created reservation with a 201 status
-    res.status(201).json(reservation)
-}
+// Create the reservation in the database
+const reservation = await prisma.reservation.create({
+    data: {
+        nb_tickets,
+        date: new Date(date),
+        id_TICKET,
+        id_USER: id_USER || req.user.id,
+        total_amount: 0,
+    }
+});
+
+// Return the created reservation with a 201 status
+res.status(201).json(reservation)
+};
 
 // Cancel a reservation with J-10 rule
 export const deleteReservation = async (req: Request, res: Response, next: NextFunction) => {
