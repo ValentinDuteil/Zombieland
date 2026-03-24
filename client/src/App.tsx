@@ -17,7 +17,7 @@ import AttractionDetailPage from './pages/AttractionDetailPage'
 // Import the scroll to top component
 import ScrollToTop from './components/ScrollToTop'
 // Import the admin layout
-import AdminLayout from './components/AdminLayout'
+import AdminNavlinkMenu from './components/AdminNavlinkMenu'
 // Import the admin pages
 // import AdminDashboard from './pages/admin/AdminDashboard'
 // import AdminMembers from './pages/admin/AdminMembers'
@@ -37,7 +37,7 @@ const App = () => {
             <ScrollToTop />
 
             <Routes>
-                <Route path="/admin" element={<AdminLayout />}>
+                <Route path="/admin" element={<AdminNavlinkMenu />}>
                     {/* <Route index element={<AdminDashboard />} />
                     <Route path="members" element={<AdminMembers />} />
                     <Route path="attractions" element={<AdminAttractions />} />
