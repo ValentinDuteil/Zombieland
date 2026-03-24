@@ -62,7 +62,6 @@ function Plan() {
                     boxShadow="0 0 30px rgba(0,0,0,0.7)"
                     transition="transform 0.3s ease"
                     _hover={{ transform: "scale(1.02)" }}
-                    cursor="pointer"
                 >
                     <Image
                         src={planImage}

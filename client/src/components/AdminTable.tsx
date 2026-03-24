@@ -1,5 +1,8 @@
 // generic table component reusable for all admin pages
 import { Table, Thead, Tbody, Tr, Th, Td, TableContainer } from "@chakra-ui/react"
+import bgAdmin from '../assets/bgadmin.png'
+
+
 
 // definition of a column : a header and a render function
 interface Column<T> {
@@ -26,7 +29,7 @@ function AdminTable<T>({ columns, data, onRowClick }: AdminTableProps<T>) {
                 <Thead>
                     <Tr borderBottom="1px solid #333">
                         {columns.map((col) => (
-                            <Th key={col.header} color="zombieland.cta1orange">
+                            <Th key={col.header} color="#FAEBDC">
                                 {col.header}
                             </Th>
                         ))}
@@ -46,7 +49,15 @@ function AdminTable<T>({ columns, data, onRowClick }: AdminTableProps<T>) {
                             onClick={() => onRowClick?.(item)}
                         >
                             {columns.map((col) => (
-                                <Td key={col.header} color="gray.400">
+                                <Td
+                                    key={col.header}
+                                    color="#1A1A1A"
+                                    fontWeight="bold"
+                                    bgImage={`url(${bgAdmin})`}
+                                    bgSize="cover"
+                                    bgPosition="center"
+                                    border="1px solid #444"
+                                >
                                     {col.render(item)}
                                 </Td>
                             ))}

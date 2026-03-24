@@ -2,8 +2,9 @@
 // import { PrismaClient } from "@prisma/client"
 import { prisma } from '../lib/prisma.js'
 import { Request, Response, NextFunction } from 'express';
-import { BadRequestError, NotFoundError } from "../utils/AppError.js";
-import { notDeepEqual } from 'node:assert';
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../utils/AppError.js";
+import * as argon2 from 'argon2'
+
 // const prisma = new PrismaClient()
 export const getAttractions = async (req: Request, res: Response, next: NextFunction) => {
     // Extract the "category" query parameter from the request
@@ -83,23 +84,46 @@ export const createAttraction = async (req: Request, res: Response, next: NextFu
     return res.status(201).json(attraction)
 }
 
-// delete an attraction by admin only
+// delete an attraction by admin only, requires password confirmation
 export const deleteAttraction = async (req: Request, res: Response, next: NextFunction) => {
     const attractionParam = parseInt(req.params.id as string)
 
     if (isNaN(attractionParam)) {
         throw new BadRequestError("ID invalide")
     }
+
     const findAttraction = await prisma.attraction.findUnique({
         where: { id_ATTRACTION: attractionParam }
     })
+
     if (findAttraction === null) {
         throw new NotFoundError("L'attraction n'existe pas")
+    }
+
+    // Check password before deleting
+    const { password } = req.body
+    if (!password) {
+        throw new BadRequestError("Mot de passe requis")
+    }
+
+    // Fetch the admin user from the DB to compare the password
+    const user = await prisma.user.findUnique({
+        where: { id_USER: req.user!.id }
+    })
+
+    if (!user) {
+        throw new NotFoundError("Utilisateur introuvable")
+    }
+
+    const rightPassword = await argon2.verify(user.password, password)
+    if (!rightPassword) {
+        throw new UnauthorizedError("Mot de passe incorrect")
     }
 
     await prisma.attraction.delete({
         where: { id_ATTRACTION: attractionParam }
     })
+
     return res.status(204).send()
 }
 

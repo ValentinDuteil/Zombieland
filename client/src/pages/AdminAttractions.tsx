@@ -1,12 +1,14 @@
 // Admin page to manage attractions : list, filter, edit and delete
-import { useEffect, useState, useRef } from "react"
-import { Box, Text, Button, Flex, Menu, MenuButton, MenuList, MenuItem, Spinner, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
+import { Box, Text, Button, Flex, Menu, MenuButton, MenuList, MenuItem, Spinner } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
-import bgImage from '../assets/bg-image.png'
+import bgImage from '../assets/bgadminpage.png'
 import type { Attraction } from "@types"
 import AdminTable from "../components/AdminTable"
+import { FaTrash } from 'react-icons/fa'
+import ConfirmModal from "../components/ConfirmModal"
 
 
 const categoryToEnum: Record<string, string> = {
@@ -22,7 +24,6 @@ const AdminAttractions = () => {
     const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
     const [attractionToDelete, setAttractionToDelete] = useState<number | null>(null)
-    const cancelRef = useRef<HTMLButtonElement>(null)
 
     const fetchAttractions = async () => {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions`)
@@ -40,16 +41,18 @@ const AdminAttractions = () => {
         fetchAttractions()
     }, [])
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: number, password: string) => {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions/${id}`, {
             method: 'DELETE',
-            credentials: 'include'
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            // Send password in the body for verification
+            body: JSON.stringify({ password })
         })
         if (!res.ok) {
             setError("Erreur lors de la suppression de l'attraction")
             return
         }
-        // Refresh the list after deletion
         fetchAttractions()
     }
 
@@ -115,11 +118,19 @@ const AdminAttractions = () => {
                 {!loading && (
                     <AdminTable
                         data={filteredAttractions}
-                        onRowClick={(attraction) => navigate(`/attractions/${attraction.id_ATTRACTION}`)}
                         columns={[
                             {
                                 header: "Nom",
-                                render: (a) => <Text color="zombieland.white" fontWeight="bold">{a.name}</Text>
+                                render: (a) => (
+                                    <Text
+                                        fontWeight="bold"
+                                        cursor="pointer"
+                                        _hover={{ color: "zombieland.cta1orange", textDecoration: "underline" }}
+                                        onClick={() => navigate(`/attractions/${a.id_ATTRACTION}`)}
+                                    >
+                                        {a.name}
+                                    </Text>
+                                )
                             },
                             {
                                 header: "Intensité",
@@ -143,11 +154,9 @@ const AdminAttractions = () => {
                                     <Flex gap={3}>
                                         <Button
                                             size="sm"
-                                            border="2px solid"
-                                            borderColor="zombieland.primary"
-                                            color="zombieland.white"
-                                            bg="transparent"
-                                            _hover={{ borderColor: "zombieland.cta1orange", color: "zombieland.cta1orange" }}
+                                            bg="#3E4D28"
+                                            color="white"
+                                            _hover={{ opacity: 0.8 }}
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 navigate(`/admin/attractions/${a.id_ATTRACTION}/edit`)
@@ -157,17 +166,15 @@ const AdminAttractions = () => {
                                         </Button>
                                         <Button
                                             size="sm"
-                                            border="2px solid"
-                                            borderColor="red.500"
-                                            color="red.400"
-                                            bg="transparent"
-                                            _hover={{ bg: "red.500", color: "white" }}
+                                            bg="#8C6E21"
+                                            color="white"
+                                            _hover={{ bg: "#6e5519" }}
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 setAttractionToDelete(a.id_ATTRACTION)
                                             }}
                                         >
-                                            Supprimer
+                                            <FaTrash />
                                         </Button>
                                     </Flex>
                                 )
@@ -178,40 +185,17 @@ const AdminAttractions = () => {
 
             </Box>
 
-            {/* Confirmation popup before deletion */}
-            <AlertDialog
+            <ConfirmModal
                 isOpen={attractionToDelete !== null}
-                leastDestructiveRef={cancelRef}
                 onClose={() => setAttractionToDelete(null)}
-                isCentered
-            >
-                <AlertDialogOverlay>
-                    <AlertDialogContent bg="#1a1a1a" border="1px solid #333">
-                        <AlertDialogHeader color="zombieland.white" fontWeight="bold">
-                            Supprimer l'attraction
-                        </AlertDialogHeader>
-                        <AlertDialogBody color="gray.400">
-                            Voulez-vous vraiment supprimer cette attraction ? Cette action est irréversible.
-                        </AlertDialogBody>
-                        <AlertDialogFooter gap={3}>
-                            <Button ref={cancelRef} onClick={() => setAttractionToDelete(null)}>
-                                Annuler
-                            </Button>
-                            <Button
-                                bg="red.500"
-                                color="white"
-                                _hover={{ bg: "red.600" }}
-                                onClick={() => {
-                                    if (attractionToDelete) handleDelete(attractionToDelete)
-                                    setAttractionToDelete(null)
-                                }}
-                            >
-                                Supprimer
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialogOverlay>
-            </AlertDialog>
+                title="Supprimer l'attraction"
+                message="Voulez-vous vraiment supprimer cette attraction ? Cette action est irréversible."
+                onConfirm={(password) => {
+                    if (attractionToDelete) handleDelete(attractionToDelete, password)
+                    setAttractionToDelete(null)
+                }}
+            />
+
 
             <Footer />
         </Box>
