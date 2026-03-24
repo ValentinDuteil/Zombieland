@@ -2,7 +2,7 @@ import { VStack, Flex, Box } from "@chakra-ui/react"
 // import { useEffect, useState } from "react"
 import { Outlet, NavLink } from "react-router-dom"
 
-export default function AdminLayout() {
+export default function AdminMenu() {
     // const navigate = useNavigate()
     // const [loading, setLoading] = useState(true)
 
