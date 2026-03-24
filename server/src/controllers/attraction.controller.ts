@@ -3,6 +3,7 @@
 import { prisma } from '../lib/prisma.js'
 import { Request, Response, NextFunction } from 'express';
 import { BadRequestError, NotFoundError } from "../utils/AppError.js";
+import { notDeepEqual } from 'node:assert';
 // const prisma = new PrismaClient()
 export const getAttractions = async (req: Request, res: Response, next: NextFunction) => {
     // Extract the "category" query parameter from the request
@@ -57,4 +58,77 @@ export const getAttractionById = async (req: Request, res: Response, next: NextF
 
     // Return the attraction data as JSON
     return res.json(findAttraction)
+}
+
+// create a new attraction admin only
+export const createAttraction = async (req: Request, res: Response, next: NextFunction) => {
+    const { name, description, min_height, duration, capacity, intensity } = req.body
+
+    // check if all required fields are presente 
+    if (!name || !description || !intensity) {
+        throw new BadRequestError("Données invalides")
+    }
+
+    // create the attraction in the db
+    const attraction = await prisma.attraction.create({
+        data: {
+            name,
+            description,
+            min_height: min_height || 0,
+            duration: duration || 0,
+            capacity: capacity || 0,
+            intensity,
+        }
+    })
+    return res.status(201).json(attraction)
+}
+
+// delete an attraction by admin only
+export const deleteAttraction = async (req: Request, res: Response, next: NextFunction) => {
+    const attractionParam = parseInt(req.params.id as string)
+
+    if (isNaN(attractionParam)) {
+        throw new BadRequestError("ID invalide")
+    }
+    const findAttraction = await prisma.attraction.findUnique({
+        where: { id_ATTRACTION: attractionParam }
+    })
+    if (findAttraction === null) {
+        throw new NotFoundError("L'attraction n'existe pas")
+    }
+
+    await prisma.attraction.delete({
+        where: { id_ATTRACTION: attractionParam }
+    })
+    return res.status(204).send()
+}
+
+// update an attraction by admin only
+export const updateAttraction = async (req: Request, res: Response, next: NextFunction) => {
+    const attractionParam = parseInt(req.params.id as string)
+
+    if (isNaN(attractionParam)) {
+        throw new BadRequestError("ID invalide")
+    }
+    const findAttraction = await prisma.attraction.findUnique({
+        where: { id_ATTRACTION: attractionParam }
+    })
+    if (findAttraction === null) {
+        throw new NotFoundError("L'attraction n'existe pas")
+    }
+    const { name, description, min_height, duration, capacity, intensity } = req.body
+
+    const updateAttraction = await prisma.attraction.update({
+        where: { id_ATTRACTION: attractionParam },
+        data: {
+            // "??"" if the field is provided in the body, use it, otherwise keep the existing value
+            name: name ?? findAttraction.name,
+            description: description ?? findAttraction.description,
+            min_height: min_height ?? findAttraction.min_height,
+            duration: duration ?? findAttraction.duration,
+            capacity: capacity ?? findAttraction.capacity,
+            intensity: intensity ?? findAttraction.intensity,
+        }
+    })
+    return res.json(updateAttraction)
 }

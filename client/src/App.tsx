@@ -29,6 +29,9 @@ import HomePage from './pages/HomePage'
 import Contact from './pages/Contact'
 import Plan from './pages/Plan'
 import AdminHomePage from './pages/AdminHome'
+import AdminGuard from './components/AdminGuard'
+import AdminAttractions from "./pages/AdminAttractions"
+
 
 
 
@@ -57,6 +60,7 @@ const App = () => {
                 <Route path='/' element={<HomePage />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/plan" element={<Plan />} />
+                <Route path="/admin/attractions" element={<AdminGuard><AdminAttractions /></AdminGuard>} />
             </Routes>
         </BrowserRouter>
     );
