@@ -33,39 +33,79 @@ export const createReservation = async (req: Request, res: Response, next: NextF
     // id_USER is optional: only provided when an admin creates for a member
     const { nb_tickets, date, id_TICKET, id_USER } = req.body;
 
+    // Adding a maximum of 10k tickets per days
+    const reservationsByDay = await prisma.reservation.groupBy({
+        by: ['date'],
+        where: {
+            date: new Date(date),
+            status: 'CONFIRMED'
+        },
+        _sum: { nb_tickets: true }
+    })
+
+    // If reservztionsByDay[0] is undefined, 
+    // it means there are no reservations for this date, so we set totalTickets to 0
+    // if exists "?", and if nul or undifined "??" use 0 (optionnal chaining and nullish coalescing)
+    // If the total number of tickets for this date plus the number of tickets 
+    // in the new reservation exceeds 10,000, return an error
+    const totalTickets = reservationsByDay[0]?._sum.nb_tickets ?? 0 
+    if (totalTickets + nb_tickets > 10000) {
+        throw new BadRequestError("Capacité maximale atteinte pour cette date")
+    }
+
     // If id_USER is provided, it means an admin is creating a reservation for a member
     // We need to verify that this member actually exists in the database
     if (id_USER) {
         // Search for the member in the database
         const findUser = await prisma.user.findUnique({ where: { id_USER } });
         // If the member doesn't exist, return a 404 error
-        if(findUser === null){
+        if (findUser === null) {
             // Return a 404 Not Found error
             throw new NotFoundError('Utilisateur non trouvé')
         }
-    } ;
+    };
     // Check if the ticket exists in the database (for both admin and member)
     const ticket = await prisma.ticket.findUnique({ where: { id_TICKET } });
     // If the ticket doesn't exist, return a 404 error
-    if(ticket === null){
+    if (ticket === null) {
         // Return a 404 Not Found error
         throw new NotFoundError('Ticket non trouvé')
     };
 
-// Create the reservation in the database
-const reservation = await prisma.reservation.create({
-    data: {
-        nb_tickets,
-        date: new Date(date),
-        id_TICKET,
-        id_USER: id_USER || req.user.id,
-        total_amount: 0,
-    }
-});
+    // Create the reservation in the database
+    const reservation = await prisma.reservation.create({
+        data: {
+            nb_tickets,
+            date: new Date(date),
+            id_TICKET,
+            id_USER: id_USER || req.user.id,
+            total_amount: 0,
+        }
+    });
 
-// Return the created reservation with a 201 status
-res.status(201).json(reservation)
+    // Return the created reservation with a 201 status
+    res.status(201).json(reservation)
 };
+
+export const getAvailabilities = async (req: Request, res: Response, next: NextFunction) => {
+    // getAllDates to check their availability
+    const allDates = await prisma.reservation.groupBy({
+        by: ['date'],
+        where: {
+            status: 'CONFIRMED'
+        },
+        _sum: { nb_tickets: true }
+    })
+
+    // Map the results to return the date and the number of available tickets (10,000 - reserved)
+    const availabilities = allDates.map(date => ({
+        date: date.date,
+        available: (date._sum.nb_tickets ?? 0) < 10000 ? true : false
+    }))
+
+    // Return the availabilities with a 200 status
+    res.status(200).json(availabilities)
+}
 
 // Cancel a reservation with J-10 rule
 export const deleteReservation = async (req: Request, res: Response, next: NextFunction) => {
