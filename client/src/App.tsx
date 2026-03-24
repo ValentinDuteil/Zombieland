@@ -22,7 +22,7 @@ import AdminNavlinkMenu from './components/AdminNavlinkMenu'
 // import AdminDashboard from './pages/admin/AdminDashboard'
 // import AdminMembers from './pages/admin/AdminMembers'
 // import AdminAttractions from './pages/admin/AdminAttractions'
-// import AdminReservations from './pages/admin/AdminReservations'
+import AdminReservations from './pages/admin/AdminReservations'
 
 import Faq from './pages/Faq'
 import HomePage from './pages/HomePage'
@@ -40,8 +40,8 @@ const App = () => {
                 <Route path="/admin" element={<AdminNavlinkMenu />}>
                     {/* <Route index element={<AdminDashboard />} />
                     <Route path="members" element={<AdminMembers />} />
-                    <Route path="attractions" element={<AdminAttractions />} />
-                    <Route path="reservations" element={<AdminReservations />} /> */}
+                    <Route path="attractions" element={<AdminAttractions />} />*/
+                    <Route path="reservations" element={<AdminReservations />} /> }
                 </Route>
 
 
