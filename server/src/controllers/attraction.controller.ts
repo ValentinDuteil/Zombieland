@@ -2,7 +2,9 @@
 // import { PrismaClient } from "@prisma/client"
 import { prisma } from '../lib/prisma.js'
 import { Request, Response, NextFunction } from 'express';
-import { BadRequestError, NotFoundError } from "../utils/AppError.js";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../utils/AppError.js";
+import * as argon2 from 'argon2'
+
 // const prisma = new PrismaClient()
 export const getAttractions = async (req: Request, res: Response, next: NextFunction) => {
     // Extract the "category" query parameter from the request
@@ -57,4 +59,100 @@ export const getAttractionById = async (req: Request, res: Response, next: NextF
 
     // Return the attraction data as JSON
     return res.json(findAttraction)
+}
+
+// create a new attraction admin only
+export const createAttraction = async (req: Request, res: Response, next: NextFunction) => {
+    const { name, description, min_height, duration, capacity, intensity } = req.body
+
+    // check if all required fields are presente 
+    if (!name || !description || !intensity) {
+        throw new BadRequestError("Données invalides")
+    }
+
+    // create the attraction in the db
+    const attraction = await prisma.attraction.create({
+        data: {
+            name,
+            description,
+            min_height: min_height || 0,
+            duration: duration || 0,
+            capacity: capacity || 0,
+            intensity,
+        }
+    })
+    return res.status(201).json(attraction)
+}
+
+// delete an attraction by admin only, requires password confirmation
+export const deleteAttraction = async (req: Request, res: Response, next: NextFunction) => {
+    const attractionParam = parseInt(req.params.id as string)
+
+    if (isNaN(attractionParam)) {
+        throw new BadRequestError("ID invalide")
+    }
+
+    const findAttraction = await prisma.attraction.findUnique({
+        where: { id_ATTRACTION: attractionParam }
+    })
+
+    if (findAttraction === null) {
+        throw new NotFoundError("L'attraction n'existe pas")
+    }
+
+    // Check password before deleting
+    const { password } = req.body
+    if (!password) {
+        throw new BadRequestError("Mot de passe requis")
+    }
+
+    // Fetch the admin user from the DB to compare the password
+    const user = await prisma.user.findUnique({
+        where: { id_USER: req.user!.id }
+    })
+
+    if (!user) {
+        throw new NotFoundError("Utilisateur introuvable")
+    }
+
+    const rightPassword = await argon2.verify(user.password, password)
+    if (!rightPassword) {
+        throw new UnauthorizedError("Mot de passe incorrect")
+    }
+
+    await prisma.attraction.delete({
+        where: { id_ATTRACTION: attractionParam }
+    })
+
+    return res.status(204).send()
+}
+
+// update an attraction by admin only
+export const updateAttraction = async (req: Request, res: Response, next: NextFunction) => {
+    const attractionParam = parseInt(req.params.id as string)
+
+    if (isNaN(attractionParam)) {
+        throw new BadRequestError("ID invalide")
+    }
+    const findAttraction = await prisma.attraction.findUnique({
+        where: { id_ATTRACTION: attractionParam }
+    })
+    if (findAttraction === null) {
+        throw new NotFoundError("L'attraction n'existe pas")
+    }
+    const { name, description, min_height, duration, capacity, intensity } = req.body
+
+    const updateAttraction = await prisma.attraction.update({
+        where: { id_ATTRACTION: attractionParam },
+        data: {
+            // "??"" if the field is provided in the body, use it, otherwise keep the existing value
+            name: name ?? findAttraction.name,
+            description: description ?? findAttraction.description,
+            min_height: min_height ?? findAttraction.min_height,
+            duration: duration ?? findAttraction.duration,
+            capacity: capacity ?? findAttraction.capacity,
+            intensity: intensity ?? findAttraction.intensity,
+        }
+    })
+    return res.json(updateAttraction)
 }
