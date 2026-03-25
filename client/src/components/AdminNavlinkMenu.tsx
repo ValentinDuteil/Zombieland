@@ -1,6 +1,6 @@
 import { VStack, Flex, Box } from "@chakra-ui/react"
 // import { useEffect, useState } from "react"
-import { Outlet, NavLink } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 
 export default function AdminMenu() {
     // const navigate = useNavigate()
@@ -46,13 +46,14 @@ export default function AdminMenu() {
         <Flex height="100%">
             {/* Sidebar */}
             <VStack
-                width="240px"                
+                width="300px"                
                 bg="gray.800"
                 color="white"
                 align="stretch"
                 height="100%" 
                 spacing={8}
                 p={4}
+                
                 
             >
                 <SidebarLink to="/admin">Dashboard</SidebarLink>
@@ -61,10 +62,7 @@ export default function AdminMenu() {
                 <SidebarLink to="/admin/reservations">Réservations</SidebarLink>
             </VStack>
 
-            {/* Contenu */}
-            <Flex flex="1" p={6} overflowY="auto">
-                <Outlet />
-            </Flex>
+           
         </Flex>
     )
 }
@@ -75,6 +73,7 @@ function SidebarLink({ to, children }: { to: string, children: React.ReactNode }
         <Box
             as={NavLink}
             to={to}
+            end
             px={3}
             py={2}
             borderRadius="md"
@@ -83,11 +82,12 @@ function SidebarLink({ to, children }: { to: string, children: React.ReactNode }
                 bg: "zombieland.cta1orange",
                 cursor: "pointer",
             }}
+            
             _activeLink={{
                 bg: "gray.700",
                 fontWeight: "bold",
-                border: "2px solid",
-                borderColor: "orange.400",
+                border: "0.5px solid",
+                borderColor: "zombieland.cta1orange",
             }}
         >
             {children}
