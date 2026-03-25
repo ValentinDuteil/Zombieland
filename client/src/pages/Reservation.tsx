@@ -1,7 +1,7 @@
 // Reservation page - booking page
 
 // Import useState to manage from data
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 // Import Chakra UI components for styling
 import { Box, Button, Checkbox, Heading, Input, Text, Flex, FormControl, FormLabel } from '@chakra-ui/react'
 // Import modals for login before booking
@@ -13,25 +13,41 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 function Reservation() {
-    // nbTickets store the number of tickets chosen by the user (1 by default)
-const [nbTickets, setNbTickets] = useState<string>('1')
-    // date stores the chosen visit date (empty by default)
-    const today = new Date().toISOString().split('T')[0] // get today's date in YYYY-MM-DD format as default value
-
-    // date stores the chosen visit date (default => today)
-    const [date, setDate] = useState(today)
-
-    // message stores the text to display after from submission
-    const [message, setMessage] = useState('')
-
     // Price per ticket in euros
     const TICKET_PRICE = 66.66
+    // date stores the chosen visit date (empty by default)
+    // get today's date in YYYY-MM-DD format as default value
+    // 'T' cut the string where a 'T' is found "2025-04-15T00:00:00.000Z" 
+    // and [0] keep only the date part "2025-04-15" (first index of the array)
+    const today = new Date().toISOString().split('T')[0]
 
+    // nbTickets store the number of tickets chosen by the user (1 by default)
+    const [nbTickets, setNbTickets] = useState<string>('1')
+    // date stores the chosen visit date (default => today)
+    const [date, setDate] = useState(today)
+    // message stores the text to display after from submission
+    const [message, setMessage] = useState('')
     // confirmed stores whether the user has checked the confirmation checkbox
     const [confirmed, setConfirmed] = useState(false)
-
     // adding a modal to confirm the user is connected before confirming the reservation
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+    // checking the availability of the chosen date before creating the reservation
+    const [availabilities, setAvailabilities] = useState<{ date: string, available: boolean }[]>([])
+
+    // useEffect to fetch availabilities when the component mounts
+    useEffect(() => {
+        const fetchAvailabilities = async () => {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/availabilities`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            const data = await response.json()
+            setAvailabilities(data)
+        }
+
+        fetchAvailabilities()
+    }, [])
+
     //  handleSubmit is the function that runs when we click to "Confirm"
     const handleSubmit = async () => {
         // check if date is empty before sending
@@ -46,13 +62,19 @@ const [nbTickets, setNbTickets] = useState<string>('1')
             return
         }
 
+        const chosenDate = availabilities.find(a => new Date(a.date).toISOString().split('T')[0] === date)
+        if (chosenDate && !chosenDate.available) {
+            setMessage('Nous sommes navrés, l\'armée des zombies a pris possession du parc !')
+            return
+        }
+
         // Send the form data to the back via fetch
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations`, {
             method: 'POST', // Create a new reservation
             headers: { 'Content-Type': 'application/json' }, // Send JSON},
             body: JSON.stringify({
                 nb_tickets: parseInt(nbTickets) || 1, // The number of the tickets
-                date: date, // The chosen date
+                date: date, // The date of the visit choosen by the client
                 id_TICKET: 1
             }),
             credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
@@ -168,7 +190,7 @@ const [nbTickets, setNbTickets] = useState<string>('1')
 
                                 <FormControl>
                                     <FormLabel color="zombieland.white" fontWeight="600" mb={3} fontSize="16px">
-                                        Quand souhaitez-vous venir ? 
+                                        Quand souhaitez-vous venir ?
                                     </FormLabel>
                                     <Input
                                         type="date"

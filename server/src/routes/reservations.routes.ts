@@ -3,7 +3,7 @@
 // Import Router from Express to create a router
 import { Router } from 'express'
 // Import function from the controller
-import { createReservation, deleteReservation, getAllReservations, getMyReservations, updateReservation } from '../controllers/reservations.controller.js'
+import { createReservation, deleteReservation, getAllReservations, getAvailabilities, getMyReservations, updateReservation } from '../controllers/reservations.controller.js'
 import { checkToken } from '../middlewares/auth.middleware.js'
 import { checkRole } from '../middlewares/role.middleware.js'
 
@@ -17,6 +17,8 @@ const router = Router()
 router.get('/me', checkToken, getMyReservations)
 // When someone calls GET /api/reservations execute getAllReservations (admin only)
 router.get('/', checkToken, checkRole("ADMIN"), getAllReservations)
+// When someone calls GET /api/reservations/availabilities execute getAvailabilities
+router.get('/availabilities', getAvailabilities)
 // When someone calls POST /api/admin execute createReservation
 router.post('/admin', checkToken, checkRole('ADMIN'), validate(AdminCreateReservationSchema), createReservation)
 // When someone calls POST /api/reservations, execute createReservation

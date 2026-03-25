@@ -19,6 +19,7 @@ Backend
 - A2 `GET /api/users/:id/profile` Détail d'un membre (déjà fait)
 - A3 `PATCH /api/users/:id/profile` Modifier infos + rôle d'un membre (admin)
 - A4 `DELETE /api/users/:id` Supprimer un membre (déjà fait)
+- `GET /api/availabilities` → disponibilités du parc
 
 Frontend
 
@@ -32,9 +33,6 @@ et que l'utilisateur n'est pas connecté
 
 🧩 Peter — Scrum Master
 Backend
-
-- A voir pour le sprint 3 : Refacto `AttractionDetailPage.tsx` → Axios → fetch natif + `VITE_API_URL`
-- `GET /api/availabilities` → disponibilités du parc
 
 Frontend
 
@@ -79,18 +77,18 @@ Vérifier pipeline CI/CD sur Render
 
 > Le sprint est terminé quand TOUT ce qui suit fonctionne :
 
-[] Page d'accueil affichée et responsive
-[] Dashboard admin accessible avec stats (réservations, membres, attractions, revenu)
-[] CRUD attractions fonctionnel en admin (créer, modifier, supprimer)
-[] Liste membres accessible en admin + fiche membre modifiable
-[] Liste réservations accessible en admin + modification/annulation possible
-[] Bug annulation réservation corrigé (Yohann)
-[] Cookie validé en production (cross-domain Render)
-[] Confirmation mot de passe avant modification profil
-[] Suppression de compte avec modale de confirmation
-[] Pop-up login en overlay fonctionnel
-[] GET /api/availabilities fonctionnel
-[] Tout le monde a touché front ET back ← important pour le RNCP
+- [x] Page d'accueil affichée et responsive
+- [] Dashboard admin accessible avec stats (réservations, membres, attractions, revenu)
+- [] CRUD attractions fonctionnel en admin (créer, modifier, supprimer)
+- [x] Liste membres accessible en admin + fiche membre modifiable
+- [] Liste réservations accessible en admin + modification/annulation possible
+- [x] Bug annulation réservation corrigé (Yohann)
+- [x] Cookie validé en production (cross-domain Render)
+- [x] Confirmation mot de passe avant modification profil
+- [x] Suppression de compte avec modale de confirmation
+- [x] Pop-up login en overlay fonctionnel
+- [] GET /api/availabilities fonctionnel
+- [] Tout le monde a touché front ET back ← important pour le RNCP
 
 ## 📌 Point d'attention
  
