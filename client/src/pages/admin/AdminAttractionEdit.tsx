@@ -3,19 +3,19 @@ import { useEffect, useState, useRef } from "react"
 import { Box, Text, Button, Input, Select, Spinner, Flex, Image } from "@chakra-ui/react"
 import { useNavigate, useParams } from "react-router-dom"
 import { FaCamera } from "react-icons/fa"
-import Header from "../components/Header"
-import Footer from "../components/Footer"
-import bgImage from '../assets/bg-image.png'
-import bgBouton from '../assets/bg-bouton.png'
-import Card from '../assets/Card.png'
-import ConfirmModal from "../components/ConfirmModal"
+import Header from "../../components/Header"
+import Footer from "../../components/Footer"
+import bgImage from '../../assets/bg-image.png'
+import bgBouton from '../../assets/bg-bouton.png'
+import Card from '../../assets/Card.png'
+import ConfirmModal from "../../components/ConfirmModal"
 import type { AttractionWithCategories } from "@types"
-import img1 from "../assets/quarantaine.png"
-import img2 from "../assets/ridebiomasse.png"
-import img3 from "../assets/marche.png"
-import img4 from "../assets/grand8.png"
-import img5 from "../assets/fossecadavres.png"
-import img6 from "../assets/centrerecherche.png"
+import img1 from "../../assets/quarantaine.png"
+import img2 from "../../assets/ridebiomasse.png"
+import img3 from "../../assets/marche.png"
+import img4 from "../../assets/grand8.png"
+import img5 from "../../assets/fossecadavres.png"
+import img6 from "../../assets/centrerecherche.png"
 
 // Map attraction id to local image
 const attractionImages: Record<number, string> = {
