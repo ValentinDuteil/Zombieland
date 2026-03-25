@@ -127,25 +127,47 @@ export const deleteAttraction = async (req: Request, res: Response, next: NextFu
     return res.status(204).send()
 }
 
-// update an attraction by admin only
+// update an attraction by admin only, requires password confirmation
 export const updateAttraction = async (req: Request, res: Response, next: NextFunction) => {
     const attractionParam = parseInt(req.params.id as string)
 
     if (isNaN(attractionParam)) {
         throw new BadRequestError("ID invalide")
     }
+
     const findAttraction = await prisma.attraction.findUnique({
         where: { id_ATTRACTION: attractionParam }
     })
+
     if (findAttraction === null) {
         throw new NotFoundError("L'attraction n'existe pas")
     }
-    const { name, description, min_height, duration, capacity, intensity } = req.body
 
-    const updateAttraction = await prisma.attraction.update({
+    // Check password before updating
+    const { name, description, min_height, duration, capacity, intensity, password } = req.body
+
+    if (!password) {
+        throw new BadRequestError("Mot de passe requis")
+    }
+
+    // Fetch the admin user from the DB to compare the password
+    const user = await prisma.user.findUnique({
+        where: { id_USER: req.user!.id }
+    })
+
+    if (!user) {
+        throw new NotFoundError("Utilisateur introuvable")
+    }
+
+    const rightPassword = await argon2.verify(user.password, password)
+    if (!rightPassword) {
+        throw new UnauthorizedError("Mot de passe incorrect")
+    }
+
+    const updatedAttraction = await prisma.attraction.update({
         where: { id_ATTRACTION: attractionParam },
         data: {
-            // "??"" if the field is provided in the body, use it, otherwise keep the existing value
+            // If the field is provided in the body, use it, otherwise keep the existing value
             name: name ?? findAttraction.name,
             description: description ?? findAttraction.description,
             min_height: min_height ?? findAttraction.min_height,
@@ -154,10 +176,11 @@ export const updateAttraction = async (req: Request, res: Response, next: NextFu
             intensity: intensity ?? findAttraction.intensity,
         }
     })
-    return res.json(updateAttraction)
+
+    return res.json(updatedAttraction)
 }
 
-    // Update the image of an attraction by ID, admin onlu
+// Update the image of an attraction by ID, admin onlu
 export const updateAttractionImage = async (req: Request, res: Response, next: NextFunction) => {
     const attractionParam = parseInt(req.params.id as string)
 
