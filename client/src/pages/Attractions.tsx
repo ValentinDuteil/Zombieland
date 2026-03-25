@@ -130,7 +130,7 @@ const AttractionsPage = () => {
                         <WrapItem key={attraction.id_ATTRACTION}>
                             <AttractionCard
                                 {...attraction}
-                                image={attractionImages[attraction.id_ATTRACTION]}
+                                image={attraction.image ? `${import.meta.env.VITE_API_URL}${attraction.image}` : attractionImages[attraction.id_ATTRACTION]}
                             />
                         </WrapItem>
                     ))}

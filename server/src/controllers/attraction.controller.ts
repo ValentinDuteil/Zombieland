@@ -63,14 +63,31 @@ export const getAttractionById = async (req: Request, res: Response, next: NextF
 
 // create a new attraction admin only
 export const createAttraction = async (req: Request, res: Response, next: NextFunction) => {
-    const { name, description, min_height, duration, capacity, intensity } = req.body
+    const { name, description, min_height, duration, capacity, intensity, password } = req.body
 
-    // check if all required fields are presente 
+    // check if all required fields are present
     if (!name || !description || !intensity) {
         throw new BadRequestError("Données invalides")
     }
 
-    // create the attraction in the db
+    if (!password) {
+        throw new BadRequestError("Mot de passe requis")
+    }
+
+    // Fetch the admin user from the DB to compare the password
+    const user = await prisma.user.findUnique({
+        where: { id_USER: req.user!.id }
+    })
+
+    if (!user) {
+        throw new NotFoundError("Utilisateur introuvable")
+    }
+
+    const rightPassword = await argon2.verify(user.password, password)
+    if (!rightPassword) {
+        throw new UnauthorizedError("Mot de passe incorrect")
+    }
+
     const attraction = await prisma.attraction.create({
         data: {
             name,
@@ -101,7 +118,7 @@ export const deleteAttraction = async (req: Request, res: Response, next: NextFu
     }
 
     // Check password before deleting
-    const { password } = req.body
+    const { password } = req.body ?? {}
     if (!password) {
         throw new BadRequestError("Mot de passe requis")
     }
@@ -180,7 +197,7 @@ export const updateAttraction = async (req: Request, res: Response, next: NextFu
     return res.json(updatedAttraction)
 }
 
-// Update the image of an attraction by ID, admin onlu
+// Update the image of an attraction by ID, admin only
 export const updateAttractionImage = async (req: Request, res: Response, next: NextFunction) => {
     const attractionParam = parseInt(req.params.id as string)
 
