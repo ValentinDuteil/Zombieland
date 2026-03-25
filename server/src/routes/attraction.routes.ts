@@ -1,8 +1,10 @@
 // Route definitions for attractions 
 import { Router } from "express";
-import { getAttractions, getAttractionById, createAttraction, deleteAttraction, updateAttraction } from "../controllers/attraction.controller.js"
+import { getAttractions, getAttractionById, createAttraction, deleteAttraction, updateAttraction, updateAttractionImage } from "../controllers/attraction.controller.js"
 import { checkToken } from "../middlewares/auth.middleware.js"
 import { checkRole } from "../middlewares/role.middleware.js"
+import { upload } from "../middlewares/upload.middleware.js"
+
 
 const router = Router()
 
@@ -18,5 +20,7 @@ router.post('/', checkToken, checkRole("ADMIN"), createAttraction)
 router.delete('/:id', checkToken, checkRole("ADMIN"), deleteAttraction)
 // when someone calls patch /api/attractions/:id, execute updateAttraction admin only
 router.patch('/:id', checkToken, checkRole("ADMIN"), updateAttraction)
+// when someone calls patch /api/attractions/:id/image, execute updateAttractionImage admin only
+router.patch('/:id/image', checkToken, checkRole("ADMIN"), upload.single('image'), updateAttractionImage)
 
 export default router

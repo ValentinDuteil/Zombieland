@@ -5,6 +5,7 @@ import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
+import path from "path"
 // Errors
 import { errorHandler } from './middlewares/errorHandler.js'
 // Routes
@@ -24,8 +25,14 @@ app.use(cors({
     // allowing cookies
     credentials: true
 }))
-app.use(helmet())
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}))
+// helmet pour que les ressources peuvent être chargées depuis n'importe quelle origin (utile pour la modification et l'ajout d'une image d'une attraction)
 app.use(cookieParser())
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(import.meta.dirname, '../uploads')))
 
 // Authentication
 app.use('/api/auth', authRoutes)

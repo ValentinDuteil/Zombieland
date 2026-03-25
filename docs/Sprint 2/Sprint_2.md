@@ -66,8 +66,8 @@ Backend
 Frontend
 
 - CSS : Pages manquantes (contact + plan) ✅
-- P2 `/admin/attractions` Liste attractions + filtre + bouton modifier/supprimer (en cours)
-- P3 `/admin/attractions/:id/edit` Formulaire modification attraction (tous les champs en input)
+- P2 `/admin/attractions` Liste attractions + filtre + bouton modifier/supprimer ✅
+- P3 `/admin/attractions/:id/edit` Formulaire modification attraction (tous les champs en input) (en cours)
 
 Groupe Déploiement 👍
 
