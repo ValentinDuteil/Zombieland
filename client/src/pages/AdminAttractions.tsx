@@ -8,6 +8,7 @@ import bgImage from '../assets/bgadminpage.png'
 import bgBouton from '../assets/bg-bouton.png'
 import type { Attraction } from "@types"
 import AdminTable from "../components/AdminTable"
+import AdminMenu from "../components/AdminNavlinkMenu"
 import { FaTrash } from 'react-icons/fa'
 import ConfirmModal from "../components/ConfirmModal"
 
@@ -73,141 +74,155 @@ const AdminAttractions = () => {
         >
             <Header />
 
-            <Box flex="1" p={3} pt="100px" pb="100px" maxW="1000px" mx="auto" w="100%">
+            {/* MAIN LAYOUT : sidebar + content */}
+            <Flex flex="1">
 
-                <Text fontWeight="bold" color="zombieland.white" mb={6} textAlign="center" fontFamily="heading" fontSize="54px">
-                    Gestion des attractions
-                </Text>
+                {/* LEFT SIDEBAR */}
+                <Box
+                    minWidth="240px"
+                    maxWidth="240px"
+                    borderRight="1px solid rgba(255,255,255,0.1)"
+                >
+                    <AdminMenu />
+                </Box>
 
-                {/* Filter button */}
-                <Flex justifyContent={{ base: "center", lg: "flex-end" }} mb={6}>
-                    <Menu>
-                        <MenuButton
-                            color="zombieland.white"
-                            px={4}
-                            py={2}
-                            border="2px solid"
-                            borderColor="zombieland.primary"
-                            borderRadius="md"
-                            transition="all 0.3s ease"
-                            _hover={{
-                                borderColor: "zombieland.cta1orange",
-                                color: "zombieland.cta1orange"
-                            }}
+                {/* RIGHT CONTENT */}
+                <Box flex="1" p={3} pt="100px" pb="100px" maxW="1000px" mx="auto" w="100%">
+
+                    <Text fontWeight="bold" color="zombieland.white" mb={6} textAlign="center" fontFamily="heading" fontSize="54px">
+                        Gestion des attractions
+                    </Text>
+
+                    {/* Create new attraction button */}
+                    <Flex justifyContent="center" mt={8}>
+                        <Button
+                            bgImage={`url(${bgBouton})`}
+                            color="zombieland.secondary"
+                            _hover={{ opacity: 0.8 }}
+                            fontFamily="body"
+                            fontSize="18px"
+                            py={6}
+                            px={10}
+                            borderRadius="full"
+                            letterSpacing="1px"
+                            fontWeight="bold"
+                            boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+                            textTransform="uppercase"
+                            onClick={() => navigate('/admin/attractions/create')}
                         >
-                            Filtrer par catégorie
-                        </MenuButton>
-                        <MenuList bg="#1a1a1a" border="1px solid #333">
-                            <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setSelectedCategory(null)}>Toutes</MenuItem>
-                            <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setSelectedCategory("Peur Acceptable")}>Peur Acceptable</MenuItem>
-                            <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setSelectedCategory("Peur Survivable")}>Peur Survivable</MenuItem>
-                            <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setSelectedCategory("Peur Mortelle")}>Peur Mortelle</MenuItem>
-                        </MenuList>
-                    </Menu>
-                </Flex>
-
-                {/* Loading spinner */}
-                {loading && (
-                    <Flex justify="center" mt={10}>
-                        <Spinner color="zombieland.primary" size="xl" />
+                            + Créer une nouvelle attraction
+                        </Button>
                     </Flex>
-                )}
 
-                {error && <Text color="red.400">{error}</Text>}
+                    {/* Filter button */}
+                    <Flex justifyContent={{ base: "center", lg: "flex-end" }} mb={6}>
+                        <Menu>
+                            <MenuButton
+                                color="zombieland.white"
+                                px={4}
+                                py={2}
+                                border="2px solid"
+                                borderColor="zombieland.primary"
+                                borderRadius="md"
+                                transition="all 0.3s ease"
+                                _hover={{
+                                    borderColor: "zombieland.cta1orange",
+                                    color: "zombieland.cta1orange"
+                                }}
+                            >
+                                Filtrer par catégorie
+                            </MenuButton>
+                            <MenuList bg="#1a1a1a" border="1px solid #333">
+                                <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setSelectedCategory(null)}>Toutes</MenuItem>
+                                <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setSelectedCategory("Peur Acceptable")}>Peur Acceptable</MenuItem>
+                                <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setSelectedCategory("Peur Survivable")}>Peur Survivable</MenuItem>
+                                <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setSelectedCategory("Peur Mortelle")}>Peur Mortelle</MenuItem>
+                            </MenuList>
+                        </Menu>
+                    </Flex>
 
-                {/* Attractions table */}
-                {!loading && (
-                    <AdminTable
-                        data={filteredAttractions}
-                        columns={[
-                            {
-                                header: "Nom",
-                                render: (a) => (
-                                    <Text
-                                        fontWeight="bold"
-                                        cursor="pointer"
-                                        _hover={{ color: "zombieland.cta1orange", textDecoration: "underline" }}
-                                        onClick={() => navigate(`/attractions/${a.id_ATTRACTION}`)}
-                                    >
-                                        {a.name}
-                                    </Text>
-                                )
-                            },
-                            {
-                                header: "Intensité",
-                                render: (a) => a.intensity
-                            },
-                            {
-                                header: "Durée",
-                                render: (a) => a.duration ?? "—"
-                            },
-                            {
-                                header: "Capacité",
-                                render: (a) => a.capacity ?? "—"
-                            },
-                            {
-                                header: "Taille min.",
-                                render: (a) => a.min_height ? `${a.min_height} cm` : "—"
-                            },
-                            {
-                                header: "Actions",
-                                render: (a) => (
-                                    <Flex gap={3}>
-                                        <Button
-                                            size="sm"
-                                            bg="#3E4D28"
-                                            color="white"
-                                            _hover={{ opacity: 0.8 }}
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                navigate(`/admin/attractions/${a.id_ATTRACTION}/edit`)
-                                            }}
+                    {/* Loading spinner */}
+                    {loading && (
+                        <Flex justify="center" mt={10}>
+                            <Spinner color="zombieland.primary" size="xl" />
+                        </Flex>
+                    )}
+
+                    {error && <Text color="red.400">{error}</Text>}
+
+                    {/* Attractions table */}
+                    {!loading && (
+                        <AdminTable
+                            data={filteredAttractions}
+                            columns={[
+                                {
+                                    header: "Nom",
+                                    render: (a) => (
+                                        <Text
+                                            fontWeight="bold"
+                                            cursor="pointer"
+                                            _hover={{ color: "zombieland.cta1orange", textDecoration: "underline" }}
+                                            onClick={() => navigate(`/attractions/${a.id_ATTRACTION}`)}
                                         >
-                                            Modifier
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            bg="#8C6E21"
-                                            color="white"
-                                            _hover={{ bg: "#6e5519" }}
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                setAttractionToDelete(a.id_ATTRACTION)
-                                            }}
-                                        >
-                                            <FaTrash />
-                                        </Button>
+                                            {a.name}
+                                        </Text>
+                                    )
+                                },
+                                {
+                                    header: "Intensité",
+                                    render: (a) => a.intensity
+                                },
+                                {
+                                    header: "Durée",
+                                    render: (a) => a.duration ?? "—"
+                                },
+                                {
+                                    header: "Capacité",
+                                    render: (a) => a.capacity ?? "—"
+                                },
+                                {
+                                    header: "Taille min.",
+                                    render: (a) => a.min_height ? `${a.min_height} cm` : "—"
+                                },
+                                {
+                                    header: "Actions",
+                                    render: (a) => (
+                                        <Flex gap={3}>
+                                            <Button
+                                                size="sm"
+                                                bg="#3E4D28"
+                                                color="white"
+                                                _hover={{ opacity: 0.8 }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    navigate(`/admin/attractions/${a.id_ATTRACTION}/edit`)
+                                                }}
+                                            >
+                                                Modifier
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                bg="#8C6E21"
+                                                color="white"
+                                                _hover={{ bg: "#6e5519" }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    setAttractionToDelete(a.id_ATTRACTION)
+                                                }}
+                                            >
+                                                <FaTrash />
+                                            </Button>
+                                        </Flex>
+                                    )
+                                }
+                            ]}
+                        />
+                    )}
 
-                                    </Flex>
-                                )
-                            }
-                        ]}
-                    />
-                )}
+                </Box>
+            </Flex>
 
-                {/* Create new attraction button */}
-                <Flex justifyContent="center" mt={8}>
-                    <Button
-                        bgImage={`url(${bgBouton})`}
-                        color="zombieland.secondary"
-                        _hover={{ opacity: 0.8 }}
-                        fontFamily="body"
-                        fontSize="18px"
-                        py={6}
-                        px={10}
-                        borderRadius="full"
-                        letterSpacing="1px"
-                        fontWeight="bold"
-                        boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
-                        textTransform="uppercase"
-                        onClick={() => navigate('/admin/attractions/create')}
-                    >
-                        + Créer une nouvelle attraction
-                    </Button>
-                </Flex>
-
-            </Box>
-
+            {/* Confirmation modal before deletion */}
             <ConfirmModal
                 isOpen={attractionToDelete !== null}
                 onClose={() => setAttractionToDelete(null)}
@@ -218,7 +233,6 @@ const AdminAttractions = () => {
                     setAttractionToDelete(null)
                 }}
             />
-
 
             <Footer />
         </Box>
