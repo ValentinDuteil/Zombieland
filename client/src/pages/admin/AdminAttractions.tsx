@@ -2,13 +2,13 @@
 import { useEffect, useState } from "react"
 import { Box, Text, Button, Flex, Menu, MenuButton, MenuList, MenuItem, Spinner } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
-import Header from "../components/Header"
-import Footer from "../components/Footer"
-import bgImage from '../assets/bgadminpage.png'
+import Header from "../../components/Header"
+import Footer from "../../components/Footer"
+import bgImage from '../../assets/bgadminpage.png'
 import type { Attraction } from "@types"
-import AdminTable from "../components/AdminTable"
+import AdminTable from "../../components/AdminTable"
 import { FaTrash } from 'react-icons/fa'
-import ConfirmModal from "../components/ConfirmModal"
+import ConfirmModal from "../../components/ConfirmModal"
 
 
 const categoryToEnum: Record<string, string> = {

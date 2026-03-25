@@ -11,8 +11,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdminTable from "@/components/AdminTable";
 import AdminMenu from "@/components/AdminNavlinkMenu";
-import bgImage from "../assets/centrerecherche.png";
-import type { Reservation } from "@types";
+import bgImage from "../../assets/centrerecherche.png";
+//import type { Reservation } from "../../types/reservations.ts";
 
 const AdminReservations = () => {
     const [reservations, setReservations] = useState<Reservation[]>([]);
