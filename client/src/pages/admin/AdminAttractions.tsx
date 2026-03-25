@@ -2,15 +2,15 @@
 import { useEffect, useState } from "react"
 import { Box, Text, Button, Flex, Menu, MenuButton, MenuList, MenuItem, Spinner } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
-import Header from "../components/Header"
-import Footer from "../components/Footer"
-import bgImage from '../assets/bgadminpage.png'
-import bgBouton from '../assets/bg-bouton.png'
+import Header from "../../components/Header"
+import Footer from "../../components/Footer"
+import bgImage from '../../assets/bgadminpage.png'
+import bgBouton from '../../assets/bg-bouton.png'
 import type { Attraction } from "@types"
-import AdminTable from "../components/AdminTable"
-import AdminMenu from "../components/AdminNavlinkMenu"
+import AdminTable from "../../components/AdminTable"
+import AdminMenu from "../../components/AdminNavlinkMenu"
 import { FaTrash } from 'react-icons/fa'
-import ConfirmModal from "../components/ConfirmModal"
+import ConfirmModal from "../../components/ConfirmModal"
 
 
 const categoryToEnum: Record<string, string> = {
@@ -38,10 +38,10 @@ const AdminAttractions = () => {
         setAttractions(data)
         setLoading(false)
     }
-
     useEffect(() => {
         fetchAttractions()
     }, [])
+
 
     const handleDelete = async (id: number, password: string) => {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions/${id}`, {

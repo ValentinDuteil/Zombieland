@@ -11,7 +11,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdminTable from "@/components/AdminTable";
 import AdminMenu from "@/components/AdminNavlinkMenu";
-import bgImage from "../assets/centrerecherche.png";
+import bgImage from "../../assets/centrerecherche.png";
 import type {  } from "@types";
 import type { Reservation } from "@/types/Reservations";
 

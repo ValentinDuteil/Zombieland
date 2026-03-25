@@ -28,10 +28,10 @@ import Faq from './pages/Faq'
 import HomePage from './pages/HomePage'
 import Contact from './pages/Contact'
 import Plan from './pages/Plan'
-import AdminHomePage from './pages/AdminHome'
+import AdminHomePage from './pages/admin/AdminHome'
 import AdminGuard from './components/AdminGuard'
-import AdminAttractions from "./pages/AdminAttractions"
-import AdminAttractionEdit from './pages/AdminAttractionEdit'
+import AdminAttractions from "./pages/admin/AdminAttractions"
+import AdminAttractionEdit from './pages/admin/AdminAttractionEdit'
 
 
 
