@@ -4,28 +4,35 @@
 import { useState, useEffect } from 'react'
 // Import Chakra UI components for styling
 import { Box, Button, Checkbox, Heading, Text, Input, Flex, FormControl, FormLabel } from '@chakra-ui/react'
-// Import modals for login before booking
-import LoginModal from '../components/LoginModal'
-// Import background images and card image
-import bgImage from '../assets/bg-image.png'
-import bgBouton from '../assets/bg-bouton.png'
+// Import components for login before booking
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-
+import LoginModal from '../components/LoginModal'
 // Import the calendar component from react-day-picker
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/style.css'
 import '../styles/calendar.css'
 import { fr } from 'react-day-picker/locale'
-
+// Import background images and card image
+import bgImage from '../assets/bg-image.png'
+import bgBouton from '../assets/bg-bouton.png'
 //Import utility functions to handle date formats
-import { toLocalDateString, isoToLocalDate } from '../utils/date'
+import { toLocalDateString, isoToLocalDate, getTodayMidnight } from '../utils/date'
 
 function Reservation() {
+
+    //CONSTANTS
+    //=========
+
     // Price per ticket in euros
     const TICKET_PRICE = 66.66
-
+    // Today's date as "YYYY-MM-DD" string in local time — used as default date and reset value
     const today = toLocalDateString(new Date())
+    // Past days config for DayPicker — disables all days strictly before today at midnight
+    const pastDays = { before: getTodayMidnight() }
+
+    // STATE
+    //======
 
     // nbTickets store the number of tickets chosen by the user (1 by default)
     const [nbTickets, setNbTickets] = useState<string>('1')
@@ -39,17 +46,24 @@ function Reservation() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
     // checking the availability of the chosen date before creating the reservation
     const [availabilities, setAvailabilities] = useState<{ date: string, available: boolean }[]>([])
+    // selectedDay is the Date object used by react-day-picker to highlight the selected day in the calendar
+    const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined)
+
+    // OTHER DATA
+    //===========
 
     // For react-day-picker, we need to convert the date string to a Date object
     // and disableDays will be an array of Date objects corresponding to unavailable dates
-    const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined)
     const disabledDays = availabilities
         .filter(a => !a.available)
         .map(a => (isoToLocalDate(a.date)))
-    const pastDays = { before: new Date() }
 
-    // handleSelectDay is the function that runs when we select a date in the calendar
-    // using import utility function to convert the date to the format expected by the back (YYYY-MM-DD)
+    // HANDLERS
+    //=========
+
+    // Called when user clicks a day in DayPicker
+    // Updates both selectedDay (Date for DayPicker) and date (string for the back)
+    // toLocalDateString() avoids UTC conversion when building the "YYYY-MM-DD" string
     const handleDaySelect = (day: Date | undefined) => {
         setSelectedDay(day)
         if (day) {
@@ -57,7 +71,8 @@ function Reservation() {
         }
     }
 
-    // useEffect to fetch availabilities when the component mounts
+    // useEffect to fetch availability data from the back 
+    // called on mount and after each successful reservation
     const fetchAvailabilities = async () => {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations/availabilities`, {
             method: 'GET',
@@ -66,24 +81,25 @@ function Reservation() {
         const data = await response.json()
         setAvailabilities(data)
     }
+
+    // Fetch availabilities on component mount
     useEffect(() => {
         fetchAvailabilities()
     }, [])
 
-    //  handleSubmit is the function that runs when we click to "Confirm"
+    // Called when user clicks "Rejoindre l'horreur"
     const handleSubmit = async () => {
-        // check if date is empty before sending
+        // Guard: date must be selected
         if (!date) {
             setMessage('Veuillez choisir une date.')
             return
         }
-
-        // Check if the user has confirmed their reservation details
+        // Guard: user must confirm their booking details
         if (!confirmed) {
             setMessage("Veuillez confirmer vos informations avant de rejoindre l'horreur.")
             return
         }
-
+        // Guard: front-end availability check before sending to the back
         const chosenDate = availabilities.find(a => toLocalDateString(isoToLocalDate(a.date)) === date)
         if (chosenDate && !chosenDate.available) {
             setMessage('Nous sommes navrés, l\'armée des zombies a pris possession du parc !')
@@ -95,7 +111,7 @@ function Reservation() {
             method: 'POST', // Create a new reservation
             headers: { 'Content-Type': 'application/json' }, // Send JSON},
             body: JSON.stringify({
-                nb_tickets: parseInt(nbTickets) || 1, // The number of the tickets
+                nb_tickets: parseInt(nbTickets) || 1, // The number of the tickets on by default
                 date: date, // The date of the visit choosen by the client
                 id_TICKET: 1
             }),
@@ -117,7 +133,8 @@ function Reservation() {
                 return
             } else {
                 // Otherwise, display a generic error message
-                setMessage('Une erreur est survenue, veuillez réessayer.')
+                const errorData = await response.json()
+                setMessage(errorData.message || 'Une erreur est survenue, veuillez réessayer.')
             }
         }
     }
@@ -219,7 +236,7 @@ function Reservation() {
                                         mode="single"
                                         selected={selectedDay}
                                         onSelect={handleDaySelect}
-                                        disabled={[{ before: new Date() }, ...disabledDays]}
+                                        disabled={[pastDays, ...disabledDays]}
                                         // modifiers let us add a class to the disabled days 
                                         // to make them look different in the calendar
                                         modifiers={{

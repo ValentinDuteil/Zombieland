@@ -65,7 +65,7 @@
     font-family: 'Creepster', sans-serif;
     font-size: 1.4rem;
     color: #FAEBDC;
-    border-radius: 0 !important;
+    border-radius: 0;
 }
 
 /* Today highlight */
@@ -76,10 +76,10 @@
 
 /* Selected day */
 .rdp-selected .rdp-day_button {
-    background-color: #FAEBDC !important;
-    color: #293036 !important;
-    border-radius: 10px !important;
-    border: none !important;
+    background-color: #FAEBDC;
+    color: #293036;
+    border-radius: 10px;
+    border: none;
 }
 
 /* Disabled days — fallback générique */
@@ -105,9 +105,11 @@
     text-decoration: line-through;
 }
 
-/* Past + full — past prend toujours le dessus */
-.rdp-day-past.rdp-day-full .rdp-day_button {
+/* Past + full — past prend TOUJOURS le dessus */
+.rdp-day-past.rdp-day-full .rdp-day_button,
+.rdp-day-past .rdp-day_button:disabled {
     color: rgba(250, 235, 220, 0.2) !important;
     text-decoration: none !important;
     opacity: 0.3 !important;
+    cursor: not-allowed !important;
 }

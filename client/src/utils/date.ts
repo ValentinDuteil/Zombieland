@@ -41,3 +41,9 @@ export const isoToLocalDate = (isoString: string): Date => {
     // and [0] keep only the date part "2025-04-15" (first index of the array)
     //====
     
+// Returns today at midnight in local time — used to disable past days in the calendar
+export const getTodayMidnight = (): Date => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return today
+}
