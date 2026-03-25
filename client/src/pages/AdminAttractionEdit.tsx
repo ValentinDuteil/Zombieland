@@ -158,7 +158,7 @@ const AdminAttractionEdit = () => {
 
                         <Box
                             borderRadius="lg"
-                            overflow="hidden"
+                            overflow="visible"
                             boxShadow="0 0 15px rgba(0,0,0,0.5)"
                             bgImage={`url(${Card})`}
                             bgSize="cover"
@@ -166,12 +166,13 @@ const AdminAttractionEdit = () => {
                             color="white"
                             display="flex"
                             flexDirection="column"
+                         
                         >
                             {/* Image zone - clickable to upload */}
                             <Box
                                 width="100%"
                                 height="300px"
-                                overflow="hidden"
+                                overflow="visible"
                                 display="flex"
                                 justifyContent="center"
                                 mt={8}
@@ -192,7 +193,7 @@ const AdminAttractionEdit = () => {
                                 {/* Editable intensity select */}
                                 <Select
                                     position="absolute"
-                                    top="8px"
+                                    top="-12px"
                                     left="8px"
                                     w="110px"
                                     size="xs"
@@ -248,7 +249,7 @@ const AdminAttractionEdit = () => {
 
                                 {/* Editable duration */}
                                 <Flex alignItems="center" gap={2}>
-                                    <Text fontSize="sm" whiteSpace="nowrap">⏱</Text>
+                                    <Text fontSize="sm" whiteSpace="nowrap">Durée :</Text>
                                     <Input
                                         {...inputStyle}
                                         type="number"
@@ -261,7 +262,7 @@ const AdminAttractionEdit = () => {
 
                                 {/* Editable capacity */}
                                 <Flex alignItems="center" gap={2}>
-                                    <Text fontSize="sm" whiteSpace="nowrap">👥</Text>
+                                    <Text fontSize="sm" whiteSpace="nowrap">Capacité :</Text>
                                     <Input
                                         {...inputStyle}
                                         type="number"
@@ -274,7 +275,7 @@ const AdminAttractionEdit = () => {
 
                                 {/* Editable min height */}
                                 <Flex alignItems="center" gap={2}>
-                                    <Text fontSize="sm" whiteSpace="nowrap">📏</Text>
+                                    <Text fontSize="sm" whiteSpace="nowrap">Taille requise :</Text>
                                     <Input
                                         {...inputStyle}
                                         type="number"
