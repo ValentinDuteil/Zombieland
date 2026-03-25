@@ -2,7 +2,7 @@ import { VStack, Flex, Box } from "@chakra-ui/react"
 // import { useEffect, useState } from "react"
 import { Outlet, NavLink } from "react-router-dom"
 
-export default function AdminLayout() {
+export default function AdminMenu() {
     // const navigate = useNavigate()
     // const [loading, setLoading] = useState(true)
 
@@ -43,15 +43,17 @@ export default function AdminLayout() {
     // }
 
     return (
-        <Flex height="100vh">
+        <Flex height="100%">
             {/* Sidebar */}
             <VStack
                 width="240px"                
                 bg="gray.800"
                 color="white"
                 align="stretch"
+                height="100%" 
                 spacing={8}
                 p={4}
+                
             >
                 <SidebarLink to="/admin">Dashboard</SidebarLink>
                 <SidebarLink to="/admin/attractions">Attractions</SidebarLink>
