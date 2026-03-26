@@ -423,7 +423,7 @@ function Reservation() {
                 onClose={() => setIsSuccessModalOpen(false)}
                 title="Réservation confirmée ! 🧟"
                 message="Votre place est confirmée et enregistrée dans votre profil. Le compte à rebours a commencé : vous pourrez encore annuler jusqu’à 10 jours avant votre entrée… après cela, il sera trop tard pour faire demi-tour..."
-                titleColor="green.400"
+                titleColor="green.500"
             />
 
             <LoginModal
