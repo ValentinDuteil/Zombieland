@@ -89,11 +89,10 @@ const AdminReservations = () => {
 
                 {/* LEFT SIDEBAR — 30% */}
                 <Box
-                    width={30}
-                    minWidth="250px"
-                    maxWidth="350px"
+                    display={{ base: 'none', lg: 'block' }}
+                    minWidth="240px"
+                    maxWidth="240px"
                     borderRight="1px solid rgba(255,255,255,0.1)"
-
                 >
                     <AdminMenu />
                 </Box>
@@ -217,8 +216,8 @@ const AdminReservations = () => {
                         setReservationToCancel(null)
                     }}
                 />
-                </Flex>
-                <Footer />
+            </Flex>
+            <Footer />
         </Box>
     )
 }
