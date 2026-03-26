@@ -20,7 +20,7 @@ import ScrollToTop from './components/ScrollToTop'
 // import AdminNavlinkMenu from './components/AdminNavlinkMenu'
 // Import the admin pages
 // import AdminDashboard from './pages/admin/AdminDashboard'
-// import AdminMembers from './pages/admin/AdminMembers'
+import AdminMembers from './pages/admin/AdminMembers'
 // import AdminAttractions from './pages/admin/AdminAttractions'
 import AdminReservations from './pages/admin/AdminReservations'
 import AdminAttractionCreate from './pages/admin/AdminAttractionCreate'
@@ -64,6 +64,7 @@ const App = () => {
                 <Route path="/admin/attractions/create" element={<AdminGuard><AdminAttractionCreate /></AdminGuard>} />
                 <Route path="/admin/attractions/:id/edit" element={<AdminGuard><AdminAttractionEdit /></AdminGuard>} />
                 <Route path="/admin/reservations" element={<AdminReservations />} />
+                <Route path="/admin/members" element={<AdminMembers />} />
 
             </Routes>
         </BrowserRouter>

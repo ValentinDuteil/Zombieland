@@ -47,3 +47,9 @@ export const getTodayMidnight = (): Date => {
     today.setHours(0, 0, 0, 0)
     return today
 }
+
+// Function to format a date string ISO to "DD/MM/YYYY" 
+// for display in the members table for instance
+export const formatDateForDisplay = (isoString: string): string => {
+    return isoString.split("T")[0].split("-").reverse().join("/")
+}

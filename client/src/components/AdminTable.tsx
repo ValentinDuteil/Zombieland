@@ -13,11 +13,13 @@ interface Column<T> {
 interface AdminTableProps<T> {
     columns: Column<T>[]
     data: T[]
+    // called when clicking on a header (for sorting)
+    onHeaderClick?: (header: string) => void
     // called when clicking on a row
     onRowClick?: (item: T) => void
 }
 
-function AdminTable<T>({ columns, data, onRowClick }: AdminTableProps<T>) {
+function AdminTable<T>({ columns, data, onRowClick, onHeaderClick }: AdminTableProps<T>) {
     return (
         <TableContainer
             bg="rgba(255,255,255,0.06)"
@@ -29,8 +31,15 @@ function AdminTable<T>({ columns, data, onRowClick }: AdminTableProps<T>) {
                 <Thead>
                     <Tr borderBottom="1px solid #333">
                         {columns.map((col) => (
-                            <Th key={col.header} color="#FAEBDC">
-                                {col.header}
+                            <Th key={col.header} color="#FAEBDC"
+                                cursor={onHeaderClick ? "pointer" : "default"}
+                                _hover={onHeaderClick ? {
+                                    bg: "rgba(255,255,255,0.05)",
+                                    borderColor: "zombieland.cta1orange",
+                                } : undefined}
+                                onClick={() => onHeaderClick?.(col.header)}
+                                >
+                                    {col.header}
                             </Th>
                         ))}
                     </Tr>
