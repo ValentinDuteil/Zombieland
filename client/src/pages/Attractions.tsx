@@ -77,7 +77,7 @@ const AttractionsPage = () => {
                 </Heading>
 
                 {/* Bouton unique Filtrer par catégorie */}
-                <Box display="flex" justifyContent={{ base: "center", lg: "flex-end" }} alignItems="center" pr={{ base: 0, lg: 8 }} mb={6} minH="60px">
+                <Box display="flex" justifyContent={{ base: "center", lg: "center" }} alignItems="center" pr={{ base: 0, lg: 8 }} mb={6} minH="60px">
                     <Menu>
                         <MenuButton
                             color="zombieland.white"

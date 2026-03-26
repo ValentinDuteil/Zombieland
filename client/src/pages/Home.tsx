@@ -150,15 +150,58 @@ const HomePage = () => {
             >
                 → Réserver maintenant
             </Button>
-            {/* Text central */}
 
-            <Box px={10} py={20} maxW="900px" mx="auto">
-                <Text textAlign="center" fontSize="lg" color="zombieland.white" fontFamily="body" fontWeight="300">
-                    Une ville abandonnée. Des zombies. Et vous. Bienvenue à ZombieLand,
-                    une expérience immersive où chaque attraction vous plonge au cœur
-                    d'un monde post-apocalyptique... Ici, survivre fait partie du jeu.
-                    Arriverez-vous à survivre ? Maîtriserez-vous vos peurs ? Bonne chance !!
+            <Box px={10} py={16} maxW="700px" mx="auto" textAlign="center">
+                <Text
+                    fontSize="2xl"
+                    color="zombieland.white"
+                    fontFamily="heading"
+                    letterSpacing="0.1em"
+                    textTransform="uppercase"
+                    mb={6}
+                >
+                    Une ville abandonnée. Des zombies. Et vous.
                 </Text>
+                <Box
+                    bg="whiteAlpha.100"
+                    border="1px solid"
+                    borderColor="zombieland.primary"
+                    borderRadius="md"
+                    px={8}
+                    py={6}
+                    boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 0 30px rgba(71, 97, 130, 0.3)"
+                    backdropFilter="blur(4px)"
+                    transition="all 0.3s ease"
+                    cursor="pointer"
+                    _hover={{
+                        transform: "translateY(-4px)",
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.5), 0 0 50px rgba(71, 97, 130, 0.5)",
+                        borderColor: "zombieland.cta1orange",
+                    }}
+                >
+                    <Text
+                        fontSize="md"
+                        color="zombieland.white"
+                        fontFamily="body"
+                        fontWeight="300"
+                        lineHeight="1.9"
+                        mb={4}
+                    >
+                        Bienvenue à ZombieLand, une expérience immersive où chaque attraction
+                        vous plonge au cœur d'un monde post-apocalyptique...
+                    </Text>
+                    <Box w="40px" h="1px" bg="zombieland.cta1orange" mx="auto" my={4} />
+                    <Text
+                        fontSize="md"
+                        color="zombieland.white"
+                        fontFamily="body"
+                        fontWeight="400"
+                        lineHeight="1.9"
+                    >
+                        Ici, survivre fait partie du jeu. Arriverez-vous à survivre ?
+                        Maîtriserez-vous vos peurs ?
+                    </Text>
+                </Box>
             </Box>
 
             {/* Carousel */}

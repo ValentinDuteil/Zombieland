@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 interface AttractionCardProps extends Attraction {
     image: string;
+    showButton?: boolean;
 }
 
 // Mapping API → labels internes
@@ -26,7 +27,7 @@ const categoryColors: Record<string, string> = {
 
 
 
-const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: AttractionCardProps) => {
+const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image, showButton = true }: AttractionCardProps) => {
     const navigate = useNavigate()
     const cat = intensityMap[intensity] ?? "Peur Acceptable";
 
@@ -106,31 +107,32 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image }: 
                     {description}
                 </Text>
 
-                <Button
-                    borderRadius="full"
-                    bg="transparent"
-                    bgImage={`url(${bgBouton})`}
-                    bgSize="cover"
-                    bgPosition="center"
-                    color="zombieland.secondary"
-                    fontFamily="body"
-                    fontWeight="bold"
-                    letterSpacing="1px"
-                    fontSize="16px"
-                    px={4}
-                    py={4}
-                    _hover={{ bg: "zombieland.cta2orange" }}
-                    boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
-                    textTransform="uppercase"
-                    mt="auto"
-                    // pousse le bouton en bas
-                    alignSelf="flex-end" // aligne le bouton à droite
-                    onClick={() => navigate(`/attractions/${id_ATTRACTION}`)}
+                {showButton && (
+                    <Button
+                        borderRadius="full"
+                        bg="transparent"
+                        bgImage={`url(${bgBouton})`}
+                        bgSize="cover"
+                        bgPosition="center"
+                        color="zombieland.secondary"
+                        fontFamily="body"
+                        fontWeight="bold"
+                        letterSpacing="1px"
+                        fontSize="16px"
+                        px={4}
+                        py={4}
+                        _hover={{ bg: "zombieland.cta2orange" }}
+                        boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+                        textTransform="uppercase"
+                        mt="auto"
+                        // pousse le bouton en bas
+                        alignSelf="flex-end" // aligne le bouton à droite
+                        onClick={() => navigate(`/attractions/${id_ATTRACTION}`)}
 
-
-                >
-                    → VOIR PLUS
-                </Button>
+                    >
+                        → VOIR PLUS
+                    </Button>
+                )}
             </Box>
         </Box>
     );

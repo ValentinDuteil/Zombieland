@@ -62,7 +62,7 @@ async function main() {
     const reception = await prisma.attraction.create({
         data: {
             name: 'Zone de quarantaine',
-            description: 'L\entrée du parc. Préparez vous à être décontaminé avant de pénétrer dans Zombieland',
+            description: "Bienvenue dans la dernière ligne de défense… ou ce qu’il en reste. Autrefois sécurisée, cette zone servait à contenir les premiers infectés. Aujourd’hui, les barrières sont brisées et les protocoles ont été abandonnés dans la panique. Les lumières vacillent, des messages de détresse résonnent encore, et quelque chose rôde entre les anciens sas de décontamination. Ici, chaque bruit peut vous trahir. Avancez lentement… car survivre est une question de discrétion.",
             min_height: 0,
             duration: 15,
             capacity: 100,
@@ -73,7 +73,7 @@ async function main() {
     const biomasse = await prisma.attraction.create({
         data: {
             name: 'Ride de la Biomasse',
-            description: 'Une attraction immersive dans les profondeurs d\'une masse organique vivante et terrifiante.',
+            description: "Entrez dans le cœur d’une expérience qui n’aurait jamais dû exister. Dans ce laboratoire abandonné, la matière vivante a muté au-delà de toute compréhension. Chair, métal et organismes inconnus se sont fusionnés en une entité instable et vivante. Les parois semblent respirer, les sols vibrent sous vos pieds… et certaines masses bougent encore. Vous ne traversez pas un lieu. Vous êtes à l’intérieur d’un organisme. Et il vous a déjà repéré.",
             min_height: 120,
             duration: 30,
             capacity: 20,
@@ -84,7 +84,7 @@ async function main() {
     const marche = await prisma.attraction.create({
         data: {
             name: 'L\'Allée Brisée',
-            description: 'Une ruelle dévastée abritant le Marché de Zombieland - boutiques et restauration au cœur du chaos.',
+            description: "Autrefois lieu de vie et d’échanges, cette allée marchande est aujourd’hui figée dans le chaos. Les étals renversés, les lumières clignotantes et les traces de fuite témoignent d’une évacuation brutale. Mais certains n’ont jamais quitté les lieux… Dans les ombres, des silhouettes se confondent avec le décor avant de surgir sans prévenir. Ici, le danger est partout… et surtout là où vous ne regardez pas.",
             min_height: 0,
             duration: 60,
             capacity: 200,
@@ -95,7 +95,7 @@ async function main() {
     const grand8 = await prisma.attraction.create({
         data: {
             name: 'Grand Huit',
-            description: 'Des rails tordus à travers une carcasse métallique géante...',
+            description: "Accrochez-vous… ce manège n’a jamais été arrêté. Ce grand huit délabré continue de fonctionner dans un vacarme métallique inquiétant. À chaque montée, une présence se rapproche. À chaque descente, quelque chose vous poursuit. Entre vitesse extrême, obscurité totale et apparitions soudaines, vous perdez tout contrôle. Une seule certitude : ce ne sont pas les rails qui vous feront le plus peur.",
             min_height: 140,
             duration: 10,
             capacity: 24,
@@ -106,7 +106,7 @@ async function main() {
     const fosse = await prisma.attraction.create({
         data: {
             name: 'La fosse aux cadavres',
-            description: 'Une fosse sans fond où les morts refusent de rester enterrés. Entrez si vous l\'osez.',
+            description: "Respirez profondément… l’odeur ne vous quittera plus. Cette fosse a été creusée pour contenir les victimes de l’épidémie. Mais les corps n’y sont jamais restés immobiles bien longtemps. Le sol est instable, des silhouettes s’agitent sous vos pieds, et certaines mains émergent encore pour vous agripper. Chaque pas est un risque. Chaque mouvement attire leur attention. Ici, les morts ne dorment jamais vraiment.",
             min_height: 130,
             duration: 20,
             capacity: 30,
@@ -117,7 +117,7 @@ async function main() {
     const labo = await prisma.attraction.create({
         data: {
             name: 'Le Centre de Recherche',
-            description: 'Le laboratoire secret à l\'origine de l\'épidémie. Découvrez les expériences qui ont tout déclenché.',
+            description: "Tout a commencé ici. Ce centre scientifique est à l’origine de l’épidémie qui a ravagé le monde. Les chercheurs ont tenté de contrôler l’incontrôlable… et ont disparu dans le processus. Les écrans affichent encore des données incohérentes, les expériences sont restées actives, et certaines créatures errent toujours dans les laboratoires. Vous allez découvrir la vérité. Mais certaines vérités devraient rester enterrées.",
             min_height: 120,
             duration: 45,
             capacity: 15,
