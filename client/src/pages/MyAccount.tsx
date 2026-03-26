@@ -145,7 +145,6 @@ function MyAccount() {
         py={10}
         minH="70vh"
       >
-        {/* Welcome heading */}
         <Heading
           mb={10}
           fontFamily="heading"
@@ -164,13 +163,21 @@ function MyAccount() {
           p={6}
           borderRadius="md"
           bg="rgba(0,0,0,0.3)"
-          borderLeft="3px solid"
+          border="2px solid"
           borderColor="zombieland.primary"
           boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+          transition="all 0.3s ease"
+          cursor="pointer"
+          _hover={{
+            transform: "translateY(-4px)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+            borderColor: "zombieland.cta1orange",
+          }}
         >
           <Text color="zombieland.white" fontFamily="body" fontWeight="bold" fontSize="18px" mb={4} textAlign="center">
             Modifier mes informations
-          </Text>          <Text mb={2} color="zombieland.white" fontFamily="body" fontWeight="300">Prénom</Text>
+          </Text>
+          <Text mb={2} color="zombieland.white" fontFamily="body" fontWeight="300">Prénom</Text>
           <Input
             placeholder="Ex: Jean"
             value={form.firstname}
@@ -225,7 +232,7 @@ function MyAccount() {
           />
 
           <Button
-            onClick={() => setIsUpdateModalOpen(true)} //calling pop-up confirmation before updating
+            onClick={() => setIsUpdateModalOpen(true)}
             bgImage={`url(${bgBouton})`}
             bgSize="cover"
             bgPosition="center"
@@ -259,7 +266,24 @@ function MyAccount() {
         </Box>
 
         {/* Reservations preview */}
-        <Box w="100%" maxW="500px" mb={6}>
+        <Box
+          w="100%"
+          maxW="500px"
+          mb={6}
+          p={6}
+          borderRadius="md"
+          bg="rgba(0,0,0,0.3)"
+          border="2px solid"
+          borderColor="zombieland.primary"
+          boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+          transition="all 0.3s ease"
+          cursor="pointer"
+          _hover={{
+            transform: "translateY(-4px)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+            borderColor: "zombieland.cta1orange",
+          }}
+        >
           <Text color="zombieland.white" fontFamily="body" fontWeight="bold" fontSize="18px" mb={4} textAlign="center">
             Mes prochaines réservations
           </Text>
@@ -323,9 +347,16 @@ function MyAccount() {
           p={6}
           borderRadius="md"
           bg="rgba(0,0,0,0.3)"
-          borderLeft="3px solid"
+          border="2px solid"
           borderColor="zombieland.warningprimary"
           boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+          transition="all 0.3s ease"
+          cursor="pointer"
+          _hover={{
+            transform: "translateY(-4px)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+            borderColor: "zombieland.warningprimary",
+          }}
         >
           <Text color="zombieland.warningprimary" fontFamily="body" fontWeight="bold" fontSize="18px" mb={2} textAlign="center">
             Zone dangereuse
@@ -347,7 +378,7 @@ function MyAccount() {
           </Checkbox>
 
           <Button
-            onClick={() => setIsDeleteModalOpen(true)} //calling pop-up confirmation before deleting
+            onClick={() => setIsDeleteModalOpen(true)}
             isDisabled={!confirmedDeletion}
             bgImage={`url(${bgBouton})`}
             bgSize="cover"
@@ -374,7 +405,7 @@ function MyAccount() {
           )}
         </Box>
       </Box>
-      {/*Pop-Up*/}
+
       <ConfirmModal
         isOpen={isUpdateModalOpen}
         onClose={() => setIsUpdateModalOpen(false)}

@@ -5,6 +5,8 @@ import type { Request, Response, NextFunction } from "express";
 import { prisma } from '../lib/prisma.js'
 // Import the validation schema
 import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } from "../utils/AppError.js";
+import * as argon2 from 'argon2'
+
 
 // Retrieves all reservations for admin
 export const getAllReservations = async (req: Request, res: Response, next: NextFunction) => {
@@ -54,7 +56,7 @@ export const createReservation = async (req: Request, res: Response, next: NextF
     // if exists "?", and if nul or undifined "??" use 0 (optionnal chaining and nullish coalescing)
     // If the total number of tickets for this date plus the number of tickets 
     // in the new reservation exceeds 10,000, return an error
-    const totalTickets = reservationsByDay[0]?._sum.nb_tickets ?? 0 
+    const totalTickets = reservationsByDay[0]?._sum.nb_tickets ?? 0
     if (totalTickets + nb_tickets > 9999) {
         throw new BadRequestError("Capacité maximale atteinte pour cette date")
     }
@@ -115,67 +117,60 @@ export const getAvailabilities = async (req: Request, res: Response, next: NextF
 
 // Cancel a reservation with J-10 rule
 export const deleteReservation = async (req: Request, res: Response, next: NextFunction) => {
-    // Get the id from the URL parameters and convert it to a number
-    const reservationParam = parseInt(req.params.id as string);
-
-    // Check if the id is not a valid number
+    const reservationParam = parseInt(req.params.id as string)
     if (isNaN(reservationParam)) {
-        // Return a 400 Bad Request error if the id is invalid
         throw new BadRequestError("Réservation non trouvée")
-    };
+    }
 
-    // Check if the user is authenticated
     if (!req.user) {
-        // Return a 401 Unauthorized error if no user is found
         throw new UnauthorizedError("L'utilisateur n'existe pas")
     }
 
-    // Get the connected member's id from the JWT token
-    const memberId = req.user.id;
+    const { password } = req.body
+    if (!password) {
+        throw new BadRequestError("Mot de passe requis")
+    }
 
-    // Search the database for the reservation with this id
+    const memberId = req.user.id
+
     const findReservation = await prisma.reservation.findUnique({
-        where: {
-            id_RESERVATION: reservationParam
-        }
+        where: { id_RESERVATION: reservationParam }
     })
-
-    // Check if the reservation was not found in the database
     if (findReservation === null) {
-        // Return a 404 Not Found error
         throw new NotFoundError("La réservation n'existe pas")
     }
 
-    // Check if the reservation belongs to the connected member
     if (findReservation.id_USER !== memberId) {
-        // Return a 403 Forbidden error if it's not their reservation
         throw new ForbiddenError("Cette réservation ne vous appartient pas")
     }
 
-    // Calculate the number of days between now and the reservation date
+    const user = await prisma.user.findUnique({
+        where: { id_USER: memberId }
+    })
+    if (!user) {
+        throw new NotFoundError("Utilisateur introuvable")
+    }
+
+    const rightPassword = await argon2.verify(user.password, password)
+    if (!rightPassword) {
+        throw new UnauthorizedError("Mot de passe incorrect")
+    }
+
     const dateNow = new Date();
     const dateReservation = new Date(findReservation.date);
     const calculDate = dateReservation.getTime() - dateNow.getTime();
     const oneDay = 1000 * 60 * 60 * 24;
     const resultDate = Math.round(calculDate / oneDay)
 
-    // Check if the reservation is within 10 days (J-10 rule)
     if (resultDate <= 10) {
-        // Return a 400 error if cancellation is too late
-        throw new BadRequestError("Annulation impossible ")
+        throw new BadRequestError("Annulation impossible")
     }
 
-    // All checks passed: update the reservation status to CANCELLED
     await prisma.reservation.update({
-        where: {
-            id_RESERVATION: reservationParam,
-        },
-        data: {
-            status: "CANCELLED"
-        }
+        where: { id_RESERVATION: reservationParam },
+        data: { status: "CANCELLED" }
     })
 
-    // Return a 200 success message
     return res.status(200).json({
         message: "Votre annulation a bien été prise en compte"
     })

@@ -18,6 +18,8 @@ import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
 //Import utility functions to handle date formats
 import { toLocalDateString, isoToLocalDate, getTodayMidnight } from '../utils/date'
+import InfoModal from '../components/InfoModal'
+
 
 function Reservation() {
 
@@ -48,6 +50,8 @@ function Reservation() {
     const [availabilities, setAvailabilities] = useState<{ date: string, available: boolean }[]>([])
     // selectedDay is the Date object used by react-day-picker to highlight the selected day in the calendar
     const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined)
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+
 
     // OTHER DATA
     //===========
@@ -120,7 +124,7 @@ function Reservation() {
 
         // The response is ok (status 200-299), success message
         if (response.ok) {
-            setMessage('Réservation confirmée !')
+            setIsSuccessModalOpen(true)
             setNbTickets('1')
             setDate(today)
             setConfirmed(false)
@@ -413,6 +417,15 @@ function Reservation() {
                     </Box>
                 )}
             </Box>
+
+            <InfoModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                title="Réservation confirmée ! 🧟"
+                message="Votre place est confirmée et enregistrée dans votre profil. Le compte à rebours a commencé : vous pourrez encore annuler jusqu’à 10 jours avant votre entrée… après cela, il sera trop tard pour faire demi-tour..."
+                titleColor="green.500"
+            />
+
             <LoginModal
                 isOpen={isLoginModalOpen}
                 onClose={() => setIsLoginModalOpen(false)}
