@@ -4,11 +4,12 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { API_URL } from "@/config/api";
 import type { Reservation } from "@/types/Reservations";
-import { Badge, Box, Button, Flex, Menu, MenuButton, MenuItem, MenuList, Spinner, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Input, Spinner, Text } from "@chakra-ui/react";
 import AdminTable from "@/components/AdminTable";
 import bgImage from '../../assets/bgadminpage.png'
 import ConfirmModal from "@/components/ConfirmModal";
 import AdminMenu from "@/components/AdminNavlinkMenu";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -21,10 +22,13 @@ const AdminReservations = () => {
     const [loading, setLoading] = useState(true);
     // State to store error message if the API call fails
     const [error, setError] = useState<string | null>(null);
-    // State to filter reservations by status (All, CONFIRMED, CANCELLED)
-    const [filterStatus, setFilterStatus] = useState<string>('All');
     // State to store the id of the reservation to cancel (opens the confirmation modal)
     const [reservationToCancel, setReservationToCancel] = useState<number | null>(null)
+    // State to search and filter reservations
+    const [search, setSearch] = useState("")
+    const [sort, setSort] = useState({ by: "id_RESERVATION", direction: "asc" })
+    // Navigate hook
+    const navigate = useNavigate()
 
     // Fetch all reservations from the API when the component mounts
     useEffect(() => {
@@ -71,9 +75,38 @@ const AdminReservations = () => {
     // Filter reservations by status and sort by id (ascending)
     // If filterStatus is "All", show all reservations
     // Otherwise, show only reservations matching the selected status
+    const filterTool = search.trim().toLowerCase()
     const filteredReservations = reservations
-        .filter(r => filterStatus === "All" || r.status === filterStatus)
-        .sort((a, b) => a.id_RESERVATION - b.id_RESERVATION)
+        .filter(r =>
+            String(r.id_RESERVATION).includes(filterTool) ||
+            String(r.nb_tickets).includes(filterTool) ||
+            r.user.email.toLowerCase().includes(filterTool) ||
+            r.status.toLowerCase().includes(filterTool)
+        )
+        .sort((a, b) => {
+            if (sort.by === "date") return (new Date(a.date).getTime() - new Date(b.date).getTime()) * (sort.direction === "asc" ? 1 : -1)
+            if (sort.by === "nb_tickets") return (a.nb_tickets - b.nb_tickets) * (sort.direction === "asc" ? 1 : -1)
+            if (sort.by === "status") return a.status.localeCompare(b.status) * (sort.direction === "asc" ? 1 : -1)
+            if (sort.by === "email") return a.user.email.localeCompare(b.user.email) * (sort.direction === "asc" ? 1 : -1)
+            return (a.id_RESERVATION - b.id_RESERVATION) * (sort.direction === "asc" ? 1 : -1)
+        })
+
+    const handleSortChange = (by: "id_RESERVATION" | "date" | "nb_tickets" | "status" | "email") => {
+        if (sort.by === by) {
+            setSort({ by, direction: sort.direction === "asc" ? "desc" : "asc" })
+        } else {
+            setSort({ by, direction: "asc" })
+        }
+    }
+
+    const headerToField = {
+        "ID": "id_RESERVATION",
+        "Membre": "email",
+        "Date": "date",
+        "Billets": "nb_tickets",
+        "Statut": "status"
+    } as const
+
     return (
         <Box
             display="flex"
@@ -105,28 +138,15 @@ const AdminReservations = () => {
 
                     {/* Filter button */}
                     <Flex justifyContent={{ base: "center", lg: "flex-end" }} mb={6}>
-                        <Menu>
-                            <MenuButton
-                                color="zombieland.white"
-                                px={4}
-                                py={2}
-                                border="2px solid"
-                                borderColor="zombieland.primary"
-                                borderRadius="md"
-                                transition="all 0.3s ease"
-                                _hover={{
-                                    borderColor: "zombieland.cta1orange",
-                                    color: "zombieland.cta1orange"
-                                }}
-                            >
-                                Filtrer par status
-                            </MenuButton>
-                            <MenuList bg="#1a1a1a" border="1px solid #333">
-                                <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setFilterStatus("All")}>Tous</MenuItem>
-                                <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setFilterStatus("CONFIRMED")}>Confirmer</MenuItem>
-                                <MenuItem bg="#1a1a1a" color="white" _hover={{ bg: "#333" }} onClick={() => setFilterStatus("CANCELLED")}>Annuler</MenuItem>
-                            </MenuList>
-                        </Menu>
+                        <Input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Rechercher une réservation..."
+                            color="zombieland.white"
+                            borderColor="zombieland.primary"
+                            bg="rgba(0,0,0,0.3)"
+                            mb={6}
+                        />
                     </Flex>
 
                     {/* Loading spinner */}
@@ -141,6 +161,11 @@ const AdminReservations = () => {
                     {!loading && (
                         <AdminTable
                             data={filteredReservations}
+                            onHeaderClick={(header) => {
+                                const field = headerToField[header as keyof typeof headerToField]
+                                if (field) handleSortChange(field)
+                            }}
+                            onRowClick={(r) => navigate(`/admin/members/${r.id_USER}`)}
                             columns={[
                                 {
                                     header: "ID",
@@ -148,7 +173,7 @@ const AdminReservations = () => {
                                 },
                                 {
                                     header: "Membre",
-                                    render: (r) => r.id_USER
+                                    render: (r) => r.user.email
                                 },
                                 {
                                     header: "Date",

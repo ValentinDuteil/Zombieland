@@ -9,7 +9,13 @@ import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } fro
 // Retrieves all reservations for admin
 export const getAllReservations = async (req: Request, res: Response, next: NextFunction) => {
     // Query the db to retrieve all reservations
-    const reservations = await prisma.reservation.findMany()
+    const reservations = await prisma.reservation.findMany({
+        include: {
+            user: {
+                select: { email: true }
+                }
+        }
+    })
     // Return reservations with a 200 status (success)
     res.status(200).json(reservations)
 }
