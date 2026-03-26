@@ -78,7 +78,9 @@ const AdminAttractions = () => {
             <Flex flex="1">
 
                 {/* LEFT SIDEBAR */}
+
                 <Box
+                    display={{ base: 'none', lg: 'block' }}
                     minWidth="240px"
                     maxWidth="240px"
                     borderRight="1px solid rgba(255,255,255,0.1)"
@@ -94,28 +96,34 @@ const AdminAttractions = () => {
                     </Text>
 
                     {/* Create new attraction button */}
-                    <Flex justifyContent="center" mt={8}>
+                    <Flex justifyContent="center" mt={8} mb={6}>
                         <Button
                             bgImage={`url(${bgBouton})`}
-                            color="zombieland.secondary"
-                            _hover={{ opacity: 0.8 }}
-                            fontFamily="body"
+                            bgSize="cover"
+                            bgPosition="center"
+                            color="zombieland.white"
+                            border="none"
+                            _hover={{ 
+                                opacity: 0.85,
+                                boxShadow: "0 8px 16px rgba(0,0,0,0.6), 0 0 30px rgba(250, 130, 52, 0.3)"
+                            }}
+                            fontFamily="heading"
                             fontSize="18px"
                             py={6}
-                            px={10}
-                            borderRadius="full"
+                            px={12}
+                            borderRadius="md"
                             letterSpacing="1px"
                             fontWeight="bold"
-                            boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
-                            textTransform="uppercase"
+                            boxShadow="0 4px 15px rgba(250, 130, 52, 0.25)"
+                            transition="all 0.3s ease"
                             onClick={() => navigate('/admin/attractions/create')}
                         >
-                            + Créer une nouvelle attraction
+                            Créer une attraction
                         </Button>
                     </Flex>
 
                     {/* Filter button */}
-                    <Flex justifyContent={{ base: "center", lg: "flex-end" }} mb={6}>
+                    <Flex justifyContent={{ base: "center", lg: "flex-end" }} mt={8} mb={6}>
                         <Menu>
                             <MenuButton
                                 color="zombieland.white"
