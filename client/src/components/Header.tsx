@@ -14,6 +14,8 @@ function Header() {
     const [firstname, setFirstname] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const navigate = useNavigate()
+    const [role, setRole] = useState<string | null>(null)
+
 
 
     useEffect(() => {
@@ -21,37 +23,38 @@ function Header() {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
                 credentials: 'include'
             },)
-            
+
             if (response.ok) {
                 const data = await response.json()
                 setFirstname(data.firstname)
+                setRole(data.role)
             }
             setIsLoading(false)
         }
         fetchUser()
     }, [])
 
-    const handleLogout = async() => {
+    const handleLogout = async () => {
         try {
-            
-            await axios.post(`${API_URL}/api/auth/logout`, 
+
+            await axios.post(`${API_URL}/api/auth/logout`,
                 {},
                 {
-                withCredentials: true,
-  });
+                    withCredentials: true,
+                });
             setFirstname(null);
             navigate('/')
         } catch (error) {
             console.error(error)
         }
     }
- 
+
     return (
         <Box>
             <Box
                 bg="#1A1A1A"
                 px={8}
-                py={4}                
+                py={4}
                 top={0}
                 left={0}
                 right={0}
@@ -132,6 +135,23 @@ function Header() {
                                     >
                                         Mon profil
                                     </MenuItem>
+                                    {firstname && role === 'ADMIN' && (
+                                        <>
+                                            <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin">
+                                                Dashboard
+                                            </MenuItem>
+                                            <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/attractions">
+                                                Attractions
+                                            </MenuItem>
+                                            <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/reservations">
+                                                Réservations
+                                            </MenuItem>
+                                            <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/members">
+                                                Membres
+                                            </MenuItem>
+                                        </>
+                                    )}
+
                                     <MenuItem
                                         bg="#1A1A1A"
                                         color="zombieland.white"

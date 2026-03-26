@@ -78,7 +78,9 @@ const AdminAttractions = () => {
             <Flex flex="1">
 
                 {/* LEFT SIDEBAR */}
+
                 <Box
+                    display={{ base: 'none', lg: 'block' }}
                     minWidth="240px"
                     maxWidth="240px"
                     borderRight="1px solid rgba(255,255,255,0.1)"
