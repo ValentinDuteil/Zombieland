@@ -44,8 +44,14 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
   if (!req.user) {
     throw new UnauthorizedError('Accès refusé')
   }
+
+  const id = parseInt(req.params.id as string)
+  if (isNaN(id)) {
+    throw new BadRequestError("Id invalide")
+  }
+
   const user = await prisma.user.findUnique({
-    where: { id_USER: req.user.id }
+    where: { id_USER: id }
   })
   //2.if not valid, returning 404 error
   if (!user) {
@@ -152,7 +158,7 @@ export async function deleteProfile(req: Request, res: Response, next: NextFunct
 
   //2.check if it exists
   const user = await prisma.user.findUnique({
-    where: { id_USER: req.user.id }
+    where: { id_USER: id }
   })
 
   //3.if the data isn't found, return a 404 error
@@ -162,7 +168,7 @@ export async function deleteProfile(req: Request, res: Response, next: NextFunct
 
   //4.delete
   await prisma.user.delete({
-    where: { id_USER: req.user.id }
+    where: { id_USER: id }
   })
 
   //5.returning confirmation
