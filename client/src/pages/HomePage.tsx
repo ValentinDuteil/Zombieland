@@ -8,8 +8,11 @@ import { LuChevronLeft, LuChevronRight } from "react-icons/lu"
 // Images
 import bgButton from '../assets/bg-bouton.png';
 import bgImage from '../assets/bg-image.png';
-import queue from '../assets/queue.jpg';
-import zombieactor from '../assets/zombie-actor.jpg';
+import zombi from '../assets/zombi.png';
+import fosse from '../assets/fosse.png';
+import grandhuit from '../assets/grandhuit.png';
+import reception from '../assets/reception.png';
+import train from '../assets/train.png';
 import parkEntryLandscape from '../assets/park-entry-landscape.png';
 import img1 from "../assets/quarantaine.png"
 import img2 from "../assets/ridebiomasse.png"
@@ -30,8 +33,11 @@ const categoryToEnum: Record<string, string> = {
 };
 
 const carouselImages = [
-    { src: queue, alt: "File d'attente" },
-    { src: zombieactor, alt: "Acteur zombie" },
+    { src: zombi, alt: "Zombie" },
+    { src: fosse, alt: "Fosse de cadavres" },
+    { src: grandhuit, alt: "Grand 8" },
+    { src: reception, alt: "Réception" },
+    { src: train, alt: "Train fantôme" },
 ]
 
 const HomePage = () => {
@@ -150,14 +156,14 @@ const HomePage = () => {
                 />
 
                 {/* Image + indicators */}
-                <Box maxW="600px" w="100%">
+                <Box maxW="400px" w="100%">
                     <Image
                         src={carouselImages[currentSlide].src}
                         alt={carouselImages[currentSlide].alt}
                         w="100%"
                         borderRadius="md"
                         objectFit="cover"
-                        maxH="400px"
+                        maxH="600px"
                     />
                     {/* Slide indicators */}
                     <Flex justifyContent="center" gap={2} mt={4}>

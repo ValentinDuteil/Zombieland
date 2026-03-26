@@ -257,20 +257,18 @@ const AdminReservations = () => {
                         </Box>
 
 
-                    </Flex>
-
-
-                    <Heading
-                        fontWeight="bold"
-                        color="zombieland.white"
-                        textAlign="center"
-                        fontFamily="body"
-                        fontSize="30px"
-                        mt={8}
-                        mb={8}
-                    >
-                        Gestion des réservations
-                    </Heading>
+                    </Flex>          
+                
+                 <Heading
+                    fontWeight="bold"
+                    color="zombieland.white"
+                    textAlign="center"
+                    fontFamily="heading"
+                    fontSize="30px"
+                    mb={10}
+                >
+                    Gestion des réservations
+                </Heading>
 
                     {/* Loading spinner */}
                     {loading && (
@@ -355,7 +353,7 @@ const AdminReservations = () => {
                     onClose={() => setReservationToCancel(null)}
                     title="Annuler la réservation"
                     message="Voulez-vous vraiment annuler cette réservation ? Cette action est irréversible."
-                    onConfirm={(password) => {
+                    onConfirm={() => {
                         if (reservationToCancel) handleStatusChange(reservationToCancel, "CANCELLED")
                         setReservationToCancel(null)
                     }}

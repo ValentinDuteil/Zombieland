@@ -45,29 +45,82 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>{title}</ModalHeader>
-        <ModalBody>
-          <Text mb={4}>Email</Text>
+      <ModalOverlay bg="blackAlpha.800" />
+      <ModalContent
+        bg="zombieland.bgsecondary"
+        border="1px solid"
+        borderColor="zombieland.primary"
+      >
+        <ModalHeader
+          color="zombieland.white"
+          fontFamily="heading"
+          borderBottom="1px solid"
+          borderColor="zombieland.secondary"
+        >
+          {title}
+        </ModalHeader>
+
+        <ModalBody py={5} display="flex" flexDirection="column" gap={3}>
+          <Text color="zombieland.white">Email</Text>
           <Input
             type="email"
             placeholder="john.doe@horreur.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            bg="zombieland.secondary"
+            color="zombieland.white"
+            borderColor="zombieland.primary"
+            _hover={{ borderColor: "zombieland.cta1orange" }}
+            _focus={{ borderColor: "zombieland.cta1orange", boxShadow: "0 0 0 1px #B85F00" }}
+            _placeholder={{ color: "gray.500" }}
           />
-          <Text>Mot de passe</Text>
+          <Text color="zombieland.white">Mot de passe</Text>
           <Input
             type="password"
             placeholder="********"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            bg="zombieland.secondary"
+            color="zombieland.white"
+            borderColor="zombieland.primary"
+            _hover={{ borderColor: "zombieland.cta1orange" }}
+            _focus={{ borderColor: "zombieland.cta1orange", boxShadow: "0 0 0 1px #B85F00" }}
+            _placeholder={{ color: "gray.500" }}
           />
-          <Text>{message}</Text>
+          {message && (
+            <Text
+              color={message.includes('confirmée') ? "zombieland.successprimary" : "zombieland.warningprimary"}
+              fontWeight="bold"
+            >
+              {message}
+            </Text>
+          )}
         </ModalBody>
-        <ModalFooter>
-          <Button onClick={onClose}>Retour</Button>
-          <Button onClick={handleSubmit}>Rejoindre l'horreur</Button>
+
+        <ModalFooter
+          gap={3}
+          borderTop="1px solid"
+          borderColor="zombieland.secondary"
+        >
+          <Button
+            bg="zombieland.secondary"
+            color="zombieland.white"
+            border="1px solid"
+            borderColor="zombieland.primary"
+            _hover={{ bg: "zombieland.primary" }}
+            onClick={onClose}
+          >
+            Retour
+          </Button>
+          <Button
+            bg="zombieland.cta1orange"
+            color="zombieland.white"
+            _hover={{ bg: "zombieland.cta2orange" }}
+            isDisabled={!email || !password}
+            onClick={handleSubmit}
+          >
+            Rejoindre l'horreur
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
