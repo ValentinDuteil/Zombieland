@@ -164,11 +164,10 @@ function Reservation() {
                     {/* Title at the top center */}
                     <Heading
                         mb={12}
-                        textAlign="center"
                         fontFamily="heading"
-                        fontSize={{ base: '36px', md: '54px' }}
+                        fontSize="54px"
+                        textAlign="center"
                         color="zombieland.white"
-                        textShadow="2px 2px 4px rgba(0,0,0,0.5)"
                     >
                         Réservation
                     </Heading>

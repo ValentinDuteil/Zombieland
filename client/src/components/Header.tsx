@@ -1,7 +1,7 @@
 // Header component - navigation bar
 
 import { Box, Flex, Image, Text, IconButton, Menu, MenuItem, MenuList, MenuButton } from '@chakra-ui/react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import logo from '../assets/logo.png'
 import { FaUserCircle } from 'react-icons/fa'
@@ -15,7 +15,8 @@ function Header() {
     const [isLoading, setIsLoading] = useState(true)
     const navigate = useNavigate()
     const [role, setRole] = useState<string | null>(null)
-
+    const location = useLocation()
+    const isAdminPage = location.pathname.startsWith('/admin')
 
 
     useEffect(() => {
@@ -135,8 +136,8 @@ function Header() {
                                     >
                                         Mon profil
                                     </MenuItem>
-                                    {firstname && role === 'ADMIN' && (
-                                        <>
+                                    {firstname && role === 'ADMIN' && isAdminPage && (
+                                        <Box display={{ base: 'block', lg: 'none' }}>
                                             <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin">
                                                 Dashboard
                                             </MenuItem>
@@ -149,7 +150,7 @@ function Header() {
                                             <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/members">
                                                 Membres
                                             </MenuItem>
-                                        </>
+                                        </Box>
                                     )}
 
                                     <MenuItem
