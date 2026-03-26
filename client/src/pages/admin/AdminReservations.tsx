@@ -80,14 +80,14 @@ const AdminReservations = () => {
         .filter(r =>
             String(r.id_RESERVATION).includes(filterTool) ||
             String(r.nb_tickets).includes(filterTool) ||
-            r.user.email.toLowerCase().includes(filterTool) ||
+            r.user?.email.toLowerCase().includes(filterTool) ||
             r.status.toLowerCase().includes(filterTool)
         )
         .sort((a, b) => {
             if (sort.by === "date") return (new Date(a.date).getTime() - new Date(b.date).getTime()) * (sort.direction === "asc" ? 1 : -1)
             if (sort.by === "nb_tickets") return (a.nb_tickets - b.nb_tickets) * (sort.direction === "asc" ? 1 : -1)
             if (sort.by === "status") return a.status.localeCompare(b.status) * (sort.direction === "asc" ? 1 : -1)
-            if (sort.by === "email") return a.user.email.localeCompare(b.user.email) * (sort.direction === "asc" ? 1 : -1)
+            if (sort.by === "email") return (a.user?.email ?? "").localeCompare(b.user?.email ?? "") * (sort.direction === "asc" ? 1 : -1)
             return (a.id_RESERVATION - b.id_RESERVATION) * (sort.direction === "asc" ? 1 : -1)
         })
 
@@ -173,7 +173,7 @@ const AdminReservations = () => {
                                 },
                                 {
                                     header: "Membre",
-                                    render: (r) => r.user.email
+                                    render: (r) => r.user?.email ?? "—"
                                 },
                                 {
                                     header: "Date",
