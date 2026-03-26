@@ -2,7 +2,7 @@
 
 //To be changed as an overlay/pop-up later for a better UX
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Box, Button, Heading, Input, Text } from '@chakra-ui/react'
 import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
@@ -29,8 +29,9 @@ function Login() {
       setMessage('Connexion confirmée !');
       navigate('/reservation');
     } else {
-      //otherwise displaying an error message
-      setMessage('Une erreur est survenue, veuillez réessayer.')
+      //otherwise displaying an error message getting from the back if possible, otherwise a default one
+      const errorData = await response.json()
+      setMessage(errorData.message || 'Email ou mot de passe invalide.')
     }
   }
 
@@ -44,10 +45,10 @@ function Login() {
       bgAttachment="fixed"
       display="flex"
       flexDirection="column"
-      
+
     >
       <Header />
-      
+
       <Box
         flex={1}
         display="flex"
@@ -99,6 +100,16 @@ function Login() {
             boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
             mb={6}
           />
+
+          {/* Go create an account */}
+          <Text fontSize="sm" color="gray.400" textAlign="center" mt={2}>
+            Pas de compte ?{" "}
+            <Link to="/register">
+              <Text as="span" color="zombieland.cta1orange" cursor="pointer" _hover={{ textDecoration: "underline" }}>
+                Inscrivez-vous !
+              </Text>
+            </Link>
+          </Text>
         </Box>
       </Box>
 

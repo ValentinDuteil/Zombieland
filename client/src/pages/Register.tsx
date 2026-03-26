@@ -15,6 +15,8 @@ function Register() {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
   const handleSubmit = async () => {
 
     if (form.password === form.confirmPassword) {
@@ -30,170 +32,185 @@ function Register() {
         setMessage(' Bienvenue : compte créé !');
         navigate('/');
       } else {
-        //otherwise displaying an error message
-        setMessage('Une erreur est survenue, veuillez réessayer.')
+        //otherwise displaying an error message getting from the back if possible, otherwise a default one
+        const errorData = await response.json()
+        if (errorData.details) {
+          const newErrors: Record<string, string> = {}
+          errorData.details.forEach((d: { champ: string, message: string }) => {
+            newErrors[d.champ] = d.message
+          })
+          setErrors(newErrors)
+        } else {
+          setMessage(errorData.message || 'Une erreur est survenue.')
+        }
       }
     } else {
-      setMessage('Les mots de passe ne correspondent pas.')
+      setErrors({ confirmPassword: 'Les mots de passe ne correspondent pas.' })
     }
   }
 
-  return (
+return (
+  <Box
+    minH="100vh"
+    bgImage={`url(${bgImage})`}
+    bgSize="cover"
+    bgPosition="center"
+    bgAttachment="fixed"
+    display="flex"
+    flexDirection="column"
+  >
+    <Header />
+
     <Box
-      minH="100vh"
-      bgImage={`url(${bgImage})`}
-      bgSize="cover"
-      bgPosition="center"
-      bgAttachment="fixed"
+      flex={1}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      minH="70vh"
+    >
+      <Box
+        w="500px"
+        p={10}
+        borderRadius="md"
+      >
+        <Heading
+          mb={8}
+          textAlign="center"
+          fontFamily="heading"
+          fontSize="54px"
+          color="zombieland.white"
+        >
+          Inscription
+        </Heading>
+
+        <Flex gap={4} mb={4}>
+          <Box flex={1}>
+            <Text mb={2} color="zombieland.white" fontWeight="300">Nom</Text>
+            <Input
+              type="text"
+              placeholder="Doe"
+              value={form.lastname}
+              onChange={(e) => setForm({ ...form, lastname: e.target.value })}
+              bg="rgba(0,0,0,0.3)"
+              color="zombieland.white"
+              borderColor="zombieland.primary"
+              boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+              _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
+            />
+            {errors.lastname && <Text color="zombieland.warningprimary" fontSize="sm">{errors.lastname}</Text>}
+          </Box>
+          <Box flex={1}>
+            <Text mb={2} color="zombieland.white" fontWeight="300">Prénom</Text>
+            <Input
+              type="text"
+              placeholder="John"
+              value={form.firstname}
+              onChange={(e) => setForm({ ...form, firstname: e.target.value })}
+              bg="rgba(0,0,0,0.3)"
+              color="zombieland.white"
+              borderColor="zombieland.primary"
+              boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+              _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
+            />
+            {errors.firstname && <Text color="zombieland.warningprimary" fontSize="sm">{errors.firstname}</Text>}
+          </Box>
+        </Flex>
+
+        {/* Input Email */}
+        <Text mb={2} color="zombieland.white" fontWeight="300">Email</Text>
+        <Input
+          type="email"
+          placeholder="Votre email"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          bg="rgba(0,0,0,0.3)"
+          color="zombieland.white"
+          borderColor="zombieland.primary"
+          boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+          _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
+          mb={4}
+        />
+        {errors.email && <Text color="zombieland.warningprimary" fontSize="sm">{errors.email}</Text>}
+
+        {/* Input Password */}
+        <Text mb={2} color="zombieland.white" fontWeight="300">Mot de passe</Text>
+        <Input
+          type="password"
+          placeholder="Votre mot de passe"
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          bg="rgba(0,0,0,0.3)"
+          color="zombieland.white"
+          borderColor="zombieland.primary"
+          boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+          _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
+          mb={4}
+        />
+        {errors.password && <Text color="zombieland.warningprimary" fontSize="sm">{errors.password}</Text>}
+
+        {/* Input ConfirmPassword */}
+        <Text mb={2} color="zombieland.white" fontWeight="300">Confirmer le mot de passe</Text>
+        <Input
+          type="password"
+          placeholder="Confirmez votre mot de passe"
+          value={form.confirmPassword}
+          onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+          bg="rgba(0,0,0,0.3)"
+          color="zombieland.white"
+          borderColor="zombieland.primary"
+          boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+          _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
+          mb={6}
+        />
+        {errors.confirmPassword && <Text color="zombieland.warningprimary" fontSize="sm">{errors.confirmPassword}</Text>}
+
+      </Box>
+    </Box>
+
+    <Box
       display="flex"
       flexDirection="column"
+      alignItems={{ base: 'center', lg: 'flex-end' }}
+      px={10}
+      pb={{ base: 28, lg: 6 }}
     >
-      <Header />
-
-      <Box
-        flex={1}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        minH="70vh"
-      >
-        <Box
-          w="500px"
-          p={10}
-          borderRadius="md"
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <Button
+          onClick={handleSubmit}
+          bgImage={`url(${bgBouton})`}
+          color="zombieland.secondary"
+          _hover={{ bg: "zombieland.cta2orange" }}
+          fontFamily="body"
+          fontSize="20px"
+          py={6}
+          px={3}
+          borderRadius="full"
+          letterSpacing="1px"
+          fontWeight="bold"
+          boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+          textTransform="uppercase"
         >
-          <Heading
-            mb={8}
+          → REJOINDRE L'HORREUR
+        </Button>
+
+        {/* Pop on screen only and only if the message isn't empty */}
+        {message && (
+          <Text
+            mt={4}
             textAlign="center"
-            fontFamily="heading"
-            fontSize="54px"
-            color="zombieland.white"
-          >
-            Inscription
-          </Heading>
-
-          <Flex gap={4} mb={4}>
-            <Box flex={1}>
-              <Text mb={2} color="zombieland.white" fontWeight="300">Nom</Text>
-              <Input
-                type="text"
-                placeholder="Doe"
-                value={form.lastname}
-                onChange={(e) => setForm({ ...form, lastname: e.target.value })}
-                bg="rgba(0,0,0,0.3)"
-                color="zombieland.white"
-                borderColor="zombieland.primary"
-                boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
-                _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
-              />
-            </Box>
-            <Box flex={1}>
-              <Text mb={2} color="zombieland.white" fontWeight="300">Prénom</Text>
-              <Input
-                type="text"
-                placeholder="John"
-                value={form.firstname}
-                onChange={(e) => setForm({ ...form, firstname: e.target.value })}
-                bg="rgba(0,0,0,0.3)"
-                color="zombieland.white"
-                borderColor="zombieland.primary"
-                boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
-                _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
-              />
-            </Box>
-          </Flex>
-
-          {/* Input Email */}
-          <Text mb={2} color="zombieland.white" fontWeight="300">Email</Text>
-          <Input
-            type="email"
-            placeholder="Votre email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            bg="rgba(0,0,0,0.3)"
-            color="zombieland.white"
-            borderColor="zombieland.primary"
-            boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
-            _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
-            mb={4}
-          />
-
-          {/* Input Password */}
-          <Text mb={2} color="zombieland.white" fontWeight="300">Mot de passe</Text>
-          <Input
-            type="password"
-            placeholder="Votre mot de passe"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            bg="rgba(0,0,0,0.3)"
-            color="zombieland.white"
-            borderColor="zombieland.primary"
-            boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
-            _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
-            mb={4}
-          />
-
-          {/* Input ConfirmPassword */}
-          <Text mb={2} color="zombieland.white" fontWeight="300">Confirmer le mot de passe</Text>
-          <Input
-            type="password"
-            placeholder="Confirmez votre mot de passe"
-            value={form.confirmPassword}
-            onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-            bg="rgba(0,0,0,0.3)"
-            color="zombieland.white"
-            borderColor="zombieland.primary"
-            boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
-            _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
-            mb={6}
-          />
-        </Box>
-      </Box>
-
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems={{ base: 'center', lg: 'flex-end' }}
-        px={10}
-        pb={{ base: 28, lg: 6 }}
-      >
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <Button
-            onClick={handleSubmit}
-            bgImage={`url(${bgBouton})`}
-            color="zombieland.secondary"
-            _hover={{ bg: "zombieland.cta2orange" }}
             fontFamily="body"
-            fontSize="20px"
-            py={6}
-            px={3}
-            borderRadius="full"
-            letterSpacing="1px"
-            fontWeight="bold"
-            boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
-            textTransform="uppercase"
+            fontWeight="300"
+            color={message.includes('créé') ? 'zombieland.white' : 'zombieland.warningprimary'}
           >
-            → REJOINDRE L'HORREUR
-          </Button>
-
-          {/* Pop on screen only and only if the message isn't empty */}
-          {message && (
-            <Text
-              mt={4}
-              textAlign="center"
-              fontFamily="body"
-              fontWeight="300"
-              color={message.includes('créé') ? 'zombieland.white' : 'zombieland.warningprimary'}
-            >
-              {message}
-            </Text>
-          )}
-        </Box>
+            {message}
+          </Text>
+        )}
       </Box>
-
-      <Footer />
     </Box>
-  )
+
+    <Footer />
+  </Box>
+)
 }
 
 export default Register

@@ -33,7 +33,7 @@ function Header() {
             setIsLoading(false)
         }
         fetchUser()
-    }, [])
+    }, [location]) // re-fetch user on every route change to sync header state after login/logout via modal
 
     const handleLogout = async () => {
         try {

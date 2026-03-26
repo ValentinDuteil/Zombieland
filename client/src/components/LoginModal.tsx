@@ -1,6 +1,7 @@
 // To confirm the patch or deletion of the informations
 
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Text } from '@chakra-ui/react'
 
 interface LoginModalProps {
@@ -38,8 +39,9 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
         onConfirm()
       }, 1500)
     } else {
-      //otherwise displaying an error message
-      setMessage('Une erreur est survenue, veuillez réessayer.')
+      //otherwise displaying an error message getting from the back if possible, otherwise a default one
+      const errorData = await response.json()
+      setMessage(errorData.message || 'Email ou mot de passe invalide.')
     }
   }
 
@@ -87,6 +89,14 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
             _focus={{ borderColor: "zombieland.cta1orange", boxShadow: "0 0 0 1px #B85F00" }}
             _placeholder={{ color: "gray.500" }}
           />
+          <Text fontSize="sm" color="gray.400" textAlign="center">
+            Pas de compte ?{" "}
+            <Link to="/register" onClick={onClose}>
+              <Text as="span" color="zombieland.cta1orange" cursor="pointer" _hover={{ textDecoration: "underline" }}>
+                Inscrivez-vous !
+              </Text>
+            </Link>
+          </Text>
           {message && (
             <Text
               color={message.includes('confirmée') ? "zombieland.successprimary" : "zombieland.warningprimary"}
