@@ -90,7 +90,7 @@ function Footer() {
                 <Flex gap={6} justifyContent="center" flexWrap="wrap">
                     <Link to="/"><Text color="zombieland.white" cursor="pointer" fontFamily="body">Accueil</Text></Link>
                     <Link to="/attractions"><Text color="zombieland.white" cursor="pointer" fontFamily="body">Attractions</Text></Link>
-                    <Link to="/plans"><Text color="zombieland.white" cursor="pointer" fontFamily="body">Plans</Text></Link>
+                    <Link to="/plan"><Text color="zombieland.white" cursor="pointer" fontFamily="body">Plan</Text></Link>
                     <Link to="/contact"><Text color="zombieland.white" cursor="pointer" fontFamily="body">Contact</Text></Link>
                 </Flex>
 

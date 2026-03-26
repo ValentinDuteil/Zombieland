@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Wrap, WrapItem, Menu, MenuButton, MenuList, MenuItem, Text } from "@chakra-ui/react";
+import { Box, Wrap, WrapItem, Menu, MenuButton, MenuList, MenuItem, Text, Heading } from "@chakra-ui/react";
 import AttractionCard from "../components/AttractionsCard";
 import type { Attraction } from "@types";
 import Header from "../components/Header";
@@ -63,10 +63,21 @@ const AttractionsPage = () => {
         >
             <Header />
 
-            <Box flex="1" p={3} pt="100px" pb="100px">
+            <Box flex="1" p={3} pt={{ base: "60px", md: "100px" }} pb="100px">
+
+                {/* Title */}
+                <Heading
+                    mb={12}
+                    fontFamily="heading"
+                    fontSize="54px"
+                    textAlign="center"
+                    color="zombieland.white"
+                >
+                    Nos attractions
+                </Heading>
 
                 {/* Bouton unique Filtrer par catégorie */}
-                <Box display="flex" justifyContent="flex-end" pr={8} mb={6}>
+                <Box display="flex" justifyContent={{ base: "center", lg: "flex-end" }} alignItems="center" pr={{ base: 0, lg: 8 }} mb={6} minH="60px">
                     <Menu>
                         <MenuButton
                             color="zombieland.white"

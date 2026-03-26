@@ -1,6 +1,7 @@
 // Plan page - park map
 
-import { Box, Heading, Text, Image, Flex, Button, SimpleGrid } from '@chakra-ui/react'
+import { Box, Heading, Text, Image, Flex, Button, SimpleGrid, Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody } from '@chakra-ui/react'
+import { useDisclosure } from '@chakra-ui/react'
 import bgImage from '../assets/bg-image.png'
 import planImage from '../assets/plan.png'
 import Header from '../components/Header'
@@ -19,6 +20,7 @@ const services = [
 function Plan() {
 
     const [downloaded, setDownloaded] = useState(false)
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (
         <Box
@@ -60,8 +62,9 @@ function Plan() {
                     borderRadius="md"
                     overflow="hidden"
                     boxShadow="0 0 30px rgba(0,0,0,0.7)"
-                    transition="transform 0.3s ease"
-                    _hover={{ transform: "scale(1.02)" }}
+                    transition="transform 0.3s ease, cursor 0.3s ease"
+                    _hover={{ transform: "scale(1.02)", cursor: "pointer" }}
+                    onClick={onOpen}
                 >
                     <Image
                         src={planImage}
@@ -224,6 +227,33 @@ function Plan() {
                     )}
                 </Box>
             </Box>
+
+            {/* Modal for zoomed plan */}
+            <Modal isOpen={isOpen} onClose={onClose} size="full" isCentered motionPreset="slideInBottom">
+                <ModalOverlay bg="rgba(0,0,0,0.95)" backdropFilter="blur(5px)" />
+                <ModalContent bg="transparent" boxShadow="none">
+                    <ModalCloseButton 
+                        color="zombieland.white" 
+                        fontSize="28px" 
+                        position="fixed" 
+                        top={4} 
+                        right={4}
+                        zIndex={1000}
+                        _hover={{ opacity: 0.8 }}
+                    />
+                    <ModalBody display="flex" alignItems="center" justifyContent="center" minH="100vh" p={4}>
+                        <Image
+                            src={planImage}
+                            alt="Plan du parc Zombieland - Vue agrandie"
+                            maxW="90vw"
+                            maxH="90vh"
+                            objectFit="contain"
+                            borderRadius="md"
+                            boxShadow="0 0 50px rgba(250, 130, 52, 0.3)"
+                        />
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
 
             <Footer />
         </Box >
