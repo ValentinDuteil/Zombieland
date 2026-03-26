@@ -1,6 +1,7 @@
 // Admin page to manage reservations: list, filter, edit and delete
 import { useEffect, useState } from "react";
-import { Box, Text, Button, Flex, Spinner,
+import {
+    Box, Text, Button, Flex, Spinner,
     Badge, Heading,
 } from "@chakra-ui/react";
 
@@ -26,11 +27,9 @@ const AdminReservations = () => {
     const [loading, setLoading] = useState(true);
     // State to store error message if the API call fails
     const [error, setError] = useState<string | null>(null);
-    // State to filter reservations by status (All, CONFIRMED, CANCELLED)
-    const [filterStatus, setFilterStatus] = useState<string>('All');
     // State to store the id of the reservation to cancel (opens the confirmation modal)
     const [reservationToCancel, setReservationToCancel] = useState<number | null>(null)
-    
+
     // Fetch all reservations from the API when the component mounts
     useEffect(() => {
         const axiosReservation = async () => {
@@ -72,13 +71,6 @@ const AdminReservations = () => {
             r.id_RESERVATION === id ? { ...r, status } : r
         ))
     }
-
-    // Filter reservations by status and sort by id (ascending)
-    // If filterStatus is "All", show all reservations
-    // Otherwise, show only reservations matching the selected status
-    const filteredReservations = reservations
-        .filter(r => filterStatus === "All" || r.status === filterStatus)
-        .sort((a, b) => a.id_RESERVATION - b.id_RESERVATION)
 
     //fetch all attractions
     useEffect(() => {
@@ -186,28 +178,10 @@ const AdminReservations = () => {
                                     </Text>
                                 </Flex>
                             </Flex>
-                        </Box>
+                        </Box >
 
 
-                    </Flex>
 
-
-                    <Heading
-                        fontWeight="bold"
-                        color="zombieland.white"
-                        textAlign="center"
-                        fontFamily="heading"
-                        fontSize="30px"
-                        mt={8}
-                        mb={8}
-                    >
-                        Zombieland Admin
-                    </Heading>
-                    <Flex
-                        wrap="wrap"
-                        gap="6"
-                        justifyContent="center"
-                        mb={10}>
                         <Box
                             w="300px"
                             h="300px"
@@ -255,9 +229,9 @@ const AdminReservations = () => {
                         <Box
                             w="300px"
                             h="300px"
-                            bg="rgba(0, 0, 0, 0.5)" 
+                            bg="rgba(0, 0, 0, 0.5)"
                             border="2px"
-                        
+
                         >
                             {/* 2 flex text between 1 flex */}
                             <Flex direction="column" justify="space-between" h="100%">
@@ -276,24 +250,18 @@ const AdminReservations = () => {
 
 
                         </Box>
-                        <Box
-                            w="450px"
-                            h="450px"
-                            bgImage={`url(${marche})`}>
+                    </Flex>
 
-
-                    </Flex>          
-                
-                 <Heading
-                    fontWeight="bold"
-                    color="zombieland.white"
-                    textAlign="center"
-                    fontFamily="heading"
-                    fontSize="30px"
-                    mb={10}
-                >
-                    Gestion des réservations
-                </Heading>
+                    <Heading
+                        fontWeight="bold"
+                        color="zombieland.white"
+                        textAlign="center"
+                        fontFamily="heading"
+                        fontSize="30px"
+                        mb={10}
+                    >
+                        Gestion des réservations
+                    </Heading>
 
                     {/* Loading spinner */}
                     {loading && (
@@ -307,7 +275,7 @@ const AdminReservations = () => {
                     {/* Reservations table */}
                     {!loading && (
                         <AdminTable
-                            data={filteredReservations}
+                            data={reservations}
                             columns={[
                                 {
                                     header: "ID",
@@ -359,7 +327,7 @@ const AdminReservations = () => {
                                             {r.status === "CANCELLED" && (
                                                 <Text color="red.400" fontWeight="bold">Annulée</Text>
                                             )}
-                                        </Flex>
+                                        </Flex >
                                     )
                                 }
                             ]}
