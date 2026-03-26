@@ -38,10 +38,10 @@ const AdminAttractions = () => {
         setAttractions(data)
         setLoading(false)
     }
+
     useEffect(() => {
         fetchAttractions()
     }, [])
-
 
     const handleDelete = async (id: number, password: string) => {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions/${id}`, {

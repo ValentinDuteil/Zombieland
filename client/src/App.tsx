@@ -13,31 +13,27 @@ import MyReservations from './pages/MyReservations'
 // Import the attractions page
 import AttractionsPage from "./pages/Attractions"
 // Import the attractions detailpage
-import AttractionDetailPage from './pages/AttractionDetailPage'
+import AttractionDetailPage from './pages/AttractionDetail'
 // Import the scroll to top component
 import ScrollToTop from './components/ScrollToTop'
 // Import the admin layout
 // import AdminNavlinkMenu from './components/AdminNavlinkMenu'
 // Import the admin pages
 // import AdminDashboard from './pages/admin/AdminDashboard'
-// import AdminMembers from './pages/admin/AdminMembers'
+import AdminMembers from './pages/admin/AdminMembers'
 // import AdminAttractions from './pages/admin/AdminAttractions'
 import AdminReservations from './pages/admin/AdminReservations'
 import AdminAttractionCreate from './pages/admin/AdminAttractionCreate'
 
 
 import Faq from './pages/Faq'
-import HomePage from './pages/HomePage'
+import HomePage from './pages/Home'
 import Contact from './pages/Contact'
 import Plan from './pages/Plan'
 import AdminHomePage from './pages/admin/AdminHome'
 import AdminGuard from './components/AdminGuard'
 import AdminAttractions from "./pages/admin/AdminAttractions"
 import AdminAttractionEdit from './pages/admin/AdminAttractionEdit'
-
-
-
-
 
 const App = () => {
     return (
@@ -68,6 +64,7 @@ const App = () => {
                 <Route path="/admin/attractions/create" element={<AdminGuard><AdminAttractionCreate /></AdminGuard>} />
                 <Route path="/admin/attractions/:id/edit" element={<AdminGuard><AdminAttractionEdit /></AdminGuard>} />
                 <Route path="/admin/reservations" element={<AdminReservations />} />
+                <Route path="/admin/members" element={<AdminMembers />} />
 
             </Routes>
         </BrowserRouter>

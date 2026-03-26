@@ -10,21 +10,30 @@ export async function getAllUsers(req: Request, res: Response, next: NextFunctio
 
   //1.fetching the users with req.user.id (because we already have the cookie) 
   //and checking if users exist
+  // selecting the informations we need and the count of reservations for each user with _count and select
+  // for the AdminMembers page
   if (!req.user) {
     throw new UnauthorizedError('Accès refusé')
   }
   const users = await prisma.user.findMany({
+    select: {
+        id_USER: true,
+        email: true,
+        firstname: true,
+        lastname: true,
+        role: true,
+        created_at: true,
+        _count: {
+            select: { reservations: true }
+        }
+    }
   })
   //2.if not valid, returning 404 error
   if (!users.length) {
     throw new NotFoundError("Utilisateurs introuvables")
   }
   //3.returning Users (without passwords)
-  // using the .map() to go throught the table 
-  // and stock the password in an non use variable "_" 
-  // then keeping the rest of the information thanks to the spread "..."user.
-  const usersWithoutPassword = users.map(({ password: _, ...user }) => user)
-  return res.status(200).json(usersWithoutPassword)
+  return res.status(200).json(users)
 }
 
 
