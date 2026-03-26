@@ -161,6 +161,49 @@ const AdminReservations = () => {
                     mt={8}
                     mb={8}
                 >
+                    Zombieland Admin 
+                </Heading>
+                <Flex
+                    wrap="wrap"
+                    gap="6"
+                    justifyContent="center"
+                    mb={10}>
+                        <Box
+                        w="450px"
+                        h="450px"
+                        bgImage={`url(${marche})`}
+                        opacity={0.5}>
+
+                        </Box>
+                        <Box
+                        w="450px"
+                        h="450px"
+                        bgImage={`url(${marche})`}>
+
+                        </Box>
+                        <Box
+                        w="450px"
+                        h="450px"
+                        bgImage={`url(${marche})`}>
+
+                        </Box>
+                        <Box
+                        w="450px"
+                        h="450px"
+                        bgImage={`url(${marche})`}>
+
+                        </Box>
+
+                </Flex>
+            
+                <Heading
+                    fontWeight="bold"
+                    color="zombieland.white"
+                    textAlign="center"
+                    fontFamily="heading"
+                    fontSize="30px"
+                    mb={10}
+                >
                     Gestion des réservations
                 </Heading>
 
