@@ -164,9 +164,16 @@ function MyAccount() {
           p={6}
           borderRadius="md"
           bg="rgba(0,0,0,0.3)"
-          borderLeft="3px solid"
-          borderColor="zombieland.primary"
           boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+          transition="all 0.3s ease"
+          border="2px solid"
+          borderColor="zombieland.primary"
+          cursor="pointer"
+          _hover={{
+            transform: "translateY(-4px)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+            borderColor: "zombieland.cta1orange",
+          }}
         >
           <Text color="zombieland.white" fontFamily="body" fontWeight="bold" fontSize="18px" mb={4} textAlign="center">
             Modifier mes informations
@@ -259,13 +266,13 @@ function MyAccount() {
         </Box>
 
         {/* Reservations preview */}
-        <Box w="100%" maxW="500px" mb={6}>
+        <Box w="100%" maxW="500px" mb={6} >
           <Text color="zombieland.white" fontFamily="body" fontWeight="bold" fontSize="18px" mb={4} textAlign="center">
-            Mes prochaines réservations
+            Mes réservations
           </Text>
 
           {reservations.filter((r: any) => r.status !== 'CANCELLED').length === 0 ? (
-            <Text color="zombieland.white" fontFamily="body" fontWeight="300" textAlign="center">
+            <Text color="zombieland.white" fontFamily="body" fontWeight="300" textAlign="center" >
               Vous n'avez pas encore de réservations.
             </Text>
           ) : (
@@ -325,7 +332,8 @@ function MyAccount() {
           bg="rgba(0,0,0,0.3)"
           borderLeft="3px solid"
           borderColor="zombieland.warningprimary"
-          boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+          boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)
+          "
         >
           <Text color="zombieland.warningprimary" fontFamily="body" fontWeight="bold" fontSize="18px" mb={2} textAlign="center">
             Zone dangereuse
