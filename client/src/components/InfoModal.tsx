@@ -6,9 +6,10 @@ interface InfoModalProps {
     onClose: () => void
     title: string
     message: string
+    titleColor?: string // white default
 }
 
-function InfoModal({ isOpen, onClose, title, message }: InfoModalProps) {
+function InfoModal({ isOpen, onClose, title, message, titleColor = "zombieland.white" }: InfoModalProps) {
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered motionPreset="none">
             <ModalOverlay bg="blackAlpha.800" />
@@ -18,7 +19,7 @@ function InfoModal({ isOpen, onClose, title, message }: InfoModalProps) {
                 borderColor="zombieland.primary"
             >
                 <ModalHeader
-                    color="zombieland.white"
+                    color={titleColor}
                     fontFamily="heading"
                     borderBottom="1px solid"
                     borderColor="zombieland.secondary"
