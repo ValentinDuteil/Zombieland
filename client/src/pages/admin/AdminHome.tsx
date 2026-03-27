@@ -120,6 +120,7 @@ const AdminReservations = () => {
 
                 {/* LEFT SIDEBAR — 30% */}
                 <Box
+                    display={{ base: 'none', lg: 'block' }}
                     width={30}
                     minWidth="250px"
                     maxWidth="350px"
