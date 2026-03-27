@@ -137,10 +137,11 @@ function Header() {
                                         Mon profil
                                     </MenuItem>
                                     {firstname && role === 'ADMIN' && (
-                                        <Box display={{ base: 'block', lg: 'none' }}>
+                                        <>
                                             <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin">
                                                 Dashboard
                                             </MenuItem>
+                                        <Box display={{ base: 'block', lg:'none' }}>
                                             {isAdminPage && (
                                                 <>
                                                     <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/attractions">
@@ -152,9 +153,10 @@ function Header() {
                                                     <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/members">
                                                         Membres
                                                     </MenuItem>
-                                                </>
+                                                    </>
                                             )}
-                                        </Box>
+                                            </Box>
+                                            </>
                                     )}
 
                                     <MenuItem
