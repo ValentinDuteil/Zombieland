@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { Box, Button, Heading, Text, Flex, Spinner } from '@chakra-ui/react'
-import bgImage from '../assets/bg-image.png'
-import bgBouton from '../assets/bg-bouton.png'
+import bgImage from '../assets/bg-image.webp'
+import bgBouton from '../assets/bg-bouton.webp'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { useNavigate } from 'react-router-dom'

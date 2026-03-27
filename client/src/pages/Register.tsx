@@ -4,8 +4,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { Box, Button, Heading, Flex, Input, Text } from '@chakra-ui/react'
-import bgImage from '../assets/bg-image.png'
-import bgBouton from '../assets/bg-bouton.png'
+import bgImage from '../assets/bg-image.webp'
+import bgBouton from '../assets/bg-bouton.webp'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 

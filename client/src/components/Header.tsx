@@ -3,7 +3,7 @@
 import { Box, Flex, Image, Text, IconButton, Menu, MenuItem, MenuList, MenuButton } from '@chakra-ui/react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.webp'
 import { FaUserCircle } from 'react-icons/fa'
 import axios from 'axios'
 import { API_URL } from '@/config/api'

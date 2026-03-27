@@ -1,7 +1,7 @@
 import { Box, Image, Heading, Text, Badge, Button } from "@chakra-ui/react";
 import type { Attraction } from "@/types";
-import Card from '../assets/Card.png';
-import bgBouton from '../assets/bg-bouton.png'
+import Card from '../assets/Card.webp';
+import bgBouton from '../assets/bg-bouton.webp'
 import { useNavigate } from "react-router-dom";
 
 

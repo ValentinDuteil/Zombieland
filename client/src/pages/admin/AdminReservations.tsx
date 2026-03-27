@@ -6,7 +6,7 @@ import { API_URL } from "@/config/api";
 import type { Reservation } from "@/types/Reservations";
 import { Badge, Box, Button, Flex, Input, Spinner, Text } from "@chakra-ui/react";
 import AdminTable from "@/components/AdminTable";
-import bgImage from '../../assets/bgadminpage.png'
+import bgImage from '../../assets/bgadminpage.webp'
 import ConfirmModal from "@/components/ConfirmModal";
 import AdminMenu from "@/components/AdminNavlinkMenu";
 import { useNavigate } from "react-router-dom";

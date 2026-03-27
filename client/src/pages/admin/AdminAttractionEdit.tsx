@@ -5,17 +5,17 @@ import { useNavigate, useParams } from "react-router-dom"
 import { FaCamera } from "react-icons/fa"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
-import bgImage from '../../assets/bg-image.png'
-import bgBouton from '../../assets/bg-bouton.png'
-import Card from '../../assets/Card.png'
+import bgImage from '../../assets/bg-image.webp'
+import bgBouton from '../../assets/bg-bouton.webp'
+import Card from '../../assets/Card.webp'
 import ConfirmModal from "../../components/ConfirmModal"
 import type { AttractionWithCategories } from "@types"
-import img1 from "../../assets/quarantaine.png"
-import img2 from "../../assets/ridebiomasse.png"
-import img3 from "../../assets/marche.png"
-import img4 from "../../assets/grand8.png"
-import img5 from "../../assets/fossecadavres.png"
-import img6 from "../../assets/centrerecherche.png"
+import img1 from "../../assets/quarantaine.webp"
+import img2 from "../../assets/ridebiomasse.webp"
+import img3 from "../../assets/marche.webp"
+import img4 from "../../assets/grand8.webp"
+import img5 from "../../assets/fossecadavres.webp"
+import img6 from "../../assets/centrerecherche.webp"
 
 // Map attraction id to local image
 const attractionImages: Record<number, string> = {

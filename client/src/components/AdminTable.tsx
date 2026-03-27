@@ -1,6 +1,6 @@
 // generic table component reusable for all admin pages
 import { Table, Thead, Tbody, Tr, Th, Td, TableContainer } from "@chakra-ui/react"
-import bgAdmin from '../assets/bgadmin.png'
+import bgAdmin from '../assets/bgadmin.webp'
 
 
 

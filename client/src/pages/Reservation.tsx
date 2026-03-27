@@ -14,8 +14,8 @@ import 'react-day-picker/style.css'
 import '../styles/calendar.css'
 import { fr } from 'react-day-picker/locale'
 // Import background images and card image
-import bgImage from '../assets/bg-image.png'
-import bgBouton from '../assets/bg-bouton.png'
+import bgImage from '../assets/bg-image.webp'
+import bgBouton from '../assets/bg-bouton.webp'
 //Import utility functions to handle date formats
 import { toLocalDateString, isoToLocalDate, getTodayMidnight } from '../utils/date'
 import InfoModal from '../components/InfoModal'

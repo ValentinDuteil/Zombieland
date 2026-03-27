@@ -4,8 +4,8 @@ import { Box, Text, Button, Flex, Input, Spinner } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
-import bgImage from '../../assets/bgadminpage.png'
-import bgBouton from '../../assets/bg-bouton.png'
+import bgImage from '../../assets/bgadminpage.webp'
+import bgBouton from '../../assets/bg-bouton.webp'
 import type { Attraction } from "@types"
 import AdminTable from "../../components/AdminTable"
 import AdminMenu from "../../components/AdminNavlinkMenu"

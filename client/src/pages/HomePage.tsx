@@ -6,20 +6,20 @@ import Footer from "../components/Footer"
 import { Box, Image, Button, Text, Wrap, WrapItem, IconButton, Flex, Heading, Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody, useDisclosure } from "@chakra-ui/react"
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu"
 // Images
-import bgButton from '../assets/bg-bouton.png'
-import bgImage from '../assets/bg-image.png'
-import zombi from '../assets/zombi.png'
-import fosse from '../assets/fosse.png'
-import grandhuit from '../assets/grandhuit.png'
-import reception from '../assets/reception.png'
-import train from '../assets/train.png'
-import parkEntryLandscape from '../assets/park-entry-landscape.png'
-import img1 from "../assets/quarantaine.png"
-import img2 from "../assets/ridebiomasse.png"
-import img3 from "../assets/marche.png"
-import img4 from "../assets/grand8.png"
-import img5 from "../assets/fossecadavres.png"
-import img6 from "../assets/centrerecherche.png"
+import bgButton from '../assets/bg-bouton.webp'
+import bgImage from '../assets/bg-image.webp'
+import zombi from '../assets/zombi.webp'
+import fosse from '../assets/fosse.webp'
+import grandhuit from '../assets/grandhuit.webp'
+import reception from '../assets/reception.webp'
+import train from '../assets/train.webp'
+import parkEntryLandscape from '../assets/park-entry-landscape.webp'
+import img1 from "../assets/quarantaine.webp"
+import img2 from "../assets/ridebiomasse.webp"
+import img3 from "../assets/marche.webp"
+import img4 from "../assets/grand8.webp"
+import img5 from "../assets/fossecadavres.webp"
+import img6 from "../assets/centrerecherche.webp"
 
 
 

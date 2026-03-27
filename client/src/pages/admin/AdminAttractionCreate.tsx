@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom"
 import { FaCamera } from "react-icons/fa"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
-import bgImage from '../../assets/bg-image.png'
-import bgBouton from '../../assets/bg-bouton.png'
-import Card from '../../assets/Card.png'
+import bgImage from '../../assets/bg-image.webp'
+import bgBouton from '../../assets/bg-bouton.webp'
+import Card from '../../assets/Card.webp'
 import ConfirmModal from "../../components/ConfirmModal"
-import defaultImage from "../../assets/quarantaine.png"
+import defaultImage from "../../assets/quarantaine.webp"
 
 const categoryColors: Record<string, string> = {
     LOW: "green",

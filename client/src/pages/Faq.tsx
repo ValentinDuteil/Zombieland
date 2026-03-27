@@ -1,7 +1,7 @@
 // FAQ and legal mentions page
 
 import { Box, Heading, Text, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon } from '@chakra-ui/react'
-import bgImage from '../assets/bg-image.png'
+import bgImage from '../assets/bg-image.webp'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
