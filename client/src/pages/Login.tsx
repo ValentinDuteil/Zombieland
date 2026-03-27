@@ -41,11 +41,13 @@ function Login() {
       minH="100vh"
       bgImage={`url(${bgImage})`}
       bgSize="cover"
-      bgPosition="center"
-      bgAttachment={{ base: "scroll", lg: "fixed" }}
+      bgRepeat="no-repeat"
+      bgPosition="center top"
+      bgAttachment="fixed"
       display="flex"
       flexDirection="column"
-
+      w="100%"
+      overflow="hidden"
     >
       <Header />
 

@@ -112,9 +112,13 @@ const AdminReservations = () => {
             display="flex"
             flexDirection="column"
             minHeight="100vh"
-            bgAttachment={{ base: "scroll", lg: "fixed" }}
+            bgAttachment="fixed"
             bgImage={`url(${bgImage})`}
             bgSize="cover"
+            bgRepeat="no-repeat"
+            bgPosition="center top"
+            w="100%"
+            overflow="hidden"
         >
             <Header />
             {/* MAIN LAYOUT : sidebar + content */}

@@ -129,10 +129,13 @@ function MyAccount() {
       minH="100vh"
       bgImage={`url(${bgImage})`}
       bgSize="cover"
-      bgPosition="center"
-      bgAttachment={{ base: "scroll", lg: "fixed" }}
+      bgRepeat="no-repeat"
+      bgAttachment="fixed"
+      bgPosition="center top"
       display="flex"
       flexDirection="column"
+      w="100%"
+      overflow="hidden"
     >
       <Header />
 
