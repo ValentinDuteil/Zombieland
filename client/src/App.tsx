@@ -42,7 +42,7 @@ const App = () => {
             <ScrollToTop />
 
             <Routes>
-                <Route path="/admin" element={<AdminHomePage />}>
+                <Route path="/admin" element={<AdminGuard><AdminHomePage /></AdminGuard>}>
                     {/* <Route index element={<AdminDashboard />} />
                     <Route path="members" element={<AdminMembers />} />
                     <Route path="attractions" element={<AdminAttractions />} />*/}
@@ -64,8 +64,8 @@ const App = () => {
                 <Route path="/admin/attractions" element={<AdminGuard><AdminAttractions /></AdminGuard>} />
                 <Route path="/admin/attractions/create" element={<AdminGuard><AdminAttractionCreate /></AdminGuard>} />
                 <Route path="/admin/attractions/:id/edit" element={<AdminGuard><AdminAttractionEdit /></AdminGuard>} />
-                <Route path="/admin/reservations" element={<AdminReservations />} />
-                <Route path="/admin/members" element={<AdminMembers />} />
+                <Route path="/admin/reservations" element={<AdminGuard><AdminReservations /></AdminGuard>} />
+                <Route path="/admin/members" element={<AdminGuard><AdminMembers /></AdminGuard>} />
                 <Route path="/admin/members/:id" element={<AdminGuard><AdminMemberEdit /></AdminGuard>} />
 
             </Routes>

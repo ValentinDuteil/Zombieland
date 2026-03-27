@@ -142,5 +142,6 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
     </Modal>
   )
 }
+}
 
 export default LoginModal

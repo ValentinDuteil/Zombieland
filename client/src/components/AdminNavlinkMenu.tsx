@@ -3,45 +3,7 @@ import { VStack, Flex, Box } from "@chakra-ui/react"
 import { NavLink } from "react-router-dom"
 
 export default function AdminMenu() {
-    // const navigate = useNavigate()
-    // const [loading, setLoading] = useState(true)
-
-    // useEffect(() => {
-    //     const checkAuth = async () => {
-    //         try {
-    //             const res = await fetch("/api/auth/me", {
-    //                 credentials: "include",
-    //             })
-
-    //             if (!res.ok) {
-    //                 navigate("/login")
-    //                 return
-    //             }
-
-    //             const user = await res.json()
-
-    //             if (user.role !== "ADMIN") {
-    //                 navigate("/")
-    //                 return
-    //             }
-
-    //             setLoading(false)
-    //         } catch (err) {
-    //             navigate("/login")
-    //         }
-    //     }
-
-    //     checkAuth()
-    // }, [navigate])
-
-    // if (loading) {
-    //     return (
-    //         <div style={{ padding: 40 }}>
-    //             Vérification des accès…
-    //         </div>
-    //     )
-    // }
-
+    
     return (
         <Flex height="100%">
             {/* Sidebar */}
