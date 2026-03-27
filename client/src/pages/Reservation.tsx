@@ -19,7 +19,8 @@ import bgBouton from '../assets/bg-bouton.png'
 //Import utility functions to handle date formats
 import { toLocalDateString, isoToLocalDate, getTodayMidnight } from '../utils/date'
 import InfoModal from '../components/InfoModal'
-
+// Navigation
+import { useNavigate } from 'react-router-dom'
 
 function Reservation() {
 
@@ -36,6 +37,8 @@ function Reservation() {
     // STATE
     //======
 
+    // navigate hook to refresh the page after successful reservation and show the updated availabilities
+    const navigate = useNavigate()
     // nbTickets store the number of tickets chosen by the user (1 by default)
     const [nbTickets, setNbTickets] = useState<string>('1')
     // date stores the chosen visit date (default => today)
@@ -420,7 +423,10 @@ function Reservation() {
 
             <InfoModal
                 isOpen={isSuccessModalOpen}
-                onClose={() => setIsSuccessModalOpen(false)}
+                onClose={() => {
+                    setIsSuccessModalOpen(false)
+                    navigate(0)
+                }}
                 title="Réservation confirmée ! 🧟"
                 message="Votre place est confirmée et enregistrée dans votre profil. Le compte à rebours a commencé : vous pourrez encore annuler jusqu’à 10 jours avant votre entrée… après cela, il sera trop tard pour faire demi-tour..."
                 titleColor="green.500"
