@@ -1,7 +1,7 @@
 // Admin page to see the list of the members, filter them, edit and delete them
 
 import { useEffect, useState } from "react"
-import { Box, Text, Input, Flex, Spinner } from "@chakra-ui/react"
+import { Box, Button, Text, Input, Flex, Spinner } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
@@ -11,6 +11,7 @@ import AdminNavlinkMenu from "@/components/AdminNavlinkMenu"
 import type { Member } from "@/types/Member"
 import { formatDateForDisplay } from "@/utils/date"
 
+import bgBouton from '../../assets/bg-bouton.png'
 import bgImage from '../../assets/bg-image.png'
 
 const AdminMembers = () => {
@@ -59,15 +60,15 @@ const AdminMembers = () => {
       }
       // If we sort by role, we want admins first in asc and members first in desc
       if (sort.by === "role") {
-        return a.role.localeCompare(b.role)* (sort.direction === "asc" ? 1 : -1)
+        return a.role.localeCompare(b.role) * (sort.direction === "asc" ? 1 : -1)
       }
       // If we sort by email
       if (sort.by === "email") {
-        return a.email.localeCompare(b.email)* (sort.direction === "asc" ? 1 : -1)
+        return a.email.localeCompare(b.email) * (sort.direction === "asc" ? 1 : -1)
       }
       // If we sort by firstname
       if (sort.by === "firstname") {
-        return a.firstname.localeCompare(b.firstname)* (sort.direction === "asc" ? 1 : -1)
+        return a.firstname.localeCompare(b.firstname) * (sort.direction === "asc" ? 1 : -1)
       }
       // If not, we sort by lastname by default
       return a.lastname.localeCompare(b.lastname) * (sort.direction === "asc" ? 1 : -1)
@@ -101,6 +102,7 @@ const AdminMembers = () => {
       <Flex flex="1">
         {/*LEFT COLUMN*/}
         <Box
+          display={{ base: 'none', lg: 'block' }}
           minWidth="240px"
           maxWidth="240px"
           borderRight="1px solid rgba(255,255,255,0.1)"
@@ -127,11 +129,42 @@ const AdminMembers = () => {
             Gestion des membres
           </Text>
 
+          {/* Create member button */}
+                    <Flex justifyContent="center" mt={8} mb={6}>
+                        <Button
+                            bgImage={`url(${bgBouton})`}
+                            bgSize="cover"
+                            bgPosition="center"
+                            color="zombieland.white"
+                            border="none"
+                            _hover={{
+                                opacity: 0.85,
+                                boxShadow: "0 8px 16px rgba(0,0,0,0.6), 0 0 30px rgba(250, 130, 52, 0.3)"
+                            }}
+                            fontFamily="heading"
+                            fontSize="18px"
+                            py={6}
+                            px={12}
+                            borderRadius="md"
+                            letterSpacing="1px"
+                            fontWeight="bold"
+                            boxShadow="0 4px 15px rgba(250, 130, 52, 0.25)"
+                            transition="all 0.3s ease"
+                            onClick={() => navigate('/register')}
+                        >
+                            Créer un nouveau membre
+                        </Button>
+                    </Flex>
+
           {/* Searchbar */}
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un membre..."
+            color="zombieland.white"
+            borderColor="zombieland.primary"
+            bg="rgba(0,0,0,0.3)"
+            mb={6}
           />
 
           {/* Loading spinner */}

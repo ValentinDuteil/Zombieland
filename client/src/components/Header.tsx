@@ -33,7 +33,7 @@ function Header() {
             setIsLoading(false)
         }
         fetchUser()
-    }, [])
+    }, [location]) // re-fetch user on every route change to sync header state after login/logout via modal
 
     const handleLogout = async () => {
         try {
@@ -136,21 +136,27 @@ function Header() {
                                     >
                                         Mon profil
                                     </MenuItem>
-                                    {firstname && role === 'ADMIN' && isAdminPage && (
-                                        <Box display={{ base: 'block', lg: 'none' }}>
+                                    {firstname && role === 'ADMIN' && (
+                                        <>
                                             <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin">
                                                 Dashboard
                                             </MenuItem>
-                                            <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/attractions">
-                                                Attractions
-                                            </MenuItem>
-                                            <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/reservations">
-                                                Réservations
-                                            </MenuItem>
-                                            <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/members">
-                                                Membres
-                                            </MenuItem>
-                                        </Box>
+                                        <Box display={{ base: 'block', lg:'none' }}>
+                                            {isAdminPage && (
+                                                <>
+                                                    <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/attractions">
+                                                        Attractions
+                                                    </MenuItem>
+                                                    <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/reservations">
+                                                        Réservations
+                                                    </MenuItem>
+                                                    <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/members">
+                                                        Membres
+                                                    </MenuItem>
+                                                    </>
+                                            )}
+                                            </Box>
+                                            </>
                                     )}
 
                                     <MenuItem

@@ -136,7 +136,7 @@ const AdminReservations = () => {
                         Gestion des réservations
                     </Text>
 
-                    {/* Filter button */}
+                    {/* Searchbar */}
                     <Flex justifyContent={{ base: "center", lg: "flex-end" }} mb={6}>
                         <Input
                             value={search}
