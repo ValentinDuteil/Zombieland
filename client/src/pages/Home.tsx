@@ -96,14 +96,14 @@ const HomePage = () => {
         : attractions;
     return (
         <Box
-            display="flex"
-            flexDirection="column"
+            minH="100vh"
             bgImage={`url(${bgImage})`}
-            bgAttachment="fixed"
             bgSize="cover"
             bgRepeat="no-repeat"
             bgPosition="center top"
-            minH="100vh"
+            bgAttachment="fixed"
+            display="flex"
+            flexDirection="column"
             w="100%"
             overflow="hidden"
         >

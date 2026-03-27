@@ -4,6 +4,7 @@ import AttractionCard from "../components/AttractionsCard";
 import type { Attraction } from "@types";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { PageBackground } from "../components/PageBackground";
 import bgImage from '../assets/bg-image.png';
 import img1 from "../assets/quarantaine.png"
 import img2 from "../assets/ridebiomasse.png"
@@ -53,18 +54,7 @@ const AttractionsPage = () => {
         : attractions;
 
 return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            minHeight="100vh"
-            bgAttachment="fixed"
-            bgImage={`url(${bgImage})`}
-            bgSize="cover"
-            bgRepeat="no-repeat"
-            bgPosition="center top"
-            w="100%"
-            overflow="hidden"
-        >
+        <PageBackground bgImage={bgImage}>
             <Header />
 
             <Box flex="1" p={3} pt="100px" pb="100px">
@@ -121,7 +111,7 @@ return (
             </Box>
 
             <Footer />
-        </Box>
+        </PageBackground>
     );
 };
 

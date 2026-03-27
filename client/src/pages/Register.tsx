@@ -8,6 +8,7 @@ import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { PageBackground } from '../components/PageBackground'
 
 function Register() {
   //setting the changing of the inputs and the validation message as well
@@ -50,18 +51,7 @@ function Register() {
   }
 
 return (
-  <Box
-    minH="100vh"
-    bgImage={`url(${bgImage})`}
-    bgSize="cover"
-    bgRepeat="no-repeat"
-    bgPosition="center top"
-    bgAttachment="fixed"
-    display="flex"
-    flexDirection="column"
-    w="100%"
-    overflow="hidden"
-  >
+  <PageBackground bgImage={bgImage}>
     <Header />
 
     <Box
@@ -213,7 +203,7 @@ return (
     </Box>
 
     <Footer />
-  </Box>
+  </PageBackground>
 )
 }
 
