@@ -8,7 +8,6 @@ import Footer from '../components/Footer'
 function Faq() {
     return (
         <Box
-            minH="100vh"
             bgImage={`url(${bgImage})`}
             bgSize="cover"
             bgPosition="center"
