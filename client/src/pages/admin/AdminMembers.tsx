@@ -99,6 +99,7 @@ const AdminMembers = () => {
       bgSize="cover"
     >
       <Header />
+
       <Flex flex="1">
         {/*LEFT COLUMN*/}
         <Box
