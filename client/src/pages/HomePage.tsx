@@ -99,10 +99,13 @@ const HomePage = () => {
             display="flex"
             flexDirection="column"
             bgImage={`url(${bgImage})`}
-            bgAttachment={{ base: "scroll", lg: "fixed" }}
+            bgAttachment="fixed"
             bgSize="cover"
+            bgRepeat="no-repeat"
+            bgPosition="center top"
             w="100%"
             overflow="hidden"
+            minH="100vh"
         >
             <Header />
 

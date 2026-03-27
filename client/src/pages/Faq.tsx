@@ -10,10 +10,14 @@ function Faq() {
         <Box
             bgImage={`url(${bgImage})`}
             bgSize="cover"
-            bgPosition="center"
-            bgAttachment={{ base: "scroll", lg: "fixed" }}
+            bgRepeat="no-repeat"
+            bgAttachment="fixed"
+            bgPosition="center top"
             display="flex"
             flexDirection="column"
+            minH="100vh"
+            w="100%"
+            overflow="hidden"
         >
             <Header />
 

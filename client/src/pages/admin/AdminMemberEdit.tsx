@@ -59,7 +59,7 @@ const AdminMemberEdit = () => {
   }
 
   return (
-    <Box display="flex" flexDirection="column" minHeight="100vh" backgroundImage={`url(${bgImage})`} bgSize="cover">
+    <Box display="flex" flexDirection="column" minHeight="100vh" bgImage={`url(${bgImage})`} bgSize="cover" bgRepeat="no-repeat" bgAttachment="fixed" bgPosition="center top" w="100%" overflow="hidden">
       <Header />
       <Flex flex="1">
         <Box minWidth="240px" maxWidth="240px" borderRight="1px solid rgba(255,255,255,0.1)">

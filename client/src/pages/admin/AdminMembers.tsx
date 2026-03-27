@@ -95,8 +95,13 @@ const AdminMembers = () => {
       display="flex"
       flexDirection="column"
       minHeight="100vh"
-      backgroundImage={`url(${bgImage})`}
+      bgImage={`url(${bgImage})`}
       bgSize="cover"
+      bgRepeat="no-repeat"
+      bgAttachment="fixed"
+      bgPosition="center top"
+      w="100%"
+      overflow="hidden"
     >
       <Header />
       <Flex flex="1">
