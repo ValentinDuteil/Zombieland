@@ -47,6 +47,7 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
 
         setMessage(isAxiosError(error)?error.response?.data || message : message)
   }
+}
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -142,6 +143,6 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
     </Modal>
   )
 }
-}
+
 
 export default LoginModal
