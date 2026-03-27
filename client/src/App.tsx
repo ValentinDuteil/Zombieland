@@ -28,7 +28,7 @@ import AdminAttractionCreate from './pages/admin/AdminAttractionCreate'
 
 
 import Faq from './pages/Faq'
-import HomePage from './pages/Home'
+import Home from './pages/Home'
 import Contact from './pages/Contact'
 import Plan from './pages/Plan'
 import AdminHomePage from './pages/admin/AdminHome'
@@ -58,7 +58,7 @@ const App = () => {
                 <Route path="/attractions" element={<AttractionsPage />} />
                 <Route path="/attractions/:id" element={<AttractionDetailPage />} />
                 <Route path='/faq' element={<Faq />} />
-                <Route path='/' element={<HomePage />} />
+                <Route path='/' element={<Home />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/plan" element={<Plan />} />
                 <Route path="/admin/attractions" element={<AdminGuard><AdminAttractions /></AdminGuard>} />

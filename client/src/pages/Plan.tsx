@@ -8,6 +8,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import bgBouton from '../assets/bg-bouton.png'
 import { useState } from 'react'
+import { PageBackground } from '../components/PageBackground'
 
 // Park services
 const services = [
@@ -23,18 +24,7 @@ function Plan() {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (
-        <Box
-            minH="100vh"
-            bgImage={`url(${bgImage})`}
-            bgSize="cover"
-            bgRepeat="no-repeat"
-            bgPosition="center top"
-            bgAttachment="fixed"
-            display="flex"
-            flexDirection="column"
-            w="100%"
-            overflow="hidden"
-        >
+        <PageBackground bgImage={bgImage}>
             <Header />
 
             <Box
@@ -257,9 +247,8 @@ function Plan() {
                     </ModalBody>
                 </ModalContent>
             </Modal>
-
             <Footer />
-        </Box >
+        </PageBackground>
     )
 }
 

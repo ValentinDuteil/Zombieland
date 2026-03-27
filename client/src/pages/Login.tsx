@@ -8,6 +8,7 @@ import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { PageBackground } from '../components/PageBackground'
 
 
 function Login() {
@@ -37,18 +38,7 @@ function Login() {
 
   return (
 
-    <Box
-      minH="100vh"
-      bgImage={`url(${bgImage})`}
-      bgSize="cover"
-      bgRepeat="no-repeat"
-      bgPosition="center top"
-      bgAttachment="fixed"
-      display="flex"
-      flexDirection="column"
-      w="100%"
-      overflow="hidden"
-    >
+    <PageBackground bgImage={bgImage}>
       <Header />
 
       <Box
@@ -155,9 +145,8 @@ function Login() {
           )}
         </Box>
       </Box>
-
       <Footer />
-    </Box>
+    </PageBackground>
   )
 }
 

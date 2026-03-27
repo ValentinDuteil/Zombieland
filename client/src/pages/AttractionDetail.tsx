@@ -7,6 +7,7 @@ import axios from "axios";
 import { Badge, Box, Button, Flex, Heading, Image, Text, Wrap, WrapItem } from "@chakra-ui/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { PageBackground } from "@/components/PageBackground";
 import bgImage from '../assets/bg-image.png'
 import Card from '../assets/Card.png';
 import { API_URL } from '../config/api.ts'
@@ -82,18 +83,7 @@ const AttractionDetailPage = () => {
     return <p>Attraction non trouvé</p>
   }
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      minHeight="100vh"
-      bgAttachment="fixed"
-      bgImage={`url(${bgImage})`}
-      bgSize="cover"
-      bgRepeat="no-repeat"
-      bgPosition="center top"
-      w="100%"
-      overflow="hidden"
-    >
+    <PageBackground bgImage={bgImage}>
       <Header />
 
       <Box flex="1" p={3} pt={{ base: "60px", lg: "100px" }} pb="100px">
@@ -262,7 +252,7 @@ const AttractionDetailPage = () => {
       {error && <Text>{error}</Text>}
 
       <Footer />
-    </Box>
+    </PageBackground>
   );
 };
 

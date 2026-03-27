@@ -18,6 +18,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import bgImage from '../assets/bg-image.png'
 import bgBouton from '../assets/bg-bouton.png'
+import { PageBackground } from '../components/PageBackground'
 
 //We will need on this page : 
 //  connected user informations (so we need his ID)
@@ -125,18 +126,7 @@ function MyAccount() {
   }
 
   return (
-    <Box
-      minH="100vh"
-      bgImage={`url(${bgImage})`}
-      bgSize="cover"
-      bgRepeat="no-repeat"
-      bgAttachment="fixed"
-      bgPosition="center top"
-      display="flex"
-      flexDirection="column"
-      w="100%"
-      overflow="hidden"
-    >
+    <PageBackground bgImage={bgImage}>
       <Header />
 
       <Box
@@ -425,7 +415,7 @@ function MyAccount() {
         message="Êtes-vous sûr de vouloir supprimer votre compte ?"
       />
       <Footer />
-    </Box>
+    </PageBackground>
   )
 }
 

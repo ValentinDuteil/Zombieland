@@ -4,21 +4,11 @@ import { Box, Heading, Text, Accordion, AccordionItem, AccordionButton, Accordio
 import bgImage from '../assets/bg-image.png'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { PageBackground } from '../components/PageBackground'
 
 function Faq() {
     return (
-        <Box
-            bgImage={`url(${bgImage})`}
-            bgSize="cover"
-            bgRepeat="no-repeat"
-            bgAttachment="fixed"
-            bgPosition="center top"
-            display="flex"
-            flexDirection="column"
-            minH="100vh"
-            w="100%"
-            overflow="hidden"
-        >
+        <PageBackground bgImage={bgImage}>
             <Header />
 
             <Box
@@ -277,7 +267,7 @@ function Faq() {
             </Box>
 
             <Footer />
-        </Box>
+        </PageBackground>
     )
 }
 
