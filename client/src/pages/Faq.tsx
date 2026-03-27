@@ -234,7 +234,18 @@ function Faq() {
                             bg: "rgba(0,0,0,0.5)"
                         }}>
                         <Text color="zombieland.white" fontFamily="body" fontWeight="bold" mb={2}>Données personnelles</Text>
-                        <Text color="zombieland.white" fontFamily="body" fontWeight="300">Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ces droits : contact@au-dela-des-morts.fr</Text>
+                        <Text color="zombieland.white" fontFamily="body" fontWeight="300">
+                            Conformément au{" "}
+                            <a
+                                href="https://www.economie.gouv.fr/entreprises/gerer-son-entreprise-au-quotidien/assurer-sa-cybersecurite-et-la-protection-de-ses/le#:~:text=Le%20r%C3%A8glement%20g%C3%A9n%C3%A9ral%20sur%20la%20protection%20des%20donn%C3%A9es%20(RGPD)%20est,dans%20toute%20l'Union%20europ%C3%A9enne."
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: "inherit", textDecoration: "underline" }}
+                            >
+                                RGPD
+                            </a>
+                            , vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ces droits : contact@au-dela-des-morts.fr
+                        </Text>
                     </Box>
 
                     <Box mb={4} p={6} borderRadius="md" bg="rgba(0,0,0,0.3)" borderLeft="3px solid" borderColor="zombieland.primary" transition="all 0.3s ease"
