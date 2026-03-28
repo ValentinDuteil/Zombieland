@@ -25,6 +25,8 @@ import img6 from "../assets/centrerecherche.png"
 
 
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "@/config/api";
+import axios from "axios";
 
 // Conversion catégories → enum backend
 const categoryToEnum: Record<string, string> = {
@@ -70,11 +72,8 @@ const HomePage = () => {
     useEffect(() => {
         const fetchAttractions = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions`);
-                if (!res.ok) throw new Error("Erreur récupération attractions");
-
-                const data: Attraction[] = await res.json();
-                setAttractions(data);
+                const res = await axios.get<Attraction[]>(`${API_URL}/api/attractions`);
+                setAttractions(res.data);
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (err) {
