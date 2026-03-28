@@ -12,6 +12,8 @@ import img3 from "../assets/marche.png"
 import img4 from "../assets/grand8.png"
 import img5 from "../assets/fossecadavres.png"
 import img6 from "../assets/centrerecherche.png"
+import { API_URL } from "@/config/api";
+import axios from "axios";
 
 const categoryToEnum: Record<string, string> = {
     "Peur Acceptable": "LOW",
@@ -37,10 +39,9 @@ const AttractionsPage = () => {
     useEffect(() => {
         const fetchAttractions = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions`);
-                if (!res.ok) throw new Error("Erreur récupération attractions");
-                const data: Attraction[] = await res.json();
-                setAttractions(data);
+                const res = await axios.get<Attraction[]>(`${API_URL}/api/attractions`);
+                
+                setAttractions(res.data);
             } catch (err) {
                 setError("Erreur lors de la récupération des attractions")
             }
