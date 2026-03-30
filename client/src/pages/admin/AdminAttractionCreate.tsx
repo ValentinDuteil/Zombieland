@@ -12,6 +12,8 @@ import ConfirmModal from "../../components/ConfirmModal"
 import defaultImage from "../../assets/quarantaine.webp"
 import { API_URL } from "@/config/api"
 import axios from "axios"
+import { isAxiosError } from "axios"
+
 
 const categoryColors: Record<string, string> = {
     LOW: "green",
@@ -21,16 +23,17 @@ const categoryColors: Record<string, string> = {
 
 const AdminAttractionCreate = () => {
     const navigate = useNavigate()
-    const [error, setError] = useState<string | null>(null)
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [error, setError] = useState<string | null>("");
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     // Form fields state — all empty by default
-    const [name, setName] = useState("")
-    const [description, setDescription] = useState("")
-    const [minHeight, setMinHeight] = useState<number | "">("")
-    const [duration, setDuration] = useState<number | "">("")
-    const [capacity, setCapacity] = useState<number | "">("")
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
+    const [minHeight, setMinHeight] = useState<number | "">('')
+    const [duration, setDuration] = useState<number | "">('')
+    const [capacity, setCapacity] = useState<number | "">('')
     const [intensity, setIntensity] = useState<"LOW" | "MEDIUM" | "HIGH">("LOW")
     const [previewImage, setPreviewImage] = useState<string | null>(null)
 
@@ -46,7 +49,7 @@ const AdminAttractionCreate = () => {
         let errorMessage = "Erreur lors de la création de l'attraction"
         try {
             // Create the attraction first
-            const res = await axios.post(`${API_URL}/api/attractions`, 
+            const res = await axios.post(`${API_URL}/api/attractions`,
                 {
                     name,
                     description,
@@ -58,7 +61,7 @@ const AdminAttractionCreate = () => {
                 },
                 {
                     withCredentials: true,
-            });
+                });
 
             const data = res.data
 
@@ -66,26 +69,35 @@ const AdminAttractionCreate = () => {
             if (fileInputRef.current?.files?.[0]) {
                 const formData = new FormData()
                 formData.append('image', fileInputRef.current.files[0])
-                
-                errorMessage= "Attraction créée mais erreur lors de l'upload de l'image"
 
-                await axios.patch(`${API_URL}/api/attractions/${data.id_ATTRACTION}/image`, 
+                errorMessage = "Attraction créée mais erreur lors de l'upload de l'image"
+
+                await axios.patch(`${API_URL}/api/attractions/${data.id_ATTRACTION}/image`,
                     formData
-                ,{
-                    withCredentials: true,
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                })
+                    , {
+                        withCredentials: true,
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    })
             }
             // Redirect to admin attractions page after success
             setTimeout(() => navigate('/admin/attractions'), 1500)
-        } catch (error) {
-            setError(errorMessage)
-            // premier if
-            // setError("Erreur lors de la création de l'attraction")
-                
-            //deuxieme if
-            // setError("Attraction créée mais erreur lors de l'upload de l'image")
-                
+        } catch (err) {
+            if (isAxiosError(err)) {
+                if (err.response?.data.details) {
+                    // Zod field errors
+                    const newErrors: Record<string, string> = {}
+                    err.response?.data.details.forEach((d: { champ: string, message: string }) => {
+                        newErrors[d.champ] = d.message
+                    })
+                    setErrors(newErrors)
+                } else {
+                    // Generic back error
+                    setError(err.response?.data.message || errorMessage)
+                }
+            } else {
+                // Network or unexpected error
+                setError(errorMessage)
+            }
         }
     }
 
@@ -124,7 +136,7 @@ const AdminAttractionCreate = () => {
                 minH="70vh"
                 py="100px"
             >
-                {error && <Text color="red.400">{error}</Text>}
+
 
                 <Box w="600px" p={10} borderRadius="md">
 
@@ -148,6 +160,7 @@ const AdminAttractionCreate = () => {
                         _placeholder={{ color: "whiteAlpha.500" }}
                         textAlign="center"
                     />
+                    {errors['name'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['name']}</Text>}
 
                     <Box
                         borderRadius="lg"
@@ -181,8 +194,7 @@ const AdminAttractionCreate = () => {
                                 style={{ display: "none" }}
                                 onChange={handleImageChange}
                             />
-
-                            {/* Intensity select */}
+                            {/* {errors[image] &&<Text color="zombieland.warningprimary" fontSize="sm">{errors[image]}</Text>} */}
                             <Select
                                 position="absolute"
                                 top="-12px"
@@ -241,11 +253,12 @@ const AdminAttractionCreate = () => {
                                 w="80%"
                                 textAlign="center"
                             />
-
+                            {errors['description'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['description']}</Text>}
                             {/* Duration */}
                             <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                 <Text fontSize="sm" whiteSpace="nowrap">Durée :</Text>
                                 <Input {...inputStyle} type="number" value={duration} onChange={(e) => setDuration(e.target.value === "" ? "" : parseInt(e.target.value))} />
+                                {errors['duration'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['duration']}</Text>}
                                 <Text fontSize="sm" color="whiteAlpha.700">min</Text>
                             </Flex>
 
@@ -253,6 +266,7 @@ const AdminAttractionCreate = () => {
                             <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                 <Text fontSize="sm" whiteSpace="nowrap">Capacité :</Text>
                                 <Input {...inputStyle} type="number" value={capacity} onChange={(e) => setCapacity(e.target.value === "" ? "" : parseInt(e.target.value))} />
+                                {errors['capacity'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['capacity']}</Text>}
                                 <Text fontSize="sm" color="whiteAlpha.700">personnes</Text>
                             </Flex>
 
@@ -260,9 +274,10 @@ const AdminAttractionCreate = () => {
                             <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                 <Text fontSize="sm" whiteSpace="nowrap">Taille requise :</Text>
                                 <Input {...inputStyle} type="number" value={minHeight} onChange={(e) => setMinHeight(e.target.value === "" ? "" : parseInt(e.target.value))} />
+                                {errors['min_height'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['min_height']}</Text>}
                                 <Text fontSize="sm" color="whiteAlpha.700">cm</Text>
                             </Flex>
-
+                            {error && <Text color="zombieland.warningprimary">{error}</Text>}
                             {/* Create button */}
                             <Button
                                 bgImage={`url(${bgBouton})`}
