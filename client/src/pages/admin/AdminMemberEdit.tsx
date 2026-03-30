@@ -11,12 +11,15 @@ import bgBouton from '../../assets/bg-bouton.webp'
 import type { Member } from '@/types/Member'
 import { API_URL } from '@/config/api'
 import axios from 'axios'
+import { isAxiosError } from 'axios'
 
 const AdminMemberEdit = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [member, setMember] = useState<Member | null>(null)
   const [form, setForm] = useState({ firstname: '', lastname: '', email: '', password: '', role: 'MEMBER' })
+  const [error, setError] = useState('')
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [message, setMessage] = useState('')
   const [reservations, _setReservations] = useState<any[]>([])
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
@@ -56,11 +59,26 @@ const AdminMemberEdit = () => {
         })
       setMessage('Profil mis à jour !')
 
-    } catch (error) {
-      setMessage('Une erreur est survenue.')
-
-    }
-  }
+    } catch (err) {
+                if (isAxiosError(err)) {
+                    if (err.response?.data.details) {
+                        // Zod field errors
+                        const newErrors: Record<string, string> = {}
+                        err.response?.data.details.forEach((d: { champ: string, message: string }) => {
+                            newErrors[d.champ] = d.message
+                        })
+                        setErrors(newErrors)
+                    } else {
+                        // Generic back error
+                        setError(err.response?.data.message || 'Une erreur est survenue lors de la mise à jour')
+                    }
+                } else {
+                    // Network or unexpected error
+                    setError('Une erreur est survenue lors de la mise à jour')
+                }
+            }
+        }
+    
 
   const handleDelete = async (password: string) => {
     try {
@@ -133,6 +151,7 @@ const AdminMemberEdit = () => {
             borderColor="zombieland.primary"
             bg="rgba(0,0,0,0.3)"
           />
+          {errors['firstname'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['firstname']}</Text>}
 
           <Text
             color="zombieland.white"
@@ -149,6 +168,7 @@ const AdminMemberEdit = () => {
             borderColor="zombieland.primary"
             bg="rgba(0,0,0,0.3)"
           />
+            {errors['lastname'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['lastname']}</Text>}
 
           <Text
             color="zombieland.white"
@@ -164,6 +184,7 @@ const AdminMemberEdit = () => {
             borderColor="zombieland.primary"
             bg="rgba(0,0,0,0.3)"
           />
+            {errors['email'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['email']}</Text>}
 
           <Text
             color="zombieland.white"
@@ -182,6 +203,7 @@ const AdminMemberEdit = () => {
             <option value="MEMBER">Membre</option>
             <option value="ADMIN">Admin</option>
           </Select>
+          {errors['role'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['role']}</Text>}
 
           <Text
             color="zombieland.white"
@@ -198,6 +220,7 @@ const AdminMemberEdit = () => {
             borderColor="zombieland.primary"
             bg="rgba(0,0,0,0.3)"
           />
+          {errors['password'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['password']}</Text>}
 
           <Button
             onClick={() =>
