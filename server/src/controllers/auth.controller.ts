@@ -64,8 +64,8 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   res.cookie('token', token, {
     httpOnly: true,                 // JavaScript can't read it → protection XSS
     secure: true,                  // false for dev (HTTP, localhost), true for prod (HTTPS uniquement)
-    sameSite: 'none',                // cookie is send only from the same website → CSRF protection
-    maxAge: 7 * 24 * 60 * 60 * 1000 // durée de vie en millisecondes
+    sameSite: 'none',                // cookie is send only from the same website "Lax"→ CSRF protection
+    maxAge: 7 * 24 * 60 * 60 * 1000 // lifetime in milliseconds
   })
 
   //9.security, confirmed to the client the creation without returning the password
@@ -119,8 +119,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   res.cookie('token', token, {
     httpOnly: true,                 // JavaScript can't read it → protection XSS
     secure: true,                  // false for dev (HTTP, localhost), true for prod (HTTPS uniquement)
-    sameSite: 'none',                // cookie is send only from the same website → CSRF protection
-    maxAge: 7 * 24 * 60 * 60 * 1000 // durée de vie en millisecondes
+    sameSite: 'none',                // cookie is send only from the same website "Lax"→ CSRF protection
+    maxAge: 7 * 24 * 60 * 60 * 1000 // lifetime in milliseconds
   })
 
   return res.status(200).json({ message: "Connexion réussie" });

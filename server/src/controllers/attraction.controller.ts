@@ -151,7 +151,7 @@ export const deleteAttraction = async (req: Request, res: Response, next: NextFu
 
     // Check password before deleting
     const { password } = req.body ?? {}
- 
+
     // Fetch the admin user from the DB to compare the password
     const user = await prisma.user.findUnique({
         where: { id_USER: req.user!.id }
