@@ -1,0 +1,11 @@
+meta {
+  name: Update profile
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}/api/users/{{userId}}/profile
+  body: none
+  auth: none
+}

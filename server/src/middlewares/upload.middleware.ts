@@ -23,5 +23,6 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
         cb(new Error('Fichier non autorisé'))
     }
 }
-
-export const upload = multer({ storage, fileFilter })
+// Limit file size to 5MB to prevent DoS attacks
+const limits = { fileSize: 5 * 1024 * 1024 }
+export const upload = multer({ storage, fileFilter, limits })

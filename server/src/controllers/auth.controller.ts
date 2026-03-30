@@ -78,7 +78,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 
     res.cookie('token', token, {
       httpOnly: true,                 // JavaScript can't read it → protection XSS
-      secure: true,                  // false for dev (HTTP, localhost), true for prod (HTTPS uniquement)
+      secure: process.env.NODE_ENV === 'production',   // true in production (HTTPS), false in development (HTTP)
       sameSite: 'none',                // cookie is send only from the same website "Lax"→ CSRF protection
       maxAge: 7 * 24 * 60 * 60 * 1000 // lifetime in milliseconds
     })
@@ -134,7 +134,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   //7.putting the token in a cookie httpOnly
   res.cookie('token', token, {
     httpOnly: true,                 // JavaScript can't read it → protection XSS
-    secure: true,                  // false for dev (HTTP, localhost), true for prod (HTTPS uniquement)
+    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development (HTTP)
     sameSite: 'none',                // cookie is send only from the same website "Lax"→ CSRF protection
     maxAge: 7 * 24 * 60 * 60 * 1000 // lifetime in milliseconds
   })
@@ -165,7 +165,7 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
   //1.Logout
   res.clearCookie('token', {
     httpOnly: true,                 // JavaScript can't read it → protection XSS
-    secure: true,                  // false for dev (HTTP, localhost), true for prod (HTTPS uniquement)
+    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development (HTTP)
     sameSite: 'none',                // cookie is send only from the same website → CSRF protection
   })
   //2.returning the informations to the user

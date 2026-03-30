@@ -1,0 +1,19 @@
+meta {
+  name: Create reservation
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/reservations
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nb_tickets": 2,
+    "date": "2026-06-15",
+    "id_TICKET": 1
+  }
+}

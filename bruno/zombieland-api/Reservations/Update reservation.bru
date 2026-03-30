@@ -1,0 +1,11 @@
+meta {
+  name: Update reservation
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}/api/reservations/{{reservationId}}
+  body: none
+  auth: none
+}

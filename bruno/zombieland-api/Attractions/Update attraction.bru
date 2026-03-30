@@ -1,0 +1,11 @@
+meta {
+  name: Update attraction
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}/api/attractions/{{attractionId}}
+  body: none
+  auth: none
+}
