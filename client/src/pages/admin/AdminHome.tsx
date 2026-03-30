@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
     Box, Text, Button, Flex, Spinner,
     Badge, Heading,
+    Input,
 } from "@chakra-ui/react";
 
 import Header from "@/components/Header";
@@ -16,6 +17,9 @@ import { API_URL } from "@/config/api";
 import ConfirmModal from "@/components/ConfirmModal";
 
 const AdminReservations = () => {
+    const [sort, setSort] = useState({ by: "name", direction: "asc" })
+
+    const [search, setSearch] = useState("")
     //State to store the total of attractions
     const [attractions, setAttractions] = useState(Number);
     //State to store the total of Members
@@ -42,7 +46,7 @@ const AdminReservations = () => {
                     });
                 // Store the reservations data in state
                 setReservations(response.data);
-                
+
                 // Set loading to false once data is received
                 setLoading(false)
             } catch (error) {
@@ -102,14 +106,52 @@ const AdminReservations = () => {
 
 
     //  CALCUL REVENUS total
-if (!Array.isArray(reservations)) return null;
+    if (!Array.isArray(reservations)) return null;
 
-const totalAmount = reservations.reduce(
-  (sum, r) => sum + Number(r.total_amount),
-  0
-);
+    const totalAmount = reservations.reduce(
+        (sum, r) => sum + Number(r.total_amount),
+        0
+    );
+    const filterTool = search.trim().toLowerCase()
 
+    const filteredReservations = reservations
+        .filter(r => {
+            const fullName = `${r.user?.firstname ?? ""} ${r.user?.lastname ?? ""}`.toLowerCase()
 
+            return (
+                fullName.includes(filterTool) ||
+                r.id_USER.toString().includes(filterTool) ||
+                r.date.toLowerCase().includes(filterTool) ||
+                r.nb_tickets.toString().includes(filterTool) ||
+                r.status.toLowerCase().includes(filterTool)
+            )
+        })
+        .sort((a, b) => {
+            const dir = sort.direction === "asc" ? 1 : -1
+
+            switch (sort.by) {
+                case "name":
+                    return (
+                        `${a.user.firstname} ${a.user.lastname}`
+                            .localeCompare(`${b.user.firstname} ${b.user.lastname}`)
+                    ) * dir
+
+                case "member":
+                    return (a.id_USER - b.id_USER) * dir
+
+                case "date":
+                    return a.date.localeCompare(b.date) * dir
+
+                case "tickets":
+                    return (a.nb_tickets - b.nb_tickets) * dir
+
+                case "status":
+                    return a.status.localeCompare(b.status) * dir
+
+                default:
+                    return 0
+            }
+        })
 
 
     return (
@@ -264,6 +306,17 @@ const totalAmount = reservations.reduce(
 
                         </Box>
                     </Flex>
+                    <Flex justifyContent={{ base: "center", lg: "flex-end" }} mt={8} mb={6}>
+                        <Input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Rechercher une reservation..."
+                            color="zombieland.white"
+                            borderColor="zombieland.primary"
+                            bg="#476182"
+                            mb={6}
+                        />
+                    </Flex>
 
                     <Heading
                         fontWeight="bold"
@@ -289,7 +342,7 @@ const totalAmount = reservations.reduce(
                         {/* Reservations table */}
                         {!loading && (
                             <AdminTable
-                                data={reservations}
+                                data={filteredReservations}
                                 columns={[
                                     {
                                         header: "Nom",
