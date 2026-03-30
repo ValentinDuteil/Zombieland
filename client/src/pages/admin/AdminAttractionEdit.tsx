@@ -112,7 +112,7 @@ const AdminAttractionEdit = () => {
                     name,
                     description,
                     min_height: minHeight,
-                    duration, 
+                    duration,
                     capacity,
                     intensity,
                     password
@@ -304,21 +304,21 @@ const AdminAttractionEdit = () => {
                                     <Input {...inputStyle} type="number" value={duration} onChange={(e) => setDuration(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Durée (min)" />
                                     <Text fontSize="sm" color="whiteAlpha.700">min</Text>
                                 </Flex>
-                                    {errors['duration'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['duration']}</Text>}
+                                {errors['duration'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['duration']}</Text>}
 
                                 <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                     <Text fontSize="sm" whiteSpace="nowrap">Capacité :</Text>
                                     <Input {...inputStyle} type="number" value={capacity} onChange={(e) => setCapacity(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Capacité" />
                                     <Text fontSize="sm" color="whiteAlpha.700">personnes</Text>
                                 </Flex>
-                                    {errors['capacity'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['capacity']}</Text>}
+                                {errors['capacity'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['capacity']}</Text>}
 
                                 <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                     <Text fontSize="sm" whiteSpace="nowrap">Taille requise :</Text>
                                     <Input {...inputStyle} type="number" value={minHeight} onChange={(e) => setMinHeight(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Taille min. (cm)" />
                                     <Text fontSize="sm" color="whiteAlpha.700">cm</Text>
                                 </Flex>
-                                    {errors['min_height'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['min_height']}</Text>}
+                                {errors['min_height'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['min_height']}</Text>}
 
                                 <Button
                                     bgImage={`url(${bgBouton})`}
