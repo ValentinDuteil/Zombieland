@@ -52,12 +52,9 @@ const AttractionDetailPage = () => {
     const axiosAttraction = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/attractions/${id}`);
-        if (!res)
-          throw new Error("Erreur lors de la récupération d'une attraction");
         setAttraction(res.data);
       } catch (error) {
-        console.error(error);
-        setError("Attraction non trouvé")
+        setError("Erreur lors de la récupération d'une attraction")
       } finally {
         setIsLoading(false);
       }
