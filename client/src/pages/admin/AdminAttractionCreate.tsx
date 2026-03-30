@@ -43,6 +43,7 @@ const AdminAttractionCreate = () => {
         if (!file) return
         const url = URL.createObjectURL(file)
         setPreviewImage(url)
+        setError(null)  // ← reset image error when a new file is selected
     }
 
     const handleSubmit = async (password: string) => {
@@ -294,7 +295,13 @@ const AdminAttractionCreate = () => {
                                 textTransform="uppercase"
                                 mt={2}
                                 w="80%"
-                                onClick={() => setIsConfirmOpen(true)}
+                                onClick={() => {
+                                    if (!previewImage) {
+                                        setError("Veuillez sélectionner une image")
+                                        return
+                                    }
+                                    setIsConfirmOpen(true)
+                                }}
                             >
                                 Créer l'attraction
                             </Button>
