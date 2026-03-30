@@ -50,6 +50,11 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
     throw new BadRequestError("ID invalide")
   }
 
+  // a "MEMBER" can only his own profile (id from URL(req.params) has to be the same as id from cookie(req.user)
+  if (req.user.role !== 'ADMIN' && id !== req.user.id) {
+    throw new ForbiddenError('Accès interdit')
+  }
+
   const user = await prisma.user.findUnique({
     where: { id_USER: id }
   })
@@ -155,6 +160,11 @@ export async function deleteProfile(req: Request, res: Response, next: NextFunct
   //telling to TypeScript "trust me" it's a string  
   const id = parseInt(req.params.id as string)
   if (isNaN(id)) throw new BadRequestError("Id invalide")
+
+  // a "MEMBER" can only delete his own profile (id from URL(req.params) has to be the same as id from cookie(req.user)
+  if (req.user.role !== 'ADMIN' && id !== req.user.id) {
+    throw new ForbiddenError('Accès interdit')
+  }
 
   //2.check if it exists
   const user = await prisma.user.findUnique({
