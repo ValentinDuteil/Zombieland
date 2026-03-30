@@ -62,11 +62,11 @@ const AdminMemberEdit = () => {
     }
   }
 
-  const handleDelete = async () => {
+  const handleDelete = async (password: string) => {
     try {
 
       await axios.delete(`${API_URL}/api/users/${id}`, {
-
+        data: { password },
         withCredentials: true
       })
       navigate('/admin/members')
