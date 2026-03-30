@@ -151,10 +151,7 @@ export const deleteAttraction = async (req: Request, res: Response, next: NextFu
 
     // Check password before deleting
     const { password } = req.body ?? {}
-    if (!password) {
-        throw new BadRequestError("Mot de passe requis")
-    }
-
+ 
     // Fetch the admin user from the DB to compare the password
     const user = await prisma.user.findUnique({
         where: { id_USER: req.user!.id }
@@ -194,10 +191,6 @@ export const updateAttraction = async (req: Request, res: Response, next: NextFu
 
     // Check password before updating
     const { name, description, min_height, duration, capacity, intensity, password } = req.body
-
-    if (!password) {
-        throw new BadRequestError("Mot de passe requis")
-    }
 
     // Fetch the admin user from the DB to compare the password
     const user = await prisma.user.findUnique({

@@ -16,6 +16,8 @@ import img3 from "../../assets/marche.webp"
 import img4 from "../../assets/grand8.webp"
 import img5 from "../../assets/fossecadavres.webp"
 import img6 from "../../assets/centrerecherche.webp"
+import { API_URL } from "@/config/api"
+import axios from "axios"
 
 // Map attraction id to local image
 const attractionImages: Record<number, string> = {
@@ -51,22 +53,26 @@ const AdminAttractionEdit = () => {
     // Fetch the attraction to pre-fill the form
     useEffect(() => {
         const fetchAttraction = async () => {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions/${id}`)
-            if (!res.ok) {
+            setLoading(true)
+            try {
+                const res = await axios.get<AttractionWithCategories>(`${API_URL}/api/attractions/${id}`)
+
+
+                setName(res.data.name)
+                setDescription(res.data.description ?? "")
+                setMinHeight(res.data.min_height ?? "")
+                setDuration(res.data.duration ?? "")
+                setCapacity(res.data.capacity ?? "")
+                setIntensity(res.data.intensity)
+                setDbImage(res.data.image ?? null)
+                setAttractionId(res.data.id_ATTRACTION)
+
+            } catch (error) {
                 setError("Erreur lors de la récupération de l'attraction")
+            } finally {
                 setLoading(false)
-                return
+
             }
-            const data: AttractionWithCategories = await res.json()
-            setName(data.name)
-            setDescription(data.description ?? "")
-            setMinHeight(data.min_height ?? "")
-            setDuration(data.duration ?? "")
-            setCapacity(data.capacity ?? "")
-            setIntensity(data.intensity)
-            setDbImage(data.image ?? null)
-            setAttractionId(data.id_ATTRACTION)
-            setLoading(false)
         }
         fetchAttraction()
     }, [id])
@@ -80,45 +86,58 @@ const AdminAttractionEdit = () => {
     }
 
     const handleSubmit = async (password: string) => {
-        // If a new image was selected, upload it first
-        if (fileInputRef.current?.files?.[0]) {
-            const formData = new FormData()
-            formData.append('image', fileInputRef.current.files[0])
+        let errorMessage = "Erreur lors de l'upload de l'image"
+        try {
 
-            const imageRes = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions/${id}/image`, {
-                method: 'PATCH',
-                credentials: 'include',
-                body: formData
-            })
+            // If a new image was selected, upload it first
+            if (fileInputRef.current?.files?.[0]) {
+                const formData = new FormData()
+                formData.append('image', fileInputRef.current.files[0])
 
-            if (!imageRes.ok) {
-                setError("Erreur lors de l'upload de l'image")
-                return
+                await axios.patch(`${API_URL}/api/attractions/${id}/image`, formData,
+                    {
+
+                        withCredentials: true,
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    })
+
+
             }
+            errorMessage = "Erreur lors de la modification de l'attraction"
+            // Then update the other fields
+            await axios.patch(`${API_URL}/api/attractions/${id}`,
+                {
+                    name,
+                    description,
+                    min_height: minHeight === "" ? undefined : minHeight,
+                    duration: duration === "" ? undefined : duration,
+                    capacity: capacity === "" ? undefined : capacity,
+                    intensity,
+                    password
+                },
+                {
+
+                    withCredentials: true,
+                    
+                })
+
+
+
+            setTimeout(() => navigate('/admin/attractions'), 1500)
+        } catch (error) {
+            setError(errorMessage)
+            // premier if
+            // if (!imageRes.ok) {
+            //         setError("Erreur lors de l'upload de l'image")
+            //         return
+            //     }
+
+            //deuxieme if
+            // if (!res.ok) {
+            //     setError("Erreur lors de la modification de l'attraction")
+            //     return
+            // }
         }
-
-        // Then update the other fields
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions/${id}`, {
-            method: 'PATCH',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name,
-                description,
-                min_height: minHeight === "" ? undefined : minHeight,
-                duration: duration === "" ? undefined : duration,
-                capacity: capacity === "" ? undefined : capacity,
-                intensity,
-                password
-            })
-        })
-
-        if (!res.ok) {
-            setError("Erreur lors de la modification de l'attraction")
-            return
-        }
-
-        setTimeout(() => navigate('/admin/attractions'), 1500)
     }
 
     // Shared input style matching the card theme
@@ -327,7 +346,7 @@ const AdminAttractionEdit = () => {
                         </Button>
                     </Box>
                 )}
-                
+
             </Box>
 
             {/* Confirm modal with password before saving */}

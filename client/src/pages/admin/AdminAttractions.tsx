@@ -11,6 +11,8 @@ import AdminTable from "../../components/AdminTable"
 import AdminMenu from "../../components/AdminNavlinkMenu"
 import { FaTrash } from 'react-icons/fa'
 import ConfirmModal from "../../components/ConfirmModal"
+import { API_URL } from "@/config/api"
+import axios from "axios"
 
 
 const intensityToLabel: Record<string, string> = {
@@ -30,15 +32,17 @@ const AdminAttractions = () => {
     const [sort, setSort] = useState({ by: "name", direction: "asc" })
 
     const fetchAttractions = async () => {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions`)
-        if (!res.ok) {
+        setLoading(true)
+        try {
+            const res = await axios.get<Attraction[]>(`${API_URL}/api/attractions`)
+            setAttractions(res.data)
+
+        } catch (error) {
+
             setError("Erreur lors de la récupération des attractions")
+        } finally {
             setLoading(false)
-            return
         }
-        const data: Attraction[] = await res.json()
-        setAttractions(data)
-        setLoading(false)
     }
 
     useEffect(() => {
@@ -46,18 +50,17 @@ const AdminAttractions = () => {
     }, [])
 
     const handleDelete = async (id: number, password: string) => {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions/${id}`, {
-            method: 'DELETE',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            // Send password in the body for verification
-            body: JSON.stringify({ password })
-        })
-        if (!res.ok) {
+        try {
+            await axios.delete(`${API_URL}/api/attractions/${id}`, {
+                data: { password },
+
+                withCredentials: true,
+            })
+            fetchAttractions()
+
+        } catch (error) {
             setError("Erreur lors de la suppression de l'attraction")
-            return
         }
-        fetchAttractions()
     }
 
     // Filter attractions by category

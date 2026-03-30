@@ -1,7 +1,7 @@
 // Reservation page - booking page
 
 // Import useState to manage from data
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 // Import Chakra UI components for styling
 import { Box, Button, Checkbox, Heading, Text, Input, Flex, FormControl, FormLabel } from '@chakra-ui/react'
 // Import components for login before booking
@@ -20,6 +20,8 @@ import bgBouton from '../assets/bg-bouton.webp'
 //Import utility functions to handle date formats
 import { toLocalDateString, isoToLocalDate, getTodayMidnight } from '../utils/date'
 import InfoModal from '../components/InfoModal'
+import { API_URL } from '@/config/api'
+import axios, { isAxiosError } from 'axios'
 
 
 function Reservation() {
@@ -37,6 +39,8 @@ function Reservation() {
     // STATE
     //======
 
+    // navigate hook to refresh the page after successful reservation and show the updated availabilities
+    const navigate = useNavigate()
     // nbTickets store the number of tickets chosen by the user (1 by default)
     const [nbTickets, setNbTickets] = useState<string>('1')
     // date stores the chosen visit date (default => today)
@@ -47,11 +51,14 @@ function Reservation() {
     const [confirmed, setConfirmed] = useState(false)
     // adding a modal to confirm the user is connected before confirming the reservation
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+    // loading state during reservation submission
+    const [isLoading, setIsLoading] = useState(false)
     // checking the availability of the chosen date before creating the reservation
     const [availabilities, setAvailabilities] = useState<{ date: string, available: boolean }[]>([])
     // selectedDay is the Date object used by react-day-picker to highlight the selected day in the calendar
     const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined)
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+    const [partialFullMessage, setPartialFullMessage] = useState<string | null>(null)
 
 
     // OTHER DATA
@@ -69,22 +76,23 @@ function Reservation() {
     // Called when user clicks a day in DayPicker
     // Updates both selectedDay (Date for DayPicker) and date (string for the back)
     // toLocalDateString() avoids UTC conversion when building the "YYYY-MM-DD" string
-    const handleDaySelect = (day: Date | undefined) => {
+    const handleDaySelect = useCallback((day: Date | undefined) => {
         setSelectedDay(day)
         if (day) {
             setDate(toLocalDateString(day))
         }
-    }
+    }, [])
 
     // useEffect to fetch availability data from the back 
     // called on mount and after each successful reservation
     const fetchAvailabilities = async () => {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations/availabilities`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        })
-        const data = await response.json()
-        setAvailabilities(data)
+        try {
+            const response = await axios.get(`${API_URL}/api/reservations/availabilities`)
+            setAvailabilities(response.data)
+
+        } catch (error) {
+            setMessage("Erreur lors de la récupération des disponibilités")
+        }
     }
 
     // Fetch availabilities on component mount
@@ -107,42 +115,51 @@ function Reservation() {
         // Guard: front-end availability check before sending to the back
         const chosenDate = availabilities.find(a => toLocalDateString(isoToLocalDate(a.date)) === date)
         if (chosenDate && !chosenDate.available) {
-            setMessage('Nous sommes navrés, l\'armée des zombies a pris possession du parc !')
+            setPartialFullMessage("Cette date est complète. Veuillez choisir une autre date.")
             return
         }
 
-        // Send the form data to the back via fetch
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations`, {
-            method: 'POST', // Create a new reservation
-            headers: { 'Content-Type': 'application/json' }, // Send JSON},
-            body: JSON.stringify({
-                nb_tickets: parseInt(nbTickets) || 1, // The number of the tickets on by default
-                date: date, // The date of the visit choosen by the client
-                id_TICKET: 1
-            }),
-            credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
-        })
+        try {
+            // Send the form data to the back via fetch
+            await axios.post(`${API_URL}/api/reservations`,
+                {   // body
+                    nb_tickets: parseInt(nbTickets) || 1, // The number of the tickets on by default
+                    date: date, // The date of the visit choosen by the client
+                    id_TICKET: 1
+                },
+                {
+                    withCredentials: true //to get the cookie sent from the back, the browser is automatically dealing with
+                })
+            // The response is ok (status 200-299), success message
 
-        // The response is ok (status 200-299), success message
-        if (response.ok) {
             setIsSuccessModalOpen(true)
             setNbTickets('1')
             setDate(today)
             setConfirmed(false)
             fetchAvailabilities()
-        } else {
-            if (response.status === 401) {
-                // If the user is not authenticated, open the login modal
-                setIsLoginModalOpen(true)
-                setMessage('Veuillez vous connecter pour confirmer votre réservation.')
-                return
+
+        } catch (error) {
+            if (isAxiosError(error)) {
+                if (error.response?.status === 401) {
+                    // If the user is not authenticated, open the login modal
+                    setIsLoginModalOpen(true)
+                    setMessage('Veuillez vous connecter pour confirmer votre réservation.')
+                    return
+                } else {
+                    // Otherwise, display a generic error message
+                    const errorData = error.response?.data
+                    setMessage(errorData.message || 'Une erreur est survenue, veuillez réessayer.')
+                }
             } else {
-                // Otherwise, display a generic error message
-                const errorData = await response.json()
-                setMessage(errorData.message || 'Une erreur est survenue, veuillez réessayer.')
+                setMessage('Une erreur est survenue, veuillez réessayer.')
             }
+        } finally {
+            // Reset loading state
+            setIsLoading(false)
         }
     }
+
+
 
     return (
         <PageBackground bgImage={bgImage}>
@@ -201,10 +218,24 @@ function Reservation() {
                                         Nombre de billets souhaités ?
                                     </FormLabel>
                                     <Input
-                                        type="number"
-                                        min={1}
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
                                         value={nbTickets}
-                                        onChange={(e) => setNbTickets(e.target.value)}
+                                        onMouseDown={(e) => e.stopPropagation()}
+                                        onChange={(e) => {
+                                            e.stopPropagation()
+                                            const value = e.target.value
+                                            // Only allow digits
+                                            if (value === '' || /^\d+$/.test(value)) {
+                                                const numValue = parseInt(value) || 0
+                                                // Limit to 9999
+                                                if (numValue <= 9999) {
+                                                    setNbTickets(value)
+                                                }
+                                            }
+                                        }}
+                                        aria-label="Nombre de billets souhaités"
                                         bg="rgba(0,0,0,0.3)"
                                         color="zombieland.white"
                                         borderColor="zombieland.primary"
@@ -224,7 +255,7 @@ function Reservation() {
                                     />
                                 </FormControl>
 
-                                <FormControl>
+                                <FormControl onClick={(e) => e.stopPropagation()}>
                                     <FormLabel color="zombieland.white" fontWeight="600" mb={3} fontSize="16px">
                                         Quand souhaitez-vous venir ?
                                     </FormLabel>
@@ -296,7 +327,7 @@ function Reservation() {
                                             Nombre de billets
                                         </Text>
                                         <Text color="zombieland.white" fontFamily="body" fontWeight="300" fontSize="16px">
-                                            {nbTickets} {nbTickets > '1' ? 'billets' : 'billet'}
+                                            {nbTickets} {(parseInt(nbTickets) || 0) > 1 ? 'billets' : 'billet'}
                                         </Text>
                                     </Box>
                                 </Flex>
@@ -324,7 +355,7 @@ function Reservation() {
                                         Total
                                     </Text>
                                     <Text color="zombieland.white" fontFamily="heading" fontWeight="bold" fontSize="28px">
-                                        {(parseInt(nbTickets) * TICKET_PRICE).toFixed(2)} €
+                                        {((parseInt(nbTickets) || 0) * TICKET_PRICE).toFixed(2)} €
                                     </Text>
                                 </Box>
                             </Box>
@@ -359,7 +390,8 @@ function Reservation() {
 
                 <Button
                     onClick={handleSubmit}
-                    isDisabled={!confirmed}
+                    isDisabled={!confirmed || isLoading}
+                    isLoading={isLoading}
                     bgImage={`url(${bgBouton})`}
                     bgSize="cover"
                     bgPosition="center"
@@ -387,7 +419,7 @@ function Reservation() {
                         pointerEvents: "none"
                     }}
                 >
-                    → REJOINDRE L'HORREUR
+                    {isLoading ? '⏳ Traitement...' : '→ REJOINDRE L\'HORREUR'}
                 </Button>
 
                 {message && (
@@ -413,10 +445,21 @@ function Reservation() {
 
             <InfoModal
                 isOpen={isSuccessModalOpen}
-                onClose={() => setIsSuccessModalOpen(false)}
+                onClose={() => {
+                    setIsSuccessModalOpen(false)
+                    navigate(0)
+                }}
                 title="Réservation confirmée ! 🧟"
                 message="Votre place est confirmée et enregistrée dans votre profil. Le compte à rebours a commencé : vous pourrez encore annuler jusqu’à 10 jours avant votre entrée… après cela, il sera trop tard pour faire demi-tour..."
                 titleColor="green.500"
+            />
+
+            <InfoModal
+                isOpen={partialFullMessage !== null}
+                onClose={() => setPartialFullMessage(null)}
+                title="Pas assez de places 🧟"
+                message={partialFullMessage ?? ""}
+                titleColor="zombieland.warningprimary"
             />
 
             <LoginModal
@@ -428,6 +471,7 @@ function Reservation() {
                 }}
                 title="Connexion"
             />
+
             <Footer />
         </PageBackground>
     )

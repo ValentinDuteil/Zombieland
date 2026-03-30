@@ -25,6 +25,8 @@ import img6 from "../assets/centrerecherche.webp"
 
 
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "@/config/api";
+import axios from "axios";
 
 // Conversion catégories → enum backend
 const categoryToEnum: Record<string, string> = {
@@ -70,11 +72,8 @@ const HomePage = () => {
     useEffect(() => {
         const fetchAttractions = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions`);
-                if (!res.ok) throw new Error("Erreur récupération attractions");
-
-                const data: Attraction[] = await res.json();
-                setAttractions(data);
+                const res = await axios.get<Attraction[]>(`${API_URL}/api/attractions`);
+                setAttractions(res.data);
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (err) {
@@ -144,14 +143,15 @@ const HomePage = () => {
                 → Réserver maintenant
             </Button>
 
-            <Box px={10} py={16} maxW="700px" mx="auto" textAlign="center">
+            <Box px={10} py={16} maxW="900px" mx="auto" textAlign="center">
                 <Text
-                    fontSize="2xl"
+                    fontSize={{ base: "2xl", sm: "3xl", lg: "4xl" }}
                     color="zombieland.white"
                     fontFamily="heading"
                     letterSpacing="0.1em"
                     textTransform="uppercase"
-                    mb={6}
+                    mb={8}
+                    fontWeight="bold"
                 >
                     Une ville abandonnée. Des zombies. Et vous.
                 </Text>
@@ -160,8 +160,8 @@ const HomePage = () => {
                     border="1px solid"
                     borderColor="zombieland.primary"
                     borderRadius="md"
-                    px={8}
-                    py={6}
+                    px={{ base: 6, lg: 10 }}
+                    py={8}
                     boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 0 30px rgba(71, 97, 130, 0.3)"
                     backdropFilter="blur(4px)"
                     transition="all 0.3s ease"
@@ -173,23 +173,23 @@ const HomePage = () => {
                     }}
                 >
                     <Text
-                        fontSize="md"
+                        fontSize={{ base: "md", sm: "lg", lg: "xl" }}
                         color="zombieland.white"
                         fontFamily="body"
                         fontWeight="300"
-                        lineHeight="1.9"
-                        mb={4}
+                        lineHeight="2"
+                        mb={6}
                     >
                         Bienvenue à ZombieLand, une expérience immersive où chaque attraction
                         vous plonge au cœur d'un monde post-apocalyptique...
                     </Text>
-                    <Box w="40px" h="1px" bg="zombieland.cta1orange" mx="auto" my={4} />
+                    <Box w="40px" h="1px" bg="zombieland.cta1orange" mx="auto" my={6} />
                     <Text
-                        fontSize="md"
+                        fontSize={{ base: "md", sm: "lg", lg: "xl" }}
                         color="zombieland.white"
                         fontFamily="body"
                         fontWeight="400"
-                        lineHeight="1.9"
+                        lineHeight="2"
                     >
                         Ici, survivre fait partie du jeu. Arriverez-vous à survivre ?
                         Maîtriserez-vous vos peurs ?

@@ -10,6 +10,10 @@ import bgBouton from '../../assets/bg-bouton.webp'
 import Card from '../../assets/Card.webp'
 import ConfirmModal from "../../components/ConfirmModal"
 import defaultImage from "../../assets/quarantaine.webp"
+import { API_URL } from "@/config/api"
+import axios from "axios"
+import { isAxiosError } from "axios"
+
 
 const categoryColors: Record<string, string> = {
     LOW: "green",
@@ -19,16 +23,17 @@ const categoryColors: Record<string, string> = {
 
 const AdminAttractionCreate = () => {
     const navigate = useNavigate()
-    const [error, setError] = useState<string | null>(null)
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [error, setError] = useState<string | null>("");
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     // Form fields state — all empty by default
-    const [name, setName] = useState("")
-    const [description, setDescription] = useState("")
-    const [minHeight, setMinHeight] = useState<number | "">("")
-    const [duration, setDuration] = useState<number | "">("")
-    const [capacity, setCapacity] = useState<number | "">("")
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
+    const [minHeight, setMinHeight] = useState<number | "">('')
+    const [duration, setDuration] = useState<number | "">('')
+    const [capacity, setCapacity] = useState<number | "">('')
     const [intensity, setIntensity] = useState<"LOW" | "MEDIUM" | "HIGH">("LOW")
     const [previewImage, setPreviewImage] = useState<string | null>(null)
 
@@ -41,55 +46,59 @@ const AdminAttractionCreate = () => {
     }
 
     const handleSubmit = async (password: string) => {
-        // Create the attraction first
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name,
-                description,
-                min_height: minHeight === "" ? undefined : minHeight,
-                duration: duration === "" ? undefined : duration,
-                capacity: capacity === "" ? undefined : capacity,
-                intensity,
-                password
-            })
-        })
-        if (!res.ok) {
-            const data = await res.json()
+        let errorMessage = "Erreur lors de la création de l'attraction"
+        try {
+            // Create the attraction first
+            const res = await axios.post(`${API_URL}/api/attractions`,
+                {
+                    name,
+                    description,
+                    min_height: minHeight === "" ? undefined : minHeight,
+                    duration: duration === "" ? undefined : duration,
+                    capacity: capacity === "" ? undefined : capacity,
+                    intensity,
+                    password
+                },
+                {
+                    withCredentials: true,
+                });
 
-            if (data.details) {
-                // Zod validation errors
-                setError(data.details[0].message)
+            const data = res.data
+
+            // If an image was selected, upload it after creation
+            if (fileInputRef.current?.files?.[0]) {
+                const formData = new FormData()
+                formData.append('image', fileInputRef.current.files[0])
+
+                errorMessage = "Attraction créée mais erreur lors de l'upload de l'image"
+
+                await axios.patch(`${API_URL}/api/attractions/${data.id_ATTRACTION}/image`,
+                    formData
+                    , {
+                        withCredentials: true,
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    })
+            }
+            // Redirect to admin attractions page after success
+            setTimeout(() => navigate('/admin/attractions'), 1500)
+        } catch (err) {
+            if (isAxiosError(err)) {
+                if (err.response?.data.details) {
+                    // Zod field errors
+                    const newErrors: Record<string, string> = {}
+                    err.response?.data.details.forEach((d: { champ: string, message: string }) => {
+                        newErrors[d.champ] = d.message
+                    })
+                    setErrors(newErrors)
+                } else {
+                    // Generic back error
+                    setError(err.response?.data.message || errorMessage)
+                }
             } else {
-                setError("Erreur lors de la création de l'attraction")
-            }
-
-            return
-        }
-
-
-
-        // If an image was selected, upload it after creation
-        if (fileInputRef.current?.files?.[0]) {
-            const formData = new FormData()
-            formData.append('image', fileInputRef.current.files[0])
-
-            const imageRes = await fetch(`${import.meta.env.VITE_API_URL}/api/attractions/${data.id_ATTRACTION}/image`, {
-                method: 'PATCH',
-                credentials: 'include',
-                body: formData
-            })
-
-            if (!imageRes.ok) {
-                setError("Attraction créée mais erreur lors de l'upload de l'image")
-                return
+                // Network or unexpected error
+                setError(errorMessage)
             }
         }
-
-        // Redirect to admin attractions page after success
-        setTimeout(() => navigate('/admin/attractions'), 1500)
     }
 
     // Shared input style matching the card theme
@@ -127,7 +136,7 @@ const AdminAttractionCreate = () => {
                 minH="70vh"
                 py="100px"
             >
-                {error && <Text color="red.400">{error}</Text>}
+
 
                 <Box w="600px" p={10} borderRadius="md">
 
@@ -151,6 +160,7 @@ const AdminAttractionCreate = () => {
                         _placeholder={{ color: "whiteAlpha.500" }}
                         textAlign="center"
                     />
+                    {errors['name'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['name']}</Text>}
 
                     <Box
                         borderRadius="lg"
@@ -184,8 +194,7 @@ const AdminAttractionCreate = () => {
                                 style={{ display: "none" }}
                                 onChange={handleImageChange}
                             />
-
-                            {/* Intensity select */}
+                            {/* {errors[image] &&<Text color="zombieland.warningprimary" fontSize="sm">{errors[image]}</Text>} */}
                             <Select
                                 position="absolute"
                                 top="-12px"
@@ -244,11 +253,12 @@ const AdminAttractionCreate = () => {
                                 w="80%"
                                 textAlign="center"
                             />
-
+                            {errors['description'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['description']}</Text>}
                             {/* Duration */}
                             <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                 <Text fontSize="sm" whiteSpace="nowrap">Durée :</Text>
                                 <Input {...inputStyle} type="number" value={duration} onChange={(e) => setDuration(e.target.value === "" ? "" : parseInt(e.target.value))} />
+                                {errors['duration'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['duration']}</Text>}
                                 <Text fontSize="sm" color="whiteAlpha.700">min</Text>
                             </Flex>
 
@@ -256,6 +266,7 @@ const AdminAttractionCreate = () => {
                             <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                 <Text fontSize="sm" whiteSpace="nowrap">Capacité :</Text>
                                 <Input {...inputStyle} type="number" value={capacity} onChange={(e) => setCapacity(e.target.value === "" ? "" : parseInt(e.target.value))} />
+                                {errors['capacity'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['capacity']}</Text>}
                                 <Text fontSize="sm" color="whiteAlpha.700">personnes</Text>
                             </Flex>
 
@@ -263,9 +274,10 @@ const AdminAttractionCreate = () => {
                             <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                 <Text fontSize="sm" whiteSpace="nowrap">Taille requise :</Text>
                                 <Input {...inputStyle} type="number" value={minHeight} onChange={(e) => setMinHeight(e.target.value === "" ? "" : parseInt(e.target.value))} />
+                                {errors['min_height'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['min_height']}</Text>}
                                 <Text fontSize="sm" color="whiteAlpha.700">cm</Text>
                             </Flex>
-
+                            {error && <Text color="zombieland.warningprimary">{error}</Text>}
                             {/* Create button */}
                             <Button
                                 bgImage={`url(${bgBouton})`}

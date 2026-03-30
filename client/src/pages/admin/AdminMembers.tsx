@@ -13,6 +13,8 @@ import { formatDateForDisplay } from "@/utils/date"
 
 import bgBouton from '../../assets/bg-bouton.webp'
 import bgImage from '../../assets/bg-image.webp'
+import { API_URL } from "@/config/api"
+import axios from "axios"
 
 const AdminMembers = () => {
   // State for members, loading and error
@@ -27,18 +29,17 @@ const AdminMembers = () => {
 
   // Fetch members from API
   const fetchMembers = async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
-      credentials: "include"
-    })
-
-    if (!res.ok) {
-      setError("Erreur lors de la récupération des membres")
+    setLoading(true)
+    try {
+      const res = await axios.get<Member[]>(`${API_URL}/api/users`, {
+        withCredentials: true
+      })  
+      setMembers(res.data)
+    } catch (error) {
+        setError("Erreur lors de la récupération des membres")
+      } finally{
       setLoading(false)
-      return
     }
-    const data: Member[] = await res.json()
-    setMembers(data)
-    setLoading(false)
   }
 
   useEffect(() => {
@@ -104,6 +105,7 @@ const AdminMembers = () => {
       overflow="hidden"
     >
       <Header />
+
       <Flex flex="1">
         {/*LEFT COLUMN*/}
         <Box

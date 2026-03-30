@@ -15,12 +15,33 @@ export const getAllReservations = async (req: Request, res: Response, next: Next
         include: {
             user: {
                 select: { email: true }
-                }
+            }
         }
     })
     // Return reservations with a 200 status (success)
     res.status(200).json(reservations)
 }
+
+// Retrieves all reservations for admin
+export const getUserReservations = async (req: Request, res: Response, next: NextFunction) => {
+    // Query params to get User ID
+    if (!req.user) {
+        throw new UnauthorizedError("L'utilisateur n'existe pas")
+    }
+
+    const userId = parseInt(req.params.userId as string)
+    if (isNaN(userId)) {
+        throw new BadRequestError("ID invalide")
+    }
+
+    const reservations = await prisma.reservation.findMany({
+        where: { id_USER: userId }
+    })
+
+    // Return reservations with a 200 status (success)
+    res.status(200).json(reservations)
+}
+
 // Retrieves reservation for the logged-in member
 export const getMyReservations = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
@@ -41,7 +62,12 @@ export const createReservation = async (req: Request, res: Response, next: NextF
     // id_USER is optional: only provided when an admin creates for a member
     const { nb_tickets, date, id_TICKET, id_USER } = req.body;
 
-    // Adding a maximum of 10k tickets per days
+    // Validate date format
+    if (!date || isNaN(new Date(date).getTime())) {
+        throw new BadRequestError("Date invalide")
+    }
+
+    // Adding a maximum of 9999 tickets per day
     const reservationsByDay = await prisma.reservation.groupBy({
         by: ['date'],
         where: {
@@ -51,14 +77,18 @@ export const createReservation = async (req: Request, res: Response, next: NextF
         _sum: { nb_tickets: true }
     })
 
-    // If reservztionsByDay[0] is undefined, 
-    // it means there are no reservations for this date, so we set totalTickets to 0
-    // if exists "?", and if nul or undifined "??" use 0 (optionnal chaining and nullish coalescing)
-    // If the total number of tickets for this date plus the number of tickets 
-    // in the new reservation exceeds 10,000, return an error
     const totalTickets = reservationsByDay[0]?._sum.nb_tickets ?? 0
-    if (totalTickets + nb_tickets > 9999) {
+    const availableSpots = 9999 - totalTickets
+
+    // If the park is full
+    // Si le parc est complet
+    if (availableSpots <= 0) {
         throw new BadRequestError("Capacité maximale atteinte pour cette date")
+    }
+
+    // If not enough spots for the requested tickets
+    if (totalTickets + nb_tickets > 9999) {
+        throw new BadRequestError(`Vous ne pouvez pas réserver autant de billets. Il reste seulement ${availableSpots} place(s) disponible(s) pour cette date.`)
     }
 
     // If id_USER is provided, it means an admin is creating a reservation for a member
@@ -88,6 +118,7 @@ export const createReservation = async (req: Request, res: Response, next: NextF
             id_TICKET,
             id_USER: id_USER || req.user.id,
             total_amount: 0,
+            status: 'CONFIRMED'
         }
     });
 
@@ -131,39 +162,39 @@ export const deleteReservation = async (req: Request, res: Response, next: NextF
         throw new BadRequestError("Mot de passe requis")
     }
 
-    const memberId = req.user.id
-
     const findReservation = await prisma.reservation.findUnique({
         where: { id_RESERVATION: reservationParam }
     })
-    if (findReservation === null) {
+    if (!findReservation) {
         throw new NotFoundError("La réservation n'existe pas")
     }
 
-    if (findReservation.id_USER !== memberId) {
+    // --- SECURITY ---
+    const isAdmin = req.user.role === 'ADMIN'
+
+    // if the user is not an admin, he can only cancel his own reservations
+    if (!isAdmin && findReservation.id_USER !== req.user.id) {
         throw new ForbiddenError("Cette réservation ne vous appartient pas")
     }
 
-    const user = await prisma.user.findUnique({
-        where: { id_USER: memberId }
-    })
-    if (!user) {
-        throw new NotFoundError("Utilisateur introuvable")
-    }
+    // check if the password is correct (for both admin and member, 
+    // because even an admin must provide his password to cancel)
+    const user = await prisma.user.findUnique({ where: { id_USER: req.user.id } })
+    if (!user) throw new NotFoundError("Utilisateur introuvable")
 
     const rightPassword = await argon2.verify(user.password, password)
-    if (!rightPassword) {
-        throw new UnauthorizedError("Mot de passe incorrect")
-    }
+    if (!rightPassword) throw new UnauthorizedError("Mot de passe incorrect")
 
-    const dateNow = new Date();
-    const dateReservation = new Date(findReservation.date);
-    const calculDate = dateReservation.getTime() - dateNow.getTime();
-    const oneDay = 1000 * 60 * 60 * 24;
-    const resultDate = Math.round(calculDate / oneDay)
+    // --- D-10 Rule ---
+    if (!isAdmin) {
+        const dateNow = new Date();
+        const dateReservation = new Date(findReservation.date);
+        const calculDate = dateReservation.getTime() - dateNow.getTime();
+        const resultDate = Math.round(calculDate / (1000 * 60 * 60 * 24))
 
-    if (resultDate <= 10) {
-        throw new BadRequestError("Annulation impossible")
+        if (resultDate < 10) {
+            throw new BadRequestError("Annulation impossible moins de 10 jours avant")
+        }
     }
 
     await prisma.reservation.update({

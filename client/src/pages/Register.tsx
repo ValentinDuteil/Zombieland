@@ -9,6 +9,8 @@ import bgBouton from '../assets/bg-bouton.webp'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { PageBackground } from '../components/PageBackground'
+import { API_URL } from '@/config/api';
+import axios, { isAxiosError } from 'axios';
 
 function Register() {
   //setting the changing of the inputs and the validation message as well
@@ -19,36 +21,47 @@ function Register() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const handleSubmit = async () => {
+    // update UX 
+    // Reset errors and message on each submission
 
+    // setErrors({})
+    // setMessage('')
     if (form.password === form.confirmPassword) {
-      //fetching on the api with post methode
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstname: form.firstname, lastname: form.lastname, email: form.email, password: form.password }),
-        credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
-      })
-      //only if response is ok the connection is allowed
-      if (response.ok) {
+      try {
+        //fetching replace with axios on the api with post methode
+        await axios.post(`${API_URL}/api/auth/register`,
+          // body 
+          { firstname: form.firstname, lastname: form.lastname, email: form.email, password: form.password },
+          { withCredentials: true } //to get the cookie sent from the back, the browser is automatically dealing with
+        )
+        //only if response is ok the connection is allowed
         setMessage(' Bienvenue : compte créé !');
         navigate('/');
-      } else {
+
+      } catch (error) {
         //otherwise displaying an error message getting from the back if possible, otherwise a default one
-        const errorData = await response.json()
-        if (errorData.details) {
-          const newErrors: Record<string, string> = {}
-          errorData.details.forEach((d: { champ: string, message: string }) => {
-            newErrors[d.champ] = d.message
-          })
-          setErrors(newErrors)
+        // const errorData = isAxiosError(error)
+        if (isAxiosError(error)) {
+          if (error.response?.data.details) {
+            const newErrors: Record<string, string> = {}
+            error.response?.data.details.forEach((d: { champ: string, message: string }) => {
+              newErrors[d.champ] = d.message
+            })
+            setErrors(newErrors)
+          } else {
+            setMessage(error.response?.data.message || 'Une erreur est survenue.')
+          }
         } else {
-          setMessage(errorData.message || 'Une erreur est survenue.')
+          setMessage('Une erreur est survenue.')
         }
       }
-    } else {
-      setErrors({ confirmPassword: 'Les mots de passe ne correspondent pas.' })
-    }
-  }
+
+  } else {
+    setErrors({ confirmPassword: 'Les mots de passe ne correspondent pas.' })
+}
+}
+
+
 
 return (
   <PageBackground bgImage={bgImage}>
@@ -164,7 +177,7 @@ return (
     <Box
       display="flex"
       flexDirection="column"
-      alignItems={{ base: 'center', lg: 'flex-end' }}
+      alignItems="center"
       px={10}
       pb={{ base: 28, lg: 6 }}
     >

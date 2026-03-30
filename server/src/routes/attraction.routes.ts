@@ -17,11 +17,11 @@ router.get('/', getAttractions)
 router.get('/:id', getAttractionById)
 
 // when someone calls post /api/attractions, execute createAttraction admin only
-router.post('/', checkToken, checkRole("ADMIN"), validate(attractionSchema), validate(PasswordAttractionSchema), createAttraction)
+router.post('/', checkToken, checkRole("ADMIN"),validate(attractionSchema), createAttraction)
 // when someone calls delete /api/attractions/:id, execute deleteAttraction admin only
 router.delete('/:id', checkToken, checkRole("ADMIN"), deleteAttraction)
 // when someone calls patch /api/attractions/:id, execute updateAttraction admin only
-router.patch('/:id', checkToken, checkRole("ADMIN"), updateAttraction)
+router.patch('/:id', checkToken, checkRole("ADMIN"), validate(attractionSchema), updateAttraction)
 // when someone calls patch /api/attractions/:id/image, execute updateAttractionImage admin only
 router.patch('/:id/image', checkToken, checkRole("ADMIN"), upload.single('image'), updateAttractionImage)
 

@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Text } from '@chakra-ui/react'
+import { API_URL } from '@/config/api'
+import axios from 'axios'
 
 interface LoginModalProps {
   isOpen: boolean
@@ -18,32 +20,33 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
   const [password, setPassword] = useState('')
 
   const handleSubmit = async () => {
-    //check if the checkbox or the password is empty, if so do not confirm
-    if (!email || !password) {
-      return
-    }
-
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, password: password }),
-      credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
-    })
-    //only if response is ok the connection is allowed
-    if (response.ok) {
-      setMessage('Connexion confirmée !');
-      setEmail('')
-      setPassword('')
-      setTimeout(() => { //giving the time to read the message before closing the modal
-        onClose()
-        onConfirm()
-      }, 1500)
-    } else {
-      //otherwise displaying an error message getting from the back if possible, otherwise a default one
-      const errorData = await response.json()
-      setMessage(errorData.message || 'Email ou mot de passe invalide.')
-    }
+    try {
+      //check if the checkbox or the password is empty, if so do not confirm
+      if (!email || !password) {
+        return
+      }
+  
+      await axios.post(`${API_URL}/api/auth/login`,
+        { email: email, 
+          password: password },
+        {
+          withCredentials: true //to get the cookie sent from the back, the browser is automatically dealing with
+        })
+      //only if response is ok the connection is allowed
+    
+        setMessage('Connexion confirmée !');
+        setEmail('')
+        setPassword('')
+        setTimeout(() => { //giving the time to read the message before closing the modal
+          onClose()
+          onConfirm()
+        }, 1500)
+      } catch (error) {
+        //otherwise displaying an error message getting from the back if possible, otherwise a default one
+        const message = 'Email ou mot de passe invalide.'
+        setMessage(message)
   }
+}
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -139,5 +142,6 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
     </Modal>
   )
 }
+
 
 export default LoginModal

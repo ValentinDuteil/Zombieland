@@ -21,16 +21,19 @@ function Header() {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
-                credentials: 'include'
-            },)
-
-            if (response.ok) {
-                const data = await response.json()
+            try {
+                
+                const response = await axios.get(`${API_URL}/api/auth/me`,
+    
+                    { withCredentials: true },
+                );
+                const data = response.data
                 setFirstname(data.firstname)
                 setRole(data.role)
+                setIsLoading(false)
+            } catch (error) {
+                setIsLoading(false)
             }
-            setIsLoading(false)
         }
         fetchUser()
     }, [location]) // re-fetch user on every route change to sync header state after login/logout via modal

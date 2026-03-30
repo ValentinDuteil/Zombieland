@@ -9,6 +9,8 @@ import bgBouton from '../assets/bg-bouton.webp'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { PageBackground } from '../components/PageBackground'
+import { API_URL } from '@/config/api';
+import axios from 'axios';
 
 
 function Login() {
@@ -18,21 +20,23 @@ function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    //fetching on the api with post methode
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: form.email, password: form.password }),
-      credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
-    })
-    //only if response is ok the connection is allowed
-    if (response.ok) {
-      setMessage('Connexion confirmée !');
-      navigate('/reservation');
-    } else {
+    try {
+      //fetching on the api with post methode
+      await axios.post(`${API_URL}/api/auth/login`,
+        { email: form.email, password: form.password },
+        {withCredentials: true} //to get the cookie sent from the back, the browser is automatically dealing with
+      )
+      //only if response is ok the connection is allowed
+      
+        setMessage('Connexion confirmée !');
+        navigate('/reservation');
+      
+      
+    } catch (error) {
       //otherwise displaying an error message getting from the back if possible, otherwise a default one
-      const errorData = await response.json()
-      setMessage(errorData.message || 'Email ou mot de passe invalide.')
+      const message = 'Email ou mot de passe invalide.'
+      setMessage(message)
+      
     }
   }
 
@@ -108,7 +112,7 @@ function Login() {
       <Box
         display="flex"
         flexDirection="column"
-        alignItems={{ base: 'center', lg: 'flex-end' }}
+        alignItems="center"
         px={10}
         pb={{ base: 28, lg: 6 }}
       >

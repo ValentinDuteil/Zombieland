@@ -19,6 +19,8 @@ import Footer from '../components/Footer'
 import bgImage from '../assets/bg-image.webp'
 import bgBouton from '../assets/bg-bouton.webp'
 import { PageBackground } from '../components/PageBackground'
+import { API_URL } from '@/config/api';
+import axios from 'axios';
 
 //We will need on this page : 
 //  connected user informations (so we need his ID)
@@ -47,23 +49,32 @@ function MyAccount() {
   useEffect(() => {
 
     const fetchUser = async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
-        credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
-      })
-      // Convert the response to JSON => { id_USER, firstname, lastname, email, role... }
-      const data = await response.json()
-      setCurrentUser(data)
-      // Initialize form with current user data
-      setForm({ firstname: data.firstname || '', lastname: data.lastname || '', password: '', confirmPassword: '' })
+      try {
+        const response = await axios.get(`${API_URL}/api/auth/me`, {
+          withCredentials: true //to get the cookie sent from the back, the browser is automatically dealing with
+        })
+        // Convert the response to JSON => { id_USER, firstname, lastname, email, role... }
+
+        setCurrentUser(response.data)
+        // Initialize form with current user data
+        setForm({ firstname: response.data.firstname || '', lastname: response.data.lastname || '', password: '', confirmPassword: '' })
+
+      } catch (error) {
+        setMessage("Erreur lors de la récupération de votre profil")
+      }
     }
 
     const fetchReservations = async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reservations/me`, {
-        credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
-      })
-      // Convert the response to JSON
-      const data = await response.json()
-      setReservations(data)
+      try {
+
+        const response = await axios.get(`${API_URL}/api/reservations/me`, {
+          withCredentials: true //to get the cookie sent from the back, the browser is automatically dealing with
+        })
+        // Convert the response to JSON
+        setReservations(response.data)
+      } catch (error) {
+        setMessage("Erreur lors de la récupération de vos réservations")
+      }
     }
 
     //Using functions
@@ -80,15 +91,8 @@ function MyAccount() {
       setMessage('Les mots de passe ne correspondent pas.')
       return
     }
-
-    //fetching on the api with patch methode
-    //geting the informations of the connected user via currentUser on mount
-    //We are using currentUser?.id_USER (got on mount via /api/auth/me)
-    //to build the URL of the PATCH route
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${currentUser?.id_USER}/profile`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      await axios.patch(`${API_URL}/api/users/${currentUser?.id_USER}/profile`, {
         //undefined if empty, Prisma doesn't update it
         //thanks to "UserSchema.partial()" used in updateProfile
         //partial() turns the fields as "optionnal"
@@ -97,32 +101,41 @@ function MyAccount() {
         lastname: form.lastname || undefined,
         password: form.password || undefined,
         currentPassword: currentPassword //sending the current password to check if the user is really the one who is updating the profile
-      }),
-      credentials: 'include' //to get the cookie sent from the back, the browser is automatically dealing with
-    })
+      },
+        {
+          withCredentials: true //to get the cookie sent from the back, the browser is automatically dealing with
+        })
 
-    //only if response is ok we update
-    //otherwise displaying an error message
-    if (response.ok) {
+      //only if response is ok we update
+      //otherwise displaying an error message
       setMessage(' Votre profile a été mis à jour !');
-    } else {
+    } catch (error) {
       setMessage('Une erreur est survenue, veuillez réessayer.')
     }
+    // axios commentaire:
+    // Sending the updated profile data to the api with axios patch method
+    // Using currentUser?.id_USER (got on mount via /api/auth/me)
+    // to build the URL of the PATCH route
+
+
+    //fetching on the api with patch methode
+    //geting the informations of the connected user via currentUser on mount
+    //We are using currentUser?.id_USER (got on mount via /api/auth/me)
+    //to build the URL of the PATCH route
   }
 
   const handleDelete = async () => {
-
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${currentUser?.id_USER}`, {
-      method: 'DELETE',
-      credentials: 'include'
-    })
-
-    if (response.ok) {
-      // if the account is deleted we send the user on the page register
-      navigate('/register')
-    } else {
+    try {
+      await axios.delete(`${API_URL}/api/users/${currentUser?.id_USER}`, {
+        
+        withCredentials: true
+      })
+        // if the account is deleted we send the user on the page register
+        navigate('/register')
+        
+      } catch (error) {
       setDeleteMessage('Une erreur est survenue.')
-    }
+      }
   }
 
   return (
