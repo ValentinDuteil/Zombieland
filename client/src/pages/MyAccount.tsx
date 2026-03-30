@@ -104,7 +104,7 @@ function MyAccount() {
     //only if response is ok we update
     //otherwise displaying an error message
     if (response.ok) {
-      setMessage(' Votre profile a été mis à jour !');
+      setMessage(' Votre profil a été mis à jour !');
     } else {
       setMessage('Une erreur est survenue, veuillez réessayer.')
     }

@@ -21,6 +21,27 @@ export const getAllReservations = async (req: Request, res: Response, next: Next
     // Return reservations with a 200 status (success)
     res.status(200).json(reservations)
 }
+
+// Retrieves all reservations for admin
+export const getUserReservations = async (req: Request, res: Response, next: NextFunction) => {
+    // Query params to get User ID
+    if (!req.user) {
+        throw new UnauthorizedError("L'utilisateur n'existe pas")
+    }
+
+    const userId = parseInt(req.params.userId as string)
+    if (isNaN(userId)) {
+        throw new BadRequestError("ID invalide")
+    }
+
+    const reservations = await prisma.reservation.findMany({
+        where: { id_USER: userId }
+    })
+
+    // Return reservations with a 200 status (success)
+    res.status(200).json(reservations)
+}
+
 // Retrieves reservation for the logged-in member
 export const getMyReservations = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
@@ -141,39 +162,39 @@ export const deleteReservation = async (req: Request, res: Response, next: NextF
         throw new BadRequestError("Mot de passe requis")
     }
 
-    const memberId = req.user.id
-
     const findReservation = await prisma.reservation.findUnique({
         where: { id_RESERVATION: reservationParam }
     })
-    if (findReservation === null) {
+    if (!findReservation) {
         throw new NotFoundError("La réservation n'existe pas")
     }
 
-    if (findReservation.id_USER !== memberId) {
+    // --- SECURITY ---
+    const isAdmin = req.user.role === 'ADMIN'
+
+    // if the user is not an admin, he can only cancel his own reservations
+    if (!isAdmin && findReservation.id_USER !== req.user.id) {
         throw new ForbiddenError("Cette réservation ne vous appartient pas")
     }
 
-    const user = await prisma.user.findUnique({
-        where: { id_USER: memberId }
-    })
-    if (!user) {
-        throw new NotFoundError("Utilisateur introuvable")
-    }
+    // check if the password is correct (for both admin and member, 
+    // because even an admin must provide his password to cancel)
+    const user = await prisma.user.findUnique({ where: { id_USER: req.user.id } })
+    if (!user) throw new NotFoundError("Utilisateur introuvable")
 
     const rightPassword = await argon2.verify(user.password, password)
-    if (!rightPassword) {
-        throw new UnauthorizedError("Mot de passe incorrect")
-    }
+    if (!rightPassword) throw new UnauthorizedError("Mot de passe incorrect")
 
-    const dateNow = new Date();
-    const dateReservation = new Date(findReservation.date);
-    const calculDate = dateReservation.getTime() - dateNow.getTime();
-    const oneDay = 1000 * 60 * 60 * 24;
-    const resultDate = Math.round(calculDate / oneDay)
+    // --- D-10 Rule ---
+    if (!isAdmin) {
+        const dateNow = new Date();
+        const dateReservation = new Date(findReservation.date);
+        const calculDate = dateReservation.getTime() - dateNow.getTime();
+        const resultDate = Math.round(calculDate / (1000 * 60 * 60 * 24))
 
-    if (resultDate <= 10) {
-        throw new BadRequestError("Annulation impossible")
+        if (resultDate < 10) {
+            throw new BadRequestError("Annulation impossible moins de 10 jours avant")
+        }
     }
 
     await prisma.reservation.update({

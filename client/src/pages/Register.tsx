@@ -31,7 +31,7 @@ function Register() {
       //only if response is ok the connection is allowed
       if (response.ok) {
         setMessage(' Bienvenue : compte créé !');
-        navigate('/');
+        navigate('/reservation');
       } else {
         //otherwise displaying an error message getting from the back if possible, otherwise a default one
         const errorData = await response.json()

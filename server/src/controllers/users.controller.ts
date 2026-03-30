@@ -47,7 +47,7 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
 
   const id = parseInt(req.params.id as string)
   if (isNaN(id)) {
-    throw new BadRequestError("Id invalide")
+    throw new BadRequestError("ID invalide")
   }
 
   const user = await prisma.user.findUnique({
