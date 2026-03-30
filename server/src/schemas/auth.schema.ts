@@ -15,3 +15,13 @@ export const LoginSchema = z.object({
   email: z.string().email({ error: "Email invalide" }),
   password: z.string().min(1, { error: "Le mot de passe est requis" }),
 })
+
+export const UpdateProfileSchema = UserSchema.partial().extend({
+  password: z.string().min(8, { error: "Le mot de passe doit contenir au moins 8 caractères" })
+    .regex(/[A-Z]/, { error: "Votre mot de passe doit contenir au moins une majuscule" })
+    .regex(/[0-9]/, { error: "Votre mot de passe doit contenir au moins un chiffre" })
+    .regex(/[^a-zA-Z0-9]/, { error: "Votre mot de passe doit contenir au moins un caractère spécial" })
+    .optional()
+})
+
+export type UserInput = z.infer<typeof UserSchema>

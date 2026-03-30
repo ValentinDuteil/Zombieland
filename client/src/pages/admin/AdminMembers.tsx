@@ -52,7 +52,7 @@ const AdminMembers = () => {
       m.lastname.trim().toLowerCase().includes(filterTool) ||
       m.email.trim().toLowerCase().includes(filterTool) ||
       (m.role === "ADMIN" ? "admin" : "membre").includes(filterTool) ||
-      m.created_at.trim().toLowerCase().includes(filterTool))
+      m.created_at.trim().toLowerCase().includes(filterTool) || m._count.reservations.toString().includes(filterTool))
     .sort((a, b) => {
       // If we sort by creation date
       if (sort.by === "created_at") {
