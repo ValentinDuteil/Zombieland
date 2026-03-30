@@ -18,7 +18,7 @@ const AdminMemberEdit = () => {
   const [member, setMember] = useState<Member | null>(null)
   const [form, setForm] = useState({ firstname: '', lastname: '', email: '', password: '', role: 'MEMBER' })
   const [message, setMessage] = useState('')
-  const [reservations, setReservations] = useState<any[]>([])
+  const [reservations, _setReservations] = useState<any[]>([])
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 

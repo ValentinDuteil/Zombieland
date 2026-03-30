@@ -22,6 +22,7 @@ import { toLocalDateString, isoToLocalDate, getTodayMidnight } from '../utils/da
 import InfoModal from '../components/InfoModal'
 import { API_URL } from '@/config/api'
 import axios, { isAxiosError } from 'axios'
+import { useNavigate } from 'react-router'
 
 
 function Reservation() {
