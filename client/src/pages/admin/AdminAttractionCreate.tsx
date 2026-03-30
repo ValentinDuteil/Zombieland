@@ -9,7 +9,7 @@ import bgImage from '../../assets/bg-image.webp'
 import bgBouton from '../../assets/bg-bouton.webp'
 import Card from '../../assets/Card.webp'
 import ConfirmModal from "../../components/ConfirmModal"
-import defaultImage from "../../assets/quarantaine.png"
+import defaultImage from "../../assets/quarantaine.webp"
 import { API_URL } from "@/config/api"
 import axios from "axios"
 

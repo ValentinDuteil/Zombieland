@@ -12,13 +12,6 @@ import img4 from "../assets/grand8.webp"
 import img5 from "../assets/fossecadavres.webp"
 import img6 from "../assets/centrerecherche.webp"
 import { PageBackground } from "../components/PageBackground";
-import bgImage from '../assets/bg-image.png';
-import img1 from "../assets/quarantaine.png"
-import img2 from "../assets/ridebiomasse.png"
-import img3 from "../assets/marche.png"
-import img4 from "../assets/grand8.png"
-import img5 from "../assets/fossecadavres.png"
-import img6 from "../assets/centrerecherche.png"
 import { API_URL } from "@/config/api";
 import axios from "axios";
 
