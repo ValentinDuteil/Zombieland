@@ -11,8 +11,13 @@ export const attractionSchema = z.object({
   //image is not required and managed by multer
 });
 
+
 export const PasswordAttractionSchema = attractionSchema.extend({
   password: z.string().min(1, { error: "Le mot de passe est requis" }),
+  
+});
+export const updateAttractionSchema = PasswordAttractionSchema.partial().extend({
+  password: z.string().min(1) // on remet password obligatoire
 });
 
 export type AttractionInput = z.infer<typeof attractionSchema>
