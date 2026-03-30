@@ -59,18 +59,34 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     process.env.JWT_SECRET!,
     { expiresIn: '7d' },
   )
+  //checking if the user is an admin, because if it's an admin, it's probably a registration by an admin for another user
+  const existingToken = req.cookies?.token
+  let isAdmin = false
 
-  //8.putting the token in a cookie httpOnly
-  res.cookie('token', token, {
-    httpOnly: true,                 // JavaScript can't read it → protection XSS
-    secure: true,                  // false for dev (HTTP, localhost), true for prod (HTTPS uniquement)
-    sameSite: 'none',                // cookie is send only from the same website "Lax"→ CSRF protection
-    maxAge: 7 * 24 * 60 * 60 * 1000 // lifetime in milliseconds
-  })
+  if (existingToken) {
+    try {
+      const decoded = jwt.verify(existingToken, process.env.JWT_SECRET!) as { role: string }
+      isAdmin = decoded.role === 'ADMIN'
+    } catch {
+      // token invalide ou expiré → on ignore
+    }
+  }
+  //8.putting the token in a cookie httpOnly only if the user is not an admin 
+  // (because if it's an admin, it's probably a registration by an admin for another user, 
+  // so we don't want to log in as the new user)
+  if (!isAdmin) {
+
+    res.cookie('token', token, {
+      httpOnly: true,                 // JavaScript can't read it → protection XSS
+      secure: true,                  // false for dev (HTTP, localhost), true for prod (HTTPS uniquement)
+      sameSite: 'none',                // cookie is send only from the same website "Lax"→ CSRF protection
+      maxAge: 7 * 24 * 60 * 60 * 1000 // lifetime in milliseconds
+    })
+  }
 
   //9.security, confirmed to the client the creation without returning the password
   const { password: _, ...userWithoutPassword } = newUser
-  return res.status(201).json( userWithoutPassword );
+  return res.status(201).json(userWithoutPassword);
 }
 
 
