@@ -64,74 +64,19 @@ export const getAttractionById = async (req: Request, res: Response, next: NextF
 }
 
 export const createAttraction = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        
-        // 1. Validate incoming data with Zod
-        
-        // We manually convert numeric fields because Zod does not parse strings into numbers.
-        const parsedData = attractionSchema.parse({
-            ...req.body,
-            min_height: req.body.min_height ? Number(req.body.min_height) : undefined,
-            duration: req.body.duration ? Number(req.body.duration) : undefined,
-            capacity: req.body.capacity ? Number(req.body.capacity) : undefined,
-        })
+    const { name, description, min_height, duration, capacity, intensity, password } = req.body
 
-        const { name, description, min_height, duration, capacity, intensity } = parsedData
+    const user = await prisma.user.findUnique({ where: { id_USER: req.user!.id } })
+    if (!user) throw new NotFoundError("Utilisateur introuvable")
 
-        
-        // 2. Fetch the admin user to verify the password
-        
-        const user = await prisma.user.findUnique({
-            where: { id_USER: req.user!.id }
-        })
+    const rightPassword = await argon2.verify(user.password, password)
+    if (!rightPassword) throw new UnauthorizedError("Mot de passe incorrect")
 
-        if (!user) {
-            throw new NotFoundError("Utilisateur introuvable")
-        }
-
-        
-        // 3. Compare provided password with stored hash
-        
-        const rightPassword = await argon2.verify(user.password, req.body.password)
-        if (!rightPassword) {
-            throw new UnauthorizedError("Mot de passe incorrect")
-        }
-        
-        // 4. Create the attraction in the database
-        
-        const attraction = await prisma.attraction.create({
-            data: {
-                name,
-                description,
-                min_height: min_height ?? 0,
-                duration: duration ?? 0,
-                capacity: capacity ?? 0,
-                intensity,
-            }
-        })
-
-        return res.status(201).json(attraction)
-
-    } catch (err: unknown) {
-        
-
-        // 5. Handle Zod validation errors
-        
-        if (err instanceof ZodError) {
-            return res.status(400).json({
-                error: "Invalid data",
-                details: err.issues
-            })
-        }
-
-        // Forward any other error to the global error handler
-        next(err)
-    }
+    const attraction = await prisma.attraction.create({
+        data: { name, description, min_height: min_height ?? 0, duration: duration ?? 0, capacity: capacity ?? 0, intensity }
+    })
+    return res.status(201).json(attraction)
 }
-
-
-
-
 
 // delete an attraction by admin only, requires password confirmation
 export const deleteAttraction = async (req: Request, res: Response, next: NextFunction) => {
