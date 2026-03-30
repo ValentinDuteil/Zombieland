@@ -17,15 +17,15 @@ export async function getAllUsers(req: Request, res: Response, next: NextFunctio
   }
   const users = await prisma.user.findMany({
     select: {
-        id_USER: true,
-        email: true,
-        firstname: true,
-        lastname: true,
-        role: true,
-        created_at: true,
-        _count: {
-            select: { reservations: true }
-        }
+      id_USER: true,
+      email: true,
+      firstname: true,
+      lastname: true,
+      role: true,
+      created_at: true,
+      _count: {
+        select: { reservations: true }
+      }
     }
   })
   //2.if not valid, returning 404 error
@@ -175,6 +175,16 @@ export async function deleteProfile(req: Request, res: Response, next: NextFunct
   if (!user) {
     throw new NotFoundError("Utilisateur introuvable")
   }
+
+  // 3.5checking the passwword of ADMIN before deleting the profile, for security
+  const { password } = req.body
+  const admin = await prisma.user.findUnique({
+    where: { id_USER: req.user.id }
+  })
+  if (!admin) throw new NotFoundError("Administrateur introuvable")
+
+  const rightPassword = await argon2.verify(admin.password, password)
+  if (!rightPassword) throw new UnauthorizedError("Mot de passe incorrect")
 
   //4.delete
   await prisma.user.delete({

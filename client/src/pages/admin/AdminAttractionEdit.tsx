@@ -18,6 +18,7 @@ import img5 from "../../assets/fossecadavres.webp"
 import img6 from "../../assets/centrerecherche.webp"
 import { API_URL } from "@/config/api"
 import axios from "axios"
+import { isAxiosError } from "axios"
 
 // Map attraction id to local image
 const attractionImages: Record<number, string> = {
@@ -34,6 +35,7 @@ const AdminAttractionEdit = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [error, setError] = useState<string | null>(null)
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -118,27 +120,32 @@ const AdminAttractionEdit = () => {
                 {
 
                     withCredentials: true,
-                    
+
                 })
 
 
 
             setTimeout(() => navigate('/admin/attractions'), 1500)
-        } catch (error) {
-            setError(errorMessage)
-            // premier if
-            // if (!imageRes.ok) {
-            //         setError("Erreur lors de l'upload de l'image")
-            //         return
-            //     }
-
-            //deuxieme if
-            // if (!res.ok) {
-            //     setError("Erreur lors de la modification de l'attraction")
-            //     return
-            // }
+        } catch (err) {
+            if (isAxiosError(err)) {
+                if (err.response?.data.details) {
+                    // Zod field errors
+                    const newErrors: Record<string, string> = {}
+                    err.response?.data.details.forEach((d: { champ: string, message: string }) => {
+                        newErrors[d.champ] = d.message
+                    })
+                    setErrors(newErrors)
+                } else {
+                    // Generic back error
+                    setError(err.response?.data.message || errorMessage)
+                }
+            } else {
+                // Network or unexpected error
+                setError(errorMessage)
+            }
         }
     }
+
 
     // Shared input style matching the card theme
     const inputStyle = {
@@ -199,7 +206,7 @@ const AdminAttractionEdit = () => {
                             _focus={{ borderColor: "zombieland.cta1orange", boxShadow: "none" }}
                             textAlign="center"
                         />
-
+                        {errors['name'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['name']}</Text>}
                         <Box
                             borderRadius="lg"
                             overflow="visible"
@@ -291,22 +298,25 @@ const AdminAttractionEdit = () => {
                                     w="80%"
                                     textAlign="center"
                                 />
-
+                                {errors['description'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['description']}</Text>}
                                 <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                     <Text fontSize="sm" whiteSpace="nowrap">Durée :</Text>
                                     <Input {...inputStyle} type="number" value={duration} onChange={(e) => setDuration(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Durée (min)" />
+                                    {errors['duration'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['duration']}</Text>}
                                     <Text fontSize="sm" color="whiteAlpha.700">min</Text>
                                 </Flex>
 
                                 <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                     <Text fontSize="sm" whiteSpace="nowrap">Capacité :</Text>
                                     <Input {...inputStyle} type="number" value={capacity} onChange={(e) => setCapacity(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Capacité" />
+                                    {errors['capacity'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['capacity']}</Text>}
                                     <Text fontSize="sm" color="whiteAlpha.700">personnes</Text>
                                 </Flex>
 
                                 <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
                                     <Text fontSize="sm" whiteSpace="nowrap">Taille requise :</Text>
                                     <Input {...inputStyle} type="number" value={minHeight} onChange={(e) => setMinHeight(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Taille min. (cm)" />
+                                    {errors['min_height'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['min_height']}</Text>}
                                     <Text fontSize="sm" color="whiteAlpha.700">cm</Text>
                                 </Flex>
 
