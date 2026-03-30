@@ -79,7 +79,8 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     res.cookie('token', token, {
       httpOnly: true,                 // JavaScript can't read it → protection XSS
       secure: process.env.NODE_ENV === 'production',   // true in production (HTTPS), false in development (HTTP)
-      sameSite: 'none',                // cookie is send only from the same website "Lax"→ CSRF protection
+      sameSite: 'lax',                      // cookie is send only from the same website "Lax"→ CSRF protection
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // lifetime in milliseconds
     })
   }
@@ -135,7 +136,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   res.cookie('token', token, {
     httpOnly: true,                 // JavaScript can't read it → protection XSS
     secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development (HTTP)
-    sameSite: 'none',                // cookie is send only from the same website "Lax"→ CSRF protection
+    sameSite: 'lax',                      // cookie is send only from the same website "Lax"→ CSRF protection
+    path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000 // lifetime in milliseconds
   })
 
@@ -165,8 +167,9 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
   //1.Logout
   res.clearCookie('token', {
     httpOnly: true,                 // JavaScript can't read it → protection XSS
-    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development (HTTP)
-    sameSite: 'none',                // cookie is send only from the same website → CSRF protection
+    // secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development (HTTP)
+    sameSite: 'lax',                      // cookie is send only from the same website "Lax"→ CSRF protection
+    path: '/'
   })
   //2.returning the informations to the user
   return res.status(200).json('Déconnexion')

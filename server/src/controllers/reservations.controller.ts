@@ -14,10 +14,11 @@ export const getAllReservations = async (req: Request, res: Response, next: Next
     const reservations = await prisma.reservation.findMany({
         include: {
             user: {
-                select: { email: true }
+                select: { email: true, firstname: true, lastname: true}
             }
-        }
+        }        
     })
+    
     // Return reservations with a 200 status (success)
     res.status(200).json(reservations)
 }
@@ -116,14 +117,25 @@ export const createReservation = async (req: Request, res: Response, next: NextF
             nb_tickets,
             date: new Date(date),
             id_TICKET,
-            id_USER: id_USER || req.user.id,
+             id_USER: id_USER || req.user.id, // ← ici
+
             total_amount: 0,
             status: 'CONFIRMED'
         }
     });
 
-    // Return the created reservation with a 201 status
-    res.status(201).json(reservation)
+    // Fetch reservation WITH user relation
+    const reservationWithUser = await prisma.reservation.findUnique({
+        where: { id_RESERVATION: reservation.id_RESERVATION },
+        include: {
+            user: {
+                select: { firstname: true, lastname: true, email: true }
+            }
+        }
+    });
+
+    // Return the created reservation with a 201 status with relation to user if it exists
+    res.status(201).json(reservationWithUser);
 };
 
 export const getAvailabilities = async (req: Request, res: Response, next: NextFunction) => {

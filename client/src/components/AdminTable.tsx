@@ -19,7 +19,8 @@ interface AdminTableProps<T> {
     onRowClick?: (item: T) => void
 }
 
-function AdminTable<T>({ columns, data, onRowClick, onHeaderClick }: AdminTableProps<T>) {
+function AdminTable<T>({ columns, data, onRowClick, onHeaderClick }: 
+    AdminTableProps<T>) {
     return (
         <TableContainer
             bg="rgba(255,255,255,0.06)"

@@ -76,22 +76,24 @@ function MyReservations() {
         const init = async () => {
             try {
                 // 1. Fetch user first
-            const resUser = await axios.get(`${API_URL}/api/auth/me`, {
-                withCredentials: true
-            })
-            const userData = resUser.data
-            setCurrentUser(userData)
+                const resUser = await axios.get(`${API_URL}/api/auth/me`, {
+                    withCredentials: true
+                })
+                const userData = resUser.data
+                setCurrentUser(userData)
 
-            // 2. Then fetch reservations based on role
-            const isAdminUser = userData.role === 'ADMIN' && !!id
-            const url = isAdminUser
-                ? `${API_URL}/api/reservations/user/${id}`
-                : `${API_URL}/api/reservations/me`
+                // 2. Then fetch reservations based on role
+                const isAdminUser = userData.role === 'ADMIN' && !!id
+                //ATTENTION MODIf
+                const url = isAdminUser
+                //  ? `${API_URL}/api/reservations/user/${id}` route n'existe pas
+                    ? `${API_URL}/api/reservations/${id}`   // ← route qui existe
+                    : `${API_URL}/api/reservations/me`
 
-            const response = await axios.get(url, { withCredentials: true })
-            const data = response.data
-            setReservations(data)
-            
+                const response = await axios.get(url, { withCredentials: true })
+                const data = response.data
+                setReservations(data)
+
 
             } catch (error) {
                 setMessage("Erreur lors de la récupération d'une réservation")
@@ -101,7 +103,7 @@ function MyReservations() {
         }
         init()
     }, [id]) // Runs only once on mount
-    
+
 
     // Check if the reservation is less than 10 days away
     const isWithin10Days = (dateStr: string) => {
@@ -130,19 +132,20 @@ function MyReservations() {
     // Cancel a reservation by sending a delete request to the api
     const handleCancel = async (id: number, password: string) => {
         try {
-            await axios.delete(`${API_URL}/api/reservations/${id}`, 
-                {data: {password}, 
-                withCredentials: true,
-            })
-    
-            
-                setReservations(reservations.filter((r: Reservation) => r.id_RESERVATION !== id))
-                setMessage('Votre annulation a bien été prise en compte.')
-                navigate('/my-account/reservations')
-            
+            await axios.delete(`${API_URL}/api/reservations/${id}`,
+                {
+                    data: { password },
+                    withCredentials: true,
+                })
+
+
+            setReservations(reservations.filter((r: Reservation) => r.id_RESERVATION !== id))
+            setMessage('Votre annulation a bien été prise en compte.')
+            navigate('/my-account/reservations')
+
         } catch (error) {
             const message = "Votre annulation n'a pas été pris en compte"
-            if(isAxiosError(error)){
+            if (isAxiosError(error)) {
                 setMessage(error.response?.data.message || message)
             } else {
                 setMessage(message)

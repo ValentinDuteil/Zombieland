@@ -4,7 +4,8 @@ export interface Reservation {
     date: string
     total_amount: string
     status: string
-    user: { email: string }
+    user: { email: string; firstname: string; lastname: string }
     id_USER: number
     id_TICKET: number
+
 }

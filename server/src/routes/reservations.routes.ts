@@ -3,15 +3,7 @@
 // Import Router from Express to create a router
 import { Router } from 'express'
 // Import function from the controller
-import {
-  createReservation,
-  deleteReservation,
-  getAllReservations,
-  getAvailabilities,
-  getMyReservations,
-  updateReservation,
-  getUserReservations
-} from '../controllers/reservations.controller.js'
+import { createReservation, deleteReservation, getAllReservations, getAvailabilities, getMyReservations, updateReservation } from '../controllers/reservations.controller.js'
 import { checkToken } from '../middlewares/auth.middleware.js'
 import { checkRole } from '../middlewares/role.middleware.js'
 
@@ -31,11 +23,9 @@ router.get('/availabilities', getAvailabilities)
 router.post('/admin', checkToken, checkRole('ADMIN'), validate(AdminCreateReservationSchema), createReservation)
 // When someone calls POST /api/reservations, execute createReservation
 router.post('/', checkToken, validate(createReservationSchema), createReservation)
-// When Admin calls GET /api/reservations/user/:userId, execute getUserReservations
-router.get('/user/:userId', checkToken, checkRole("ADMIN"), getUserReservations)
-// When someone calls DELETE /api/reservations/:id, execute deleteReservation
+//When someone calls DELETE /api/reservations/:id, execute deleteReservation
 router.delete('/:id', checkToken, deleteReservation)
-// When someone calls PATCH /api/reservations/:id, execute updateReservation
+//When someone calls PATCH /api/reservations/:id, execute updateReservation
 router.patch('/:id', checkToken, checkRole("ADMIN"), validate(UpdateReservationSchema), updateReservation)
 
 export default router
