@@ -1,0 +1,11 @@
+meta {
+  name: Delete reservation
+  type: http
+  seq: 1
+}
+
+delete {
+  url: {{baseUrl}}/api/reservations/{{reservationId}}
+  body: none
+  auth: none
+}

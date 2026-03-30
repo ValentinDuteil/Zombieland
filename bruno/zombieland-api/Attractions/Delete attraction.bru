@@ -1,0 +1,11 @@
+meta {
+  name: Delete attraction
+  type: http
+  seq: 1
+}
+
+delete {
+  url: {{baseUrl}}/api/attractions/{{attractionId}}
+  body: none
+  auth: none
+}
