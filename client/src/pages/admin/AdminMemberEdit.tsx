@@ -18,7 +18,7 @@ const AdminMemberEdit = () => {
   const navigate = useNavigate()
   const [member, setMember] = useState<Member | null>(null)
   const [form, setForm] = useState({ firstname: '', lastname: '', email: '', password: '', role: 'MEMBER' })
-  const [error, setError] = useState('')
+  const [_error, setError] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [message, setMessage] = useState('')
   const [reservations, _setReservations] = useState<any[]>([])
@@ -46,10 +46,10 @@ const AdminMemberEdit = () => {
     try {
       await axios.patch(`${API_URL}/api/users/${id}/profile`,
         {
-          firstname: form.firstname || undefined,
-          lastname: form.lastname || undefined,
-          email: form.email || undefined,
-          password: form.password || undefined,
+          firstname: form.firstname,
+          lastname: form.lastname,
+          email: form.email,
+          password: form.password,
           role: form.role,
           currentPassword
         },
