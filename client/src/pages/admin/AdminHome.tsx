@@ -17,7 +17,7 @@ import { API_URL } from "@/config/api";
 import ConfirmModal from "@/components/ConfirmModal";
 
 const AdminReservations = () => {
-    const [sort, setSort] = useState({ by: "name", direction: "asc" })
+    const [sort, _setSort] = useState({ by: "name", direction: "asc" })
 
     const [search, setSearch] = useState("")
     //State to store the total of attractions
