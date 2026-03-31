@@ -166,7 +166,7 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
   //1.Logout
   res.clearCookie('token', {
     httpOnly: true,                 // JavaScript can't read it → protection XSS
-    // secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development (HTTP)
+    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development (HTTP)
     sameSite: 'none',                      // cookie is send only from the same website "Lax"→ CSRF protection
     
     
