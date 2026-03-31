@@ -127,7 +127,7 @@ function Login() {
             onClick={handleSubmit}
             bgImage={`url(${bgBouton})`}
             color="zombieland.secondary"
-            _hover={{ bg: "zombieland.cta2orange" }}
+            _hover={{ bg: "zombieland.cta2orange", color: "zombieland.white" }}
             fontFamily="body"
             fontSize="20px"
             py={6}
