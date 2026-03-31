@@ -54,7 +54,6 @@ function MyReservations() {
 
     // Filtering and sorting the reservations based on the search term and the current page
     const filteredReservations = reservations
-        .filter((r) => r.status !== 'CANCELLED')
         .filter((r) => {
             const search = searchTerm.toLowerCase()
             const dateStr = new Date(r.date).toLocaleDateString('fr-FR').toLowerCase()
@@ -86,8 +85,8 @@ function MyReservations() {
                 const isAdminUser = userData.role === 'ADMIN' && !!id
                 //ATTENTION MODIf
                 const url = isAdminUser
-                //  ? `${API_URL}/api/reservations/user/${id}` route n'existe pas
-                    ? `${API_URL}/api/reservations/${id}`   // ← route qui existe
+                    //  ? `${API_URL}/api/reservations/user/${id}` route n'existe pas
+                    ? `${API_URL}/api/reservations/user/${id}`   // ← route qui existe
                     : `${API_URL}/api/reservations/me`
 
                 const response = await axios.get(url, { withCredentials: true })
@@ -139,7 +138,9 @@ function MyReservations() {
                 })
 
 
-            setReservations(reservations.filter((r: Reservation) => r.id_RESERVATION !== id))
+            setReservations(reservations.map((r) =>
+                r.id_RESERVATION === id ? { ...r, status: 'CANCELLED' } : r
+            ))
             setMessage('Votre annulation a bien été prise en compte.')
             navigate('/my-account/reservations')
 
@@ -270,7 +271,7 @@ function MyReservations() {
                                     {reservation.status}
                                 </Text>
 
-                                {new Date(reservation.date) >= new Date() && (
+                                {new Date(reservation.date) >= new Date() && reservation.status !== 'CANCELLED' && (
                                     <Flex justifyContent="flex-end">
                                         <Button
                                             onClick={() => {

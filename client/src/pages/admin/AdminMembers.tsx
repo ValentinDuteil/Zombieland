@@ -33,11 +33,11 @@ const AdminMembers = () => {
     try {
       const res = await axios.get<Member[]>(`${API_URL}/api/users`, {
         withCredentials: true
-      })  
+      })
       setMembers(res.data)
     } catch (error) {
-        setError("Erreur lors de la récupération des membres")
-      } finally{
+      setError("Erreur lors de la récupération des membres")
+    } finally {
       setLoading(false)
     }
   }
@@ -59,6 +59,10 @@ const AdminMembers = () => {
         // We need to convert the date string to timestamps thanks to getTime() and then we sort by asc or desc
         return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * (sort.direction === "asc" ? 1 : -1)
       }
+      // If we sort by number of reservations
+      if (sort.by === "_count.reservations") {
+        return (a._count.reservations - b._count.reservations) * (sort.direction === "asc" ? 1 : -1)
+      }
       // If we sort by role, we want admins first in asc and members first in desc
       if (sort.by === "role") {
         return a.role.localeCompare(b.role) * (sort.direction === "asc" ? 1 : -1)
@@ -75,7 +79,7 @@ const AdminMembers = () => {
       return a.lastname.localeCompare(b.lastname) * (sort.direction === "asc" ? 1 : -1)
     })
 
-  const handleSortChange = (by: "lastname" | "firstname" | "email" | "role" | "created_at") => {
+  const handleSortChange = (by: "lastname" | "firstname" | "email" | "role" | "_count.reservations" | "created_at") => {
     if (sort.by === by) {
       setSort({ by, direction: sort.direction === "asc" ? "desc" : "asc" })
     } else {
@@ -88,6 +92,7 @@ const AdminMembers = () => {
     "Prénom": "firstname",
     "Email": "email",
     "Rôle": "role",
+    "Réservations": "_count.reservations",
     "Créé le": "created_at"
   } as const // tells to TypeScript that the values are exactly these strings, not any string
 
@@ -137,31 +142,31 @@ const AdminMembers = () => {
           </Text>
 
           {/* Create member button */}
-                    <Flex justifyContent="center" mt={8} mb={6}>
-                        <Button
-                            bgImage={`url(${bgBouton})`}
-                            bgSize="cover"
-                            bgPosition="center"
-                            color="zombieland.white"
-                            border="none"
-                            _hover={{
-                                opacity: 0.85,
-                                boxShadow: "0 8px 16px rgba(0,0,0,0.6), 0 0 30px rgba(250, 130, 52, 0.3)"
-                            }}
-                            fontFamily="heading"
-                            fontSize="18px"
-                            py={6}
-                            px={12}
-                            borderRadius="md"
-                            letterSpacing="1px"
-                            fontWeight="bold"
-                            boxShadow="0 4px 15px rgba(250, 130, 52, 0.25)"
-                            transition="all 0.3s ease"
-                            onClick={() => navigate('/register')}
-                        >
-                            Créer un nouveau membre
-                        </Button>
-                    </Flex>
+          <Flex justifyContent="center" mt={8} mb={6}>
+            <Button
+              bgImage={`url(${bgBouton})`}
+              bgSize="cover"
+              bgPosition="center"
+              color="zombieland.white"
+              border="none"
+              _hover={{
+                opacity: 0.85,
+                boxShadow: "0 8px 16px rgba(0,0,0,0.6), 0 0 30px rgba(250, 130, 52, 0.3)"
+              }}
+              fontFamily="heading"
+              fontSize="18px"
+              py={6}
+              px={12}
+              borderRadius="md"
+              letterSpacing="1px"
+              fontWeight="bold"
+              boxShadow="0 4px 15px rgba(250, 130, 52, 0.25)"
+              transition="all 0.3s ease"
+              onClick={() => navigate('/register')}
+            >
+              Créer un nouveau membre
+            </Button>
+          </Flex>
 
           {/* Searchbar */}
           <Input

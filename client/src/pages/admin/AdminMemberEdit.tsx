@@ -21,7 +21,7 @@ const AdminMemberEdit = () => {
   const [_error, setError] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [message, setMessage] = useState('')
-  const [reservations, _setReservations] = useState<any[]>([])
+  const [reservations, setReservations] = useState<any[]>([])
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
@@ -34,6 +34,12 @@ const AdminMemberEdit = () => {
 
         setMember(res.data)
         setForm({ firstname: res.data.firstname, lastname: res.data.lastname, email: res.data.email, password: '', role: res.data.role })
+
+        // Fetch reservations du membre
+        const resaRes = await axios.get(`${API_URL}/api/reservations/user/${id}`, {
+          withCredentials: true
+        })
+        setReservations(resaRes.data)
 
       } catch (error) {
         setMessage("Erreur lors de la récupération du membre")
@@ -49,7 +55,7 @@ const AdminMemberEdit = () => {
           firstname: form.firstname,
           lastname: form.lastname,
           email: form.email,
-          password: form.password,
+          password: form.password || undefined, // if password is empty, we don't want to send it to the backend → we send undefined and Prisma ignores it
           role: form.role,
           currentPassword
         },
@@ -60,25 +66,25 @@ const AdminMemberEdit = () => {
       setMessage('Profil mis à jour !')
 
     } catch (err) {
-                if (isAxiosError(err)) {
-                    if (err.response?.data.details) {
-                        // Zod field errors
-                        const newErrors: Record<string, string> = {}
-                        err.response?.data.details.forEach((d: { champ: string, message: string }) => {
-                            newErrors[d.champ] = d.message
-                        })
-                        setErrors(newErrors)
-                    } else {
-                        // Generic back error
-                        setError(err.response?.data.message || 'Une erreur est survenue lors de la mise à jour')
-                    }
-                } else {
-                    // Network or unexpected error
-                    setError('Une erreur est survenue lors de la mise à jour')
-                }
-            }
+      if (isAxiosError(err)) {
+        if (err.response?.data.details) {
+          // Zod field errors
+          const newErrors: Record<string, string> = {}
+          err.response?.data.details.forEach((d: { champ: string, message: string }) => {
+            newErrors[d.champ] = d.message
+          })
+          setErrors(newErrors)
+        } else {
+          // Generic back error
+          setError(err.response?.data.message || 'Une erreur est survenue lors de la mise à jour')
         }
-    
+      } else {
+        // Network or unexpected error
+        setError('Une erreur est survenue lors de la mise à jour')
+      }
+    }
+  }
+
 
   const handleDelete = async (password: string) => {
     try {
@@ -170,7 +176,7 @@ const AdminMemberEdit = () => {
             borderColor="zombieland.primary"
             bg="rgba(0,0,0,0.3)"
           />
-            {errors['lastname'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['lastname']}</Text>}
+          {errors['lastname'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['lastname']}</Text>}
 
           <Text
             color="zombieland.white"
@@ -186,7 +192,7 @@ const AdminMemberEdit = () => {
             borderColor="zombieland.primary"
             bg="rgba(0,0,0,0.3)"
           />
-            {errors['email'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['email']}</Text>}
+          {errors['email'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['email']}</Text>}
 
           <Text
             color="zombieland.white"

@@ -1,7 +1,7 @@
 // Business logic for users : profile, plannning, delection
 
 import { Request, Response, NextFunction } from 'express';
-import { UserSchema } from '../schemas/auth.schema.js';
+import { UpdateProfileSchema  } from '../schemas/auth.schema.js';
 import * as argon2 from 'argon2';
 import { prisma } from '../lib/prisma.js';
 import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } from "../utils/AppError.js";
@@ -92,7 +92,7 @@ export async function updateProfile(req: Request, res: Response, next: NextFunct
   //partial() makes all the fields optional → Prisma ignores the undefined fields
   // safeParse() returns "{ success: true/false, data, error } " 
   // and we stock the data in a variable "data"
-  const UpdateSchema = UserSchema.partial()
+  const UpdateSchema = UpdateProfileSchema
   const data = UpdateSchema.safeParse(req.body)
   if (!data.success) {
     throw new BadRequestError("Données invalides")
