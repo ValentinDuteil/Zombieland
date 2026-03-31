@@ -13,8 +13,9 @@ const AdminTarifs = () => {
     const [action, setAction] = useState<"price" | "capacity" | null>(null)
     const [capacity, setCapacity] = useState<number>(0)
     const [price, setPrice] = useState<number>(0)
-    const [loading, setLoading] = useState(true)
-    const [message, setMessage] = useState("")
+    const [loading, setLoading] = useState(true)    
+    const [priceMessage, setPriceMessage] = useState("")
+    const [capacityMessage, setCapacityMessage] = useState("")
     // Modals
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
@@ -23,19 +24,17 @@ const AdminTarifs = () => {
             const res = await axios.get(`${API_URL}/api/tickets`, { withCredentials: true })
             setPrice(res.data.price)
         } catch {
-            setMessage("Erreur lors du chargement du tarif")
-        } finally {
-            setLoading(false)
+            setPriceMessage("Erreur lors du chargement du tarif")    
         }
     }
     //fetch update price
     const updatePrice = async (password: string) => {
         try {
             await axios.patch(`${API_URL}/api/tickets/price`, { price, password }, { withCredentials: true })
-            setMessage("Tarif mis à jour avec succès")
+            setPriceMessage("Tarif mis à jour avec succès")
         } catch (err) {
             if (isAxiosError(err)) {
-                setMessage(err.response?.data.message || "Erreur lors de la mise à jour")
+                setPriceMessage(err.response?.data.message || "Erreur lors de la mise à jour")
             }
         }
         setIsConfirmOpen(false)
@@ -43,30 +42,29 @@ const AdminTarifs = () => {
     //fetch capacity park
     const fetchCapacity = async () => {
         try {
-            const res = await axios.get(`${API_URL}/api/settings/capacity`, {
+            const res = await axios.get(`${API_URL}/api/settings`, {
                 withCredentials: true
             })
 
-            setCapacity(res.data.capacity)
-        } catch {
-            setMessage("Erreur lors du chargement de la capacité")
-        } finally {
+            setCapacity(parseInt(res.data.value))
 
+        } catch {
+            setCapacityMessage("Erreur lors du chargement de la capacité")
         }
     }
     //fetch update capacity park
     const updateCapacity = async (password: string) => {
         try {
             await axios.patch(
-                `${API_URL}/api/settings/capacity`,
-                { capacity, password },
+                `${API_URL}/api/settings`,
+                { value: capacity, password },
                 { withCredentials: true }
             )
 
-            setMessage("Capacité mise à jour avec succès")
+            setCapacityMessage("Capacité mise à jour avec succès")
         } catch (err) {
             if (isAxiosError(err)) {
-                setMessage(err.response?.data.message || "Erreur lors de la mise à jour")
+                setCapacityMessage(err.response?.data.message || "Erreur lors de la mise à jour")
             }
         }
 
@@ -169,7 +167,7 @@ const AdminTarifs = () => {
                                 Enregistrer
                             </Button>
 
-                            {message && <Text mt={4}>{message}</Text>}
+                            {priceMessage && <Text mt={4}>{priceMessage}</Text>}
                         </>
                     )}
 
@@ -213,7 +211,7 @@ const AdminTarifs = () => {
 
 
 
-                            {message && <Text mt={4}>{message}</Text>}
+                            {capacityMessage && <Text mt={4}>{capacityMessage}</Text>}
                         </>
                     )}
                 </Box>
