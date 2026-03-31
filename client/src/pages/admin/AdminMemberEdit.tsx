@@ -55,7 +55,7 @@ const AdminMemberEdit = () => {
           firstname: form.firstname,
           lastname: form.lastname,
           email: form.email,
-          password: form.password,
+          password: form.password || undefined, // if password is empty, we don't want to send it to the backend → we send undefined and Prisma ignores it
           role: form.role,
           currentPassword
         },
