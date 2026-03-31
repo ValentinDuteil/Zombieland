@@ -29,7 +29,7 @@ export function checkToken(req: Request, res: Response, next: NextFunction): voi
       token,
       process.env.JWT_SECRET as string
     ) as JwtPayload
-    console.log("DECODED TOKEN :", decoded);
+    
     
     // Attach the decoded user info to the request object
     req.user = decoded
