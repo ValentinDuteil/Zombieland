@@ -22,6 +22,7 @@ export default function AdminMenu() {
                 <SidebarLink to="/admin/attractions">Attractions</SidebarLink>
                 <SidebarLink to="/admin/members">Membres</SidebarLink>
                 <SidebarLink to="/admin/reservations">Réservations</SidebarLink>
+                <SidebarLink to="/admin/tarifs">Tarifs</SidebarLink>
             </VStack>
 
 
