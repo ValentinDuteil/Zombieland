@@ -1,7 +1,7 @@
 //logic for ticket management
 import { prisma } from '../lib/prisma.js'
 import { Request, Response, NextFunction } from 'express'
-import { BadRequestError, NotFoundError, UnauthorizedError } from '../utils/AppError.js'
+import { NotFoundError, UnauthorizedError } from '../utils/AppError.js'
 import * as argon2 from 'argon2'
 
 export const getAllprices = async (req: Request, res: Response, next: NextFunction) => {

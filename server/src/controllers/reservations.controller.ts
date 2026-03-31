@@ -14,11 +14,11 @@ export const getAllReservations = async (req: Request, res: Response, next: Next
     const reservations = await prisma.reservation.findMany({
         include: {
             user: {
-                select: { email: true, firstname: true, lastname: true}
+                select: { email: true, firstname: true, lastname: true }
             }
-        }        
+        }
     })
-    
+
     // Return reservations with a 200 status (success)
     res.status(200).json(reservations)
 }
@@ -68,7 +68,13 @@ export const createReservation = async (req: Request, res: Response, next: NextF
         throw new BadRequestError("Date invalide")
     }
 
-    // Adding a maximum of 9999 tickets per day
+    // Reading the maximum ticket capacity from the settings table
+    const maxSetting = await prisma.setting.findUnique({
+        where: { key: 'max_tickets_per_day' }
+    })
+    const maxTickets = parseInt(maxSetting?.value ?? '9999')
+
+    // Adding a maximum of tickets per day
     const reservationsByDay = await prisma.reservation.groupBy({
         by: ['date'],
         where: {
@@ -79,16 +85,15 @@ export const createReservation = async (req: Request, res: Response, next: NextF
     })
 
     const totalTickets = reservationsByDay[0]?._sum.nb_tickets ?? 0
-    const availableSpots = 9999 - totalTickets
+    const availableSpots = maxTickets - totalTickets
 
     // If the park is full
-    // Si le parc est complet
     if (availableSpots <= 0) {
         throw new BadRequestError("Capacité maximale atteinte pour cette date")
     }
 
     // If not enough spots for the requested tickets
-    if (totalTickets + nb_tickets > 9999) {
+    if (totalTickets + nb_tickets > maxTickets) {
         throw new BadRequestError(`Vous ne pouvez pas réserver autant de billets. Il reste seulement ${availableSpots} place(s) disponible(s) pour cette date.`)
     }
 
@@ -117,7 +122,7 @@ export const createReservation = async (req: Request, res: Response, next: NextF
             nb_tickets,
             date: new Date(date),
             id_TICKET,
-             id_USER: id_USER || req.user.id, // ← ici
+            id_USER: id_USER || req.user.id, // ← ici
 
             total_amount: nb_tickets * Number(ticket.amount),
             status: 'CONFIRMED'
@@ -139,6 +144,12 @@ export const createReservation = async (req: Request, res: Response, next: NextF
 };
 
 export const getAvailabilities = async (req: Request, res: Response, next: NextFunction) => {
+    // Read the daily ticket cap from the settings table
+    const maxSetting = await prisma.setting.findUnique({
+        where: { key: 'max_tickets_per_day' }
+    })
+    const maxTickets = parseInt(maxSetting?.value ?? '9999')
+
     // getAllDates to check their availability
     const allDates = await prisma.reservation.groupBy({
         by: ['date'],
@@ -151,7 +162,7 @@ export const getAvailabilities = async (req: Request, res: Response, next: NextF
     // Map the results to return the date and the number of available tickets (10,000 - reserved)
     const availabilities = allDates.map(date => ({
         date: date.date,
-        available: (date._sum.nb_tickets ?? 0) < 9999 ? true : false
+        available: (date._sum.nb_tickets ?? 0) < maxTickets
     }))
 
     // Return the availabilities with a 200 status
