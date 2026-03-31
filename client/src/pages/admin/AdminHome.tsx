@@ -15,7 +15,7 @@ import type { Reservation } from "@/types/Reservations";
 import axios from "axios";
 import { API_URL } from "@/config/api";
 import ConfirmModal from "@/components/ConfirmModal";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const AdminReservations = () => {
     const [sort, setSort] = useState({ by: "name", direction: "asc" })
@@ -34,6 +34,7 @@ const AdminReservations = () => {
     // State to store the id of the reservation to cancel (opens the confirmation modal)
     const [reservationToCancel, setReservationToCancel] = useState<number | null>(null)
     const navigate = useNavigate()
+    const location = useLocation()
     // x
 
     // Fetch all reservations from the API when the component mounts
@@ -60,7 +61,7 @@ const AdminReservations = () => {
         // Call the function
         axiosReservation()
 
-    }, []); // Empty dependency array: runs only once on mount
+    }, [location]); // Empty dependency array: runs only once on mount
 
     // Function to update the status of a reservation via PATCH request
     // id: the reservation id to update
@@ -94,7 +95,7 @@ const AdminReservations = () => {
         };
 
         fetchAttractions();
-    }, []);
+    }, [location]);
     // const totalAttractions = attractions.length;
 
     //fetch all users
@@ -103,7 +104,7 @@ const AdminReservations = () => {
             .get(`${API_URL}/api/users`, { withCredentials: true })
             .then(res => setUsers(res.data.length))
             .catch(() => console.error("Erreur récupération utilisateurs"));
-    }, []);
+    }, [location]);
 
 
 
