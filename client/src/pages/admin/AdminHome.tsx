@@ -187,7 +187,7 @@ const AdminReservations = () => {
                     <AdminMenu />
                 </Box>
                 {/* RIGHT CONTENT — 70% */}
-                <Box width={70} flex="1" px={10}>
+                <Box width={70} flex="1" px={10} pt="60px">
                     <Heading
                         fontWeight="bold"
                         color="zombieland.white"
