@@ -73,6 +73,12 @@ model Reservation {
   ticket         Ticket   @relation(fields: [id_TICKET], references: [id_TICKET], onDelete: Restrict)
 }
 
+model Setting {
+  key        String   @id
+  value      String
+  updated_at DateTime @updatedAt
+}
+
 enum Role {
   MEMBER
   ADMIN
