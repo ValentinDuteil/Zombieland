@@ -167,8 +167,6 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
     httpOnly: true,                 // JavaScript can't read it → protection XSS
     secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development (HTTP)
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',   // cookie is send only from the same website "Lax"→ CSRF protection
-    
-    
   })
   //2.returning the informations to the user
   return res.status(200).json('Déconnexion')

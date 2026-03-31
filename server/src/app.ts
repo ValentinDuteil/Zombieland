@@ -14,6 +14,7 @@ import usersRoutes from './routes/users.routes.js'
 import attractionRoutes from './routes/attraction.routes.js'
 import reservationsRouter from './routes/reservations.routes.js'
 import ticketRoutes from './routes/ticket.routes.js'
+import settingRoutes from './routes/setting.routes.js'
 
 const app = express()
 
@@ -49,6 +50,8 @@ app.use('/api/tickets', ticketRoutes)
 app.get('/', (req,res) => {
     res.json({ message: 'Zombieland API is running'})
 })
+// Plug the router on /api/settings
+app.use('/api/settings', settingRoutes)
 
 //ErrorHandler
 app.use(errorHandler)

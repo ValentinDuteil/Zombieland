@@ -8,7 +8,10 @@ import Footer from "../../components/Footer"
 import AdminMenu from "@/components/AdminNavlinkMenu"
 import ConfirmModal from "@/components/ConfirmModal"
 
+// fetch price 
 const AdminTarifs = () => {
+    const [action, setAction] = useState<"price" | "capacity" | null>(null)
+    const [capacity, setCapacity] = useState<number>(0)
     const [price, setPrice] = useState<number>(0)
     const [loading, setLoading] = useState(true)
     const [message, setMessage] = useState("")
@@ -25,7 +28,7 @@ const AdminTarifs = () => {
             setLoading(false)
         }
     }
-
+    //fetch update price
     const updatePrice = async (password: string) => {
         try {
             await axios.patch(`${API_URL}/api/tickets/price`, { price, password }, { withCredentials: true })
@@ -37,10 +40,49 @@ const AdminTarifs = () => {
         }
         setIsConfirmOpen(false)
     }
+    //fetch capacity park
+    const fetchCapacity = async () => {
+        try {
+            const res = await axios.get(`${API_URL}/api/settings/capacity`, {
+                withCredentials: true
+            })
+
+            setCapacity(res.data.capacity)
+        } catch {
+            setMessage("Erreur lors du chargement de la capacité")
+        } finally {
+
+        }
+    }
+    //fetch update capacity park
+    const updateCapacity = async (password: string) => {
+        try {
+            await axios.patch(
+                `${API_URL}/api/settings/capacity`,
+                { capacity, password },
+                { withCredentials: true }
+            )
+
+            setMessage("Capacité mise à jour avec succès")
+        } catch (err) {
+            if (isAxiosError(err)) {
+                setMessage(err.response?.data.message || "Erreur lors de la mise à jour")
+            }
+        }
+
+        setIsConfirmOpen(false)
+    }
 
     useEffect(() => {
-        fetchPrice()
+        const load = async () => {
+            await fetchPrice()
+            await fetchCapacity()
+            setLoading(false)
+        }
+
+        load()
     }, [])
+
 
     return (
         <Box
@@ -73,7 +115,7 @@ const AdminTarifs = () => {
                 <Box
                     flex="1"
                     p={3}
-                    pt="100px"
+                    pt="70px"
                     pb="100px"
                     maxW="1000px"
                     mx="auto"
@@ -90,6 +132,7 @@ const AdminTarifs = () => {
                         Gestion des tarifs
                     </Text>
 
+                    {/* SECTION : Prix du billet */}
                     <Heading
                         fontWeight="bold"
                         color="zombieland.white"
@@ -113,16 +156,65 @@ const AdminTarifs = () => {
                                 onChange={(e) => setPrice(Number(e.target.value))}
                                 width="200px"
                                 mb={4}
+                                mr={4}
                             />
 
-                            <Button colorScheme="blue" onClick={() => setIsConfirmOpen(true)}>
+                            <Button
+                                colorScheme="blue"
+                                onClick={() => {
+                                    setAction("price")
+                                    setIsConfirmOpen(true)
+                                }}
+                            >
                                 Enregistrer
                             </Button>
 
                             {message && <Text mt={4}>{message}</Text>}
-
                         </>
+                    )}
 
+                    {/* SECTION : Capacité du parc */}
+                    <Heading
+                        fontWeight="bold"
+                        color="zombieland.white"
+                        textAlign="left"
+                        fontFamily="body"
+                        fontSize="24px"
+                        mt={12}
+                        mb={8}
+                    >
+                        Admin / Capacité
+                    </Heading>
+
+                    {loading ? (
+                        <Text>Chargement...</Text>
+                    ) : (
+                        <>
+                            <Text mb={2}>Capacité du parc</Text>
+
+                            <Input
+                                type="number"
+                                width="200px"
+                                mb={4}
+                                mr={4}
+                                value={capacity}
+                                onChange={(e) => setCapacity(Number(e.target.value))}
+
+                            />
+                            <Button
+                                colorScheme="blue"
+                                onClick={() => {
+                                    setAction("capacity")
+                                    setIsConfirmOpen(true)
+                                }}
+                            >
+                                Enregistrer
+                            </Button>
+
+
+
+                            {message && <Text mt={4}>{message}</Text>}
+                        </>
                     )}
                 </Box>
             </Flex>
@@ -131,9 +223,12 @@ const AdminTarifs = () => {
             <ConfirmModal
                 isOpen={isConfirmOpen}
                 onClose={() => setIsConfirmOpen(false)}
-                title="Modifier le tarif"
-                message="Confirmez avec votre mot de passe admin."
-                onConfirm={(password) => updatePrice(password)}
+                title={action === "price" ? "Confirmer la mise à jour du tarif" : "Confirmer la mise à jour de la capacité"}
+                message={action === "price" ? "Voulez-vous vraiment modifier le prix du billet ?" : "Voulez-vous vraiment modifier la capacité du parc ?"}
+                onConfirm={(password) => {
+                    if (action === "price") updatePrice(password)
+                    if (action === "capacity") updateCapacity(password)
+                }}
             />
         </Box>
     )
