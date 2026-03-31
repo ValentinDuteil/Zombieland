@@ -16,7 +16,7 @@ import { isoToLocalDate } from '@/utils/date'
 
 
 
-// defines the shape of a reservation object
+// defines the shape of a reservation object...
 // use an interface instead of any allows ts to check that we are accessing valid fiels
 interface Reservation {
     id_RESERVATION: number
