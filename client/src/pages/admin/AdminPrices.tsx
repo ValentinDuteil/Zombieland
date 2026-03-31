@@ -166,7 +166,7 @@ const AdminTarifs = () => {
                             >
                                 Enregistrer
                             </Button>
-
+                            {/*message update price*/}
                             {priceMessage && <Text mt={4}>{priceMessage}</Text>}
                         </>
                     )}
@@ -210,7 +210,7 @@ const AdminTarifs = () => {
                             </Button>
 
 
-
+                            {/*message update capacity*/}
                             {capacityMessage && <Text mt={4}>{capacityMessage}</Text>}
                         </>
                     )}
