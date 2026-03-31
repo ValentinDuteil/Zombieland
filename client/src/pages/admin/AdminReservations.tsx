@@ -100,7 +100,7 @@ const AdminReservations = () => {
     }
 
     const headerToField = {
-        "ID": "id_RESERVATION",
+        "N° Réservation": "id_RESERVATION",
         "Membre": "email",
         "Date": "date",
         "Billets": "nb_tickets",
