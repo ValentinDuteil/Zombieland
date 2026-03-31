@@ -56,6 +56,7 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image, sh
                 borderColor: "zombieland.cta1orange",
             }}
             cursor="pointer"
+            onClick={() => navigate(`/attractions/${id_ATTRACTION}`)}
         >
 
 
@@ -118,10 +119,10 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image, sh
                         fontFamily="body"
                         fontWeight="bold"
                         letterSpacing="1px"
-                        fontSize="16px"
+                        fontSize={{ base: "12px", md: "16px" }}
                         px={4}
                         py={4}
-                        _hover={{ bg: "zombieland.cta2orange" }}
+                        _hover={{ bg: "zombieland.cta2orange", color: "zombieland.white" }}
                         boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
                         textTransform="uppercase"
                         mt="auto"
