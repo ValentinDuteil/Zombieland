@@ -20,7 +20,7 @@ import bgImage from '../assets/bg-image.webp'
 import bgBouton from '../assets/bg-bouton.webp'
 import { PageBackground } from '../components/PageBackground'
 import { API_URL } from '@/config/api';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
 //We will need on this page : 
 //  connected user informations (so we need his ID)
@@ -34,6 +34,7 @@ function MyAccount() {
   const [currentUser, setCurrentUser] = useState<{ id_USER: number, firstname: string, lastname: string } | null>(null)
   //what the user is writting in the inputs
   const [form, setForm] = useState({ firstname: '', lastname: '', password: '', confirmPassword: '' })
+  const [errors, setErrors] = useState<Record<string, string>>({})
   //The reservations we want to display
   const [reservations, setReservations] = useState([])
   const navigate = useNavigate();
@@ -82,7 +83,6 @@ function MyAccount() {
     fetchReservations()
   }, [])
 
-
   const handleUpdate = async (currentPassword: string) => {
     //1.checking if the user wants to change his password
     //only if he's updating it, we compare the password and the confirmpassword inputs
@@ -110,7 +110,19 @@ function MyAccount() {
       //otherwise displaying an error message
       setMessage(' Votre profile a été mis à jour !');
     } catch (error) {
-      setMessage('Une erreur est survenue, veuillez réessayer.')
+      if (isAxiosError(error)) {
+        if (error.response?.data.details) {
+          const newErrors: Record<string, string> = {}
+          error.response.data.details.forEach((d: { champ: string, message: string }) => {
+            newErrors[d.champ] = d.message
+          })
+          setErrors(newErrors)
+        } else {
+          setMessage(error.response?.data.message || 'Une erreur est survenue.')
+        }
+      } else {
+        setMessage('Une erreur est survenue.')
+      }
     }
     // axios commentaire:
     // Sending the updated profile data to the api with axios patch method
@@ -127,15 +139,15 @@ function MyAccount() {
   const handleDelete = async () => {
     try {
       await axios.delete(`${API_URL}/api/users/${currentUser?.id_USER}`, {
-        
+
         withCredentials: true
       })
-        // if the account is deleted we send the user on the page register
-        navigate('/register')
-        
-      } catch (error) {
+      // if the account is deleted we send the user on the page register
+      navigate('/register')
+
+    } catch (error) {
       setDeleteMessage('Une erreur est survenue.')
-      }
+    }
   }
 
   return (
@@ -195,6 +207,7 @@ function MyAccount() {
             _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
             mb={4}
           />
+          {errors.firstname && <Text color="zombieland.warningprimary" fontSize="sm">{errors.firstname}</Text>}
 
           <Text mb={2} color="zombieland.white" fontFamily="body" fontWeight="300">Nom</Text>
           <Input
@@ -208,6 +221,7 @@ function MyAccount() {
             _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
             mb={4}
           />
+          {errors.lastname && <Text color="zombieland.warningprimary" fontSize="sm">{errors.lastname}</Text>}
 
           <Text mb={2} color="zombieland.white" fontFamily="body" fontWeight="300">Nouveau mot de passe</Text>
           <Input
@@ -236,9 +250,45 @@ function MyAccount() {
             _placeholder={{ color: 'zombieland.white', opacity: 0.5 }}
             mb={6}
           />
+          {errors.password && <Text color="zombieland.warningprimary" fontSize="sm">{errors.password}</Text>}
+          {errors.confirmPassword && <Text color="zombieland.warningprimary" fontSize="sm">{errors.confirmPassword}</Text>}
 
           <Button
-            onClick={() => setIsUpdateModalOpen(true)}
+            onClick={() => {
+              if (!form.firstname.trim()) {
+                setErrors({ firstname: "Le prénom est requis" })
+                return
+              }
+              if (!form.lastname.trim()) {
+                setErrors({ lastname: "Le nom est requis" })
+                return
+              }
+              setErrors({})
+              if (form.password && form.password !== form.confirmPassword) {
+                setErrors({ confirmPassword: 'Les mots de passe ne correspondent pas.' })
+                return
+              }
+              if (form.password) {
+                if (form.password.length < 8) {
+                  setErrors({ password: "Le mot de passe doit contenir au moins 8 caractères" })
+                  return
+                }
+                if (!/[A-Z]/.test(form.password)) {
+                  setErrors({ password: "Le mot de passe doit contenir au moins une majuscule" })
+                  return
+                }
+                if (!/[0-9]/.test(form.password)) {
+                  setErrors({ password: "Le mot de passe doit contenir au moins un chiffre" })
+                  return
+                }
+                if (!/[^a-zA-Z0-9]/.test(form.password)) {
+                  setErrors({ password: "Le mot de passe doit contenir au moins un caractère spécial" })
+                  return
+                }
+              }
+
+              setIsUpdateModalOpen(true)
+            }}
             bgImage={`url(${bgBouton})`}
             bgSize="cover"
             bgPosition="center"
