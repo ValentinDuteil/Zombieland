@@ -20,6 +20,7 @@ import AdminReservations from './pages/admin/AdminReservations'
 import AdminAttractions from "./pages/admin/AdminAttractions"
 import AdminAttractionCreate from './pages/admin/AdminAttractionCreate'
 import AdminAttractionEdit from './pages/admin/AdminAttractionEdit'
+import AdminPrices from './pages/admin/AdminPrices'
 // Components
 import ScrollToTop from './components/ScrollToTop'
 import AdminGuard from './components/AdminGuard'
@@ -44,6 +45,7 @@ const App = () => {
                 <Route path="/reservation" element={<Reservation />} />
                 {/* Admin routes */}
                 <Route path="/admin" element={<AdminGuard><AdminHomePage /></AdminGuard>} />
+                <Route path="/admin/tarifs" element={<AdminGuard><AdminPrices /></AdminGuard>} />
                 <Route path="/admin/attractions" element={<AdminGuard><AdminAttractions /></AdminGuard>} />
                 <Route path="/admin/attractions/create" element={<AdminGuard><AdminAttractionCreate /></AdminGuard>} />
                 <Route path="/admin/attractions/:id/edit" element={<AdminGuard><AdminAttractionEdit /></AdminGuard>} />
