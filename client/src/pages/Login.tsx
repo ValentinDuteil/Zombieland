@@ -24,19 +24,25 @@ function Login() {
       //fetching on the api with post methode
       await axios.post(`${API_URL}/api/auth/login`,
         { email: form.email, password: form.password },
-        {withCredentials: true} //to get the cookie sent from the back, the browser is automatically dealing with
+        { withCredentials: true } //to get the cookie sent from the back, the browser is automatically dealing with
       )
-      //only if response is ok the connection is allowed
-      
-        setMessage('Connexion confirmée !');
-        navigate('/reservation');
-      
-      
+
+      //checking the role of the user to redirect him to the right page
+      const meRes = await axios.get(`${API_URL}/api/auth/me`, { withCredentials: true })
+      const currentUser = meRes.data
+
+      if (currentUser.role === 'ADMIN') {
+        navigate('/admin')
+      } else {
+        navigate('/reservation')
+      }
+
+
     } catch (error) {
       //otherwise displaying an error message getting from the back if possible, otherwise a default one
       const message = 'Email ou mot de passe invalide.'
       setMessage(message)
-      
+
     }
   }
 
