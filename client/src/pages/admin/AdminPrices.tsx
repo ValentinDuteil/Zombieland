@@ -115,7 +115,7 @@ const AdminTarifs = () => {
                 <Box
                     flex="1"
                     p={3}
-                    pt="100px"
+                    pt="70px"
                     pb="100px"
                     maxW="1000px"
                     mx="auto"
