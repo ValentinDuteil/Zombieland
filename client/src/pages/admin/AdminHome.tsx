@@ -293,7 +293,7 @@ const AdminReservations = () => {
                             <Flex direction="column" justify="space-between" h="100%">
                                 <Flex justify="center" mt={2}>
                                     <Text fontSize="60" color="zombieland.white" fontWeight="extrabold">
-                                        {`${totalAmount} €`}
+                                        {`${totalAmount.toFixed(2)} €`}
                                     </Text>
                                 </Flex>
 
