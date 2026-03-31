@@ -10,7 +10,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdminTable from "@/components/AdminTable";
 import AdminMenu from "@/components/AdminNavlinkMenu";
-import laboratoirez from "../../assets/laboratoirez.webp"
+import labodashboard from "../../assets/labodashboard.png"
 import type { Reservation } from "@/types/Reservations";
 import axios from "axios";
 import { API_URL } from "@/config/api";
@@ -163,7 +163,7 @@ const AdminReservations = () => {
             flexDirection="column"
             minHeight="100vh"
             bgAttachment="fixed"
-            bgImage={`url(${laboratoirez})`}
+            bgImage={`url(${labodashboard})`}
             bgSize="cover"
             bgRepeat="no-repeat"
             bgPosition="center top"
@@ -194,6 +194,7 @@ const AdminReservations = () => {
                         textAlign="center"
                         fontFamily="heading"
                         fontSize="54px"
+                        mt={6}
                         mb={8}
                     >
                         Zombieland Admin
@@ -208,16 +209,18 @@ const AdminReservations = () => {
                     >
                         Admin / Dashboard
                     </Heading>
-                    {/* the flex put 4 cards on Wrap*/}
+                    {/* the flex put 4 cards on same line*/}
                     <Flex
                         wrap="wrap"
                         gap="6"
-                        justify="center"
+                        justify={{ base: "center", lg: "center" }}
+                        flexDirection="row"
+                        w="100%"
                     >
                         {/* Description and details of 1 card*/}
                         <Box
                             onClick={() => navigate('/admin/reservations')}
-                            w="300px"
+                            w={{ base: "100%", md: "45%", lg: "22%" }}
                             h="300px"
                             bg="rgba(0, 0, 0, 0.5)"
                             border="2px"
@@ -247,7 +250,7 @@ const AdminReservations = () => {
 
                         <Box
                             onClick={() => navigate('/admin/members')}
-                            w="300px"
+                            w={{ base: "100%", md: "45%", lg: "22%" }}
                             h="300px"
                             bg="rgba(0, 0, 0, 0.5)"
                             border="2px"
@@ -275,7 +278,7 @@ const AdminReservations = () => {
                         </Box>
                         <Box
                             onClick={() => navigate('/admin/attractions')}
-                            w="300px"
+                            w={{ base: "100%", md: "45%", lg: "22%" }}
                             h="300px"
                             bg="rgba(0, 0, 0, 0.5)"
                             border="2px"
@@ -303,7 +306,7 @@ const AdminReservations = () => {
 
                         </Box>
                         <Box
-                            w="300px"
+                            w={{ base: "100%", md: "45%", lg: "22%" }}
                             h="300px"
                             bg="rgba(0, 0, 0, 0.5)"
                             border="2px"
