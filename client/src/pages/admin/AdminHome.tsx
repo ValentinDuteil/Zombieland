@@ -152,6 +152,7 @@ const AdminReservations = () => {
                     return 0
             }
         })
+        const lastReservations = filteredReservations.slice(-4).reverse();   
 
 
     return (
@@ -342,7 +343,7 @@ const AdminReservations = () => {
                         {/* Reservations table */}
                         {!loading && (
                             <AdminTable
-                                data={filteredReservations}
+                                data={lastReservations}
                                 columns={[
                                     {
                                         header: "Nom",
