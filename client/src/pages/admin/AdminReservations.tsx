@@ -172,7 +172,7 @@ const AdminReservations = () => {
                             onRowClick={(r) => navigate(`/admin/members/${r.id_USER}`)}
                             columns={[
                                 {
-                                    header: "ID",
+                                    header: "N° Réservation",
                                     render: (r) => r.id_RESERVATION
                                 },
                                 {

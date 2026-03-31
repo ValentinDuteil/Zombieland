@@ -351,7 +351,7 @@ const AdminReservations = () => {
                                             : "Utilisateur inconnu"
                                     },
                                     {
-                                        header: "Membre",
+                                        header: "N° Membre",
                                         render: (r) => r.id_USER
                                     },
                                     {

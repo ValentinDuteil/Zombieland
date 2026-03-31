@@ -33,6 +33,7 @@ function AdminTable<T>({ columns, data, onRowClick, onHeaderClick }:
                     <Tr borderBottom="1px solid #333">
                         {columns.map((col) => (
                             <Th key={col.header} color="#FAEBDC"
+                            fontSize={20}
                                 cursor={onHeaderClick ? "pointer" : "default"}
                                 _hover={onHeaderClick ? {
                                     bg: "rgba(255,255,255,0.05)",
@@ -64,6 +65,7 @@ function AdminTable<T>({ columns, data, onRowClick, onHeaderClick }:
                                     color="#1A1A1A"
                                     fontWeight="bold"
                                     bgImage={`url(${bgAdmin})`}
+                                    
                                     bgSize="cover"
                                     bgPosition="center"
                                     border="1px solid #444"
