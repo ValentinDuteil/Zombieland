@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { FaCamera } from "react-icons/fa"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
-import bgImage from '../../assets/bg-image.webp'
+import bgImage from '../../assets/labodashboard.png'
 import bgBouton from '../../assets/bg-bouton.webp'
 import Card from '../../assets/Card.webp'
 import ConfirmModal from "../../components/ConfirmModal"
@@ -294,7 +294,7 @@ const AdminAttractionCreate = () => {
                                 boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
                                 textTransform="uppercase"
                                 mt={2}
-                                w="80%"
+                                w={{ base: "100%", md: "90%", lg: "80%" }}
                                 onClick={() => {
                                     if (!previewImage) {
                                         setError("Veuillez sélectionner une image")
