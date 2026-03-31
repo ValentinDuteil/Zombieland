@@ -161,6 +161,15 @@ async function main() {
         skipDuplicates: true
     });
 
+    await prisma.setting.upsert({
+        where: { key: 'max_tickets_per_day' },
+        update: {},
+        create: {
+            key: 'max_tickets_per_day',
+            value: '9999'
+        }
+    })
+
     console.log('✅ Seed terminé avec succès !');
 }
 
