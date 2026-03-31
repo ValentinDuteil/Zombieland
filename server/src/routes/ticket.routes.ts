@@ -4,18 +4,12 @@ import { getAllprices, updateTicketPrice } from '../controllers/ticket.controlle
 import { Router } from 'express'
 import { checkToken } from '../middlewares/auth.middleware.js'
 import { checkRole } from '../middlewares/role.middleware.js'
-
-
+import { validate } from '../middlewares/validate.middleware.js'
+import { updateTicketSchema } from '../schemas/ticket.schema.js'
 
 const router = Router()
 
 router.get('/',  getAllprices)
-
-router.put('/price', checkToken, checkRole("admin"),updateTicketPrice)
-
-
-
-
-
+router.patch('/price', checkToken, checkRole("ADMIN"), validate(updateTicketSchema), updateTicketPrice)
 
 export default router

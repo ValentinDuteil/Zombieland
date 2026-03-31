@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react"
 import { Box, Heading, Input, Button, Text, Flex } from "@chakra-ui/react"
-import axios from "axios"
+import axios, { isAxiosError } from "axios"
 import { API_URL } from "@/config/api"
 import Header from "../../components/Header"
 import bgImage from "../../assets/bg-image.webp"
 import Footer from "../../components/Footer"
 import AdminMenu from "@/components/AdminNavlinkMenu"
+import ConfirmModal from "@/components/ConfirmModal"
 
 const AdminTarifs = () => {
     const [price, setPrice] = useState<number>(0)
     const [loading, setLoading] = useState(true)
     const [message, setMessage] = useState("")
+    // Modals
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
     const fetchPrice = async () => {
         try {
@@ -23,13 +26,16 @@ const AdminTarifs = () => {
         }
     }
 
-    const updatePrice = async () => {
+    const updatePrice = async (password: string) => {
         try {
-            await axios.put(`${API_URL}/api/tickets/price`, { price }, { withCredentials: true })
+            await axios.patch(`${API_URL}/api/tickets/price`, { price, password }, { withCredentials: true })
             setMessage("Tarif mis à jour avec succès")
-        } catch {
-            setMessage("Erreur lors de la mise à jour")
+        } catch (err) {
+            if (isAxiosError(err)) {
+                setMessage(err.response?.data.message || "Erreur lors de la mise à jour")
+            }
         }
+        setIsConfirmOpen(false)
     }
 
     useEffect(() => {
@@ -109,17 +115,26 @@ const AdminTarifs = () => {
                                 mb={4}
                             />
 
-                            <Button colorScheme="blue" onClick={updatePrice}>
+                            <Button colorScheme="blue" onClick={() => setIsConfirmOpen(true)}>
                                 Enregistrer
                             </Button>
 
                             {message && <Text mt={4}>{message}</Text>}
+
                         </>
+
                     )}
                 </Box>
             </Flex>
 
             <Footer />
+            <ConfirmModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                title="Modifier le tarif"
+                message="Confirmez avec votre mot de passe admin."
+                onConfirm={(password) => updatePrice(password)}
+            />
         </Box>
     )
 }

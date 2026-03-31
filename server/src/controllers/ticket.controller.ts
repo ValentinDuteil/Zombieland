@@ -1,40 +1,34 @@
 //logic for ticket management
 import { prisma } from '../lib/prisma.js'
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../utils/AppError.js'
+import * as argon2 from 'argon2'
 
-export const getAllprices = async (req: Request, res: Response) => {
-    try {
+export const getAllprices = async (req: Request, res: Response, next: NextFunction) => {
+
         const ticket = await prisma.ticket.findUnique({
-            where: { id_TICKET: 1 },
+            where: { id_TICKET: 1},
         })
-
-        if (!ticket) {
-            return res.status(404).json({ message: 'Ticket non trouvé' })
-        }
-
-        res.json({ price: ticket.amount })
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: 'Erreur lors de la récupération du tarif' })
-    }
+        if (!ticket) throw new NotFoundError("Ticket non trouvé")
+            res.json({ price: ticket.amount })
+        
 }
 
-export const updateTicketPrice = async (req: Request, res: Response) => {
-    const { price } = req.body
+export const updateTicketPrice = async (req: Request, res: Response, next: NextFunction) => {
+    const { price, password } = req.body
 
-    if (typeof price !== 'number' || price < 0) {
-        return res.status(400).json({ message: 'Prix invalide' })
-    }
+    const admin = await prisma.user.findUnique({
+        where: { id_USER: req.user!.id },
+    })
+    
+    if (!admin) throw new NotFoundError("Admin non trouvé")
 
-    try {
-        await prisma.ticket.update({
-            where: { id_TICKET: 1 },
-            data: { amount: price }, // <-- IMPORTANT
-        })
+    const rightPassword = await argon2.verify(admin.password, password)
+    if (!rightPassword) throw new UnauthorizedError("Mot de passe incorrect")
 
-        res.json({ message: 'Prix mis à jour avec succès' })
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: 'Erreur lors de la mise à jour du prix' })
-    }
+    await prisma.ticket.update({
+        where: { id_TICKET: 1 },
+        data: { amount: price },
+    })
+    res.json({ message: "Prix du ticket mis à jour avec succès" })
 }
