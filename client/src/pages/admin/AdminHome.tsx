@@ -18,7 +18,7 @@ import ConfirmModal from "@/components/ConfirmModal";
 import { useNavigate } from "react-router";
 
 const AdminReservations = () => {
-    const [sort, _setSort] = useState({ by: "name", direction: "asc" })
+    const [sort, setSort] = useState({ by: "name", direction: "asc" })
 
     const [search, setSearch] = useState("")
     //State to store the total of attractions
@@ -34,6 +34,7 @@ const AdminReservations = () => {
     // State to store the id of the reservation to cancel (opens the confirmation modal)
     const [reservationToCancel, setReservationToCancel] = useState<number | null>(null)
     const navigate = useNavigate()
+    // x
 
     // Fetch all reservations from the API when the component mounts
     useEffect(() => {
@@ -122,10 +123,11 @@ const AdminReservations = () => {
 
             return (
                 fullName.includes(filterTool) ||
-                r.id_USER.toString().includes(filterTool) ||
+                String(r.id_USER).includes(filterTool) ||
                 r.date.toLowerCase().includes(filterTool) ||
-                r.nb_tickets.toString().includes(filterTool) ||
-                r.status.toLowerCase().includes(filterTool)
+                String(r.nb_tickets).includes(filterTool) ||
+                r.status.toLowerCase().includes(filterTool) ||
+                r.total_amount.includes(filterTool)
             )
         })
         .sort((a, b) => {
@@ -150,11 +152,30 @@ const AdminReservations = () => {
                 case "status":
                     return a.status.localeCompare(b.status) * dir
 
+                case "total":
+                    return (Number(a.total_amount) - Number(b.total_amount)) * dir
+
                 default:
                     return 0
             }
         })
     const lastReservations = filteredReservations.slice(-4).reverse();
+    const handleSortChange = (by: "firstname" | "date" | "nb_tickets" | "status" | "id_USER" | "total_amount") => {
+        if (sort.by === by) {
+            setSort({ by, direction: sort.direction === "asc" ? "desc" : "asc" })
+        } else {
+            setSort({ by, direction: "asc" })
+        }
+    }
+
+    const headerToField = {
+        "Nom": "firstname",
+        "N° Membre": "id_USER",
+        "Date": "date",
+        "Billets": "nb_tickets",
+        "Statut": "status",
+        "Total": "total_amount"
+    } as const
 
 
     return (
@@ -370,6 +391,11 @@ const AdminReservations = () => {
                         {!loading && (
                             <AdminTable
                                 data={lastReservations}
+                                onHeaderClick={(header) => {
+                                    const field = headerToField[header as keyof typeof headerToField]
+                                    if (field) handleSortChange(field)
+                                }}
+
                                 columns={[
                                     {
                                         header: "Nom",
@@ -393,6 +419,11 @@ const AdminReservations = () => {
                                     {
                                         header: "Billets",
                                         render: (r) => r.nb_tickets
+                                    },
+                                    {
+                                        header: "Total",
+                                        render: (r) => (
+                                            <Text > {r.total_amount} €</Text>)
                                     },
                                     {
                                         header: "Statut",
