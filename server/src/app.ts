@@ -46,12 +46,12 @@ app.use('/api/users', usersRoutes)
 app.use('/api/reservations', reservationsRouter)
 // Plug the router on /api/tickets
 app.use('/api/tickets', ticketRoutes)
+// Plug the router on /api/settings
+app.use('/api/settings', settingRoutes)
 // Test route
 app.get('/', (req,res) => {
     res.json({ message: 'Zombieland API is running'})
 })
-// Plug the router on /api/settings
-app.use('/api/settings', settingRoutes)
 
 //ErrorHandler
 app.use(errorHandler)
