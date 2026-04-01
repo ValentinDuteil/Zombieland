@@ -51,7 +51,7 @@
 // ==================================================
 
 // Mock Prisma : instead of hitting the real database, we simulate the user model
-vi.mock('../lib/prisma.js', () => ({
+vi.mock('../../lib/prisma.js', () => ({
     prisma: {
         user: {
             findUnique: vi.fn()

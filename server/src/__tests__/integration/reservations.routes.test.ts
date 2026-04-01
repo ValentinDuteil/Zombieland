@@ -26,7 +26,7 @@ vi.mock('@prisma/client', () => ({
 }))
 
 // Mock the authentication middleware with our mockCheckToken
-vi.mock('../middlewares/auth.middleware.js', () => ({
+vi.mock('../../middlewares/auth.middleware.js', () => ({
   checkToken: mockCheckToken
 }))
 
