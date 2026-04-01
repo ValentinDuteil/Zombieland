@@ -4,7 +4,7 @@ import type { Request, Response, NextFunction } from "express";
 // Talk to the db
 import { prisma } from '../lib/prisma.js'
 // Import the validation schema
-import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } from "../utils/AppError.js";
+import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError, ConflictError } from "../utils/AppError.js";
 import * as argon2 from 'argon2'
 
 
@@ -89,12 +89,12 @@ export const createReservation = async (req: Request, res: Response, next: NextF
 
     // If the park is full
     if (availableSpots <= 0) {
-        throw new BadRequestError("Capacité maximale atteinte pour cette date")
+        throw new ConflictError("Capacité maximale atteinte pour cette date")
     }
 
     // If not enough spots for the requested tickets
     if (totalTickets + nb_tickets > maxTickets) {
-        throw new BadRequestError(`Vous ne pouvez pas réserver autant de billets. Il reste seulement ${availableSpots} place(s) disponible(s) pour cette date.`)
+        throw new ConflictError(`Vous ne pouvez pas réserver autant de billets. Il reste seulement ${availableSpots} place(s) disponible(s) pour cette date.`)
     }
 
     // If id_USER is provided, it means an admin is creating a reservation for a member
