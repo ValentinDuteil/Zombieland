@@ -14,8 +14,8 @@
 //vi.mock('../lib/prisma.js', () => ({
 //    prisma: {
 //        user: {
-            // vi.fn() = une fonction "espion" qui ne fait rien par défaut
-            // mais qu'on peut programmer pour retourner ce qu'on veut
+// vi.fn() = une fonction "espion" qui ne fait rien par défaut
+// mais qu'on peut programmer pour retourner ce qu'on veut
 //            findUnique: vi.fn()
 //        }
 //    }
@@ -62,7 +62,15 @@ vi.mock('../lib/prisma.js', () => ({
 // Mock argon2
 vi.mock('argon2', () => ({
     verify: vi.fn()
+
+
 }))
+
+// Mock jsonwebtoken
+vi.mock('jsonwebtoken', () => ({
+    default: { sign: vi.fn().mockReturnValue('fake-token') }
+}))
+
 
 // Import the mocked modules and the controller to test
 //=====================================================
@@ -70,6 +78,8 @@ vi.mock('argon2', () => ({
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { login } from '../controllers/auth.controller.js'
 import { prisma } from '../lib/prisma.js'
+import * as argon2 from 'argon2'
+import type { User } from '@prisma/client'
 
 // TESTS
 // =====
@@ -93,21 +103,86 @@ describe('login', () => {
         const req = {
             body: { email: 'inconnu@test.com', password: 'monMotDePasse' }
         } as any
-
         const res = {
             status: vi.fn().mockReturnThis(), // .mockReturnThis() = return res itself
             json: vi.fn()                      // to allow chaining like res.status(401).
         } as any
-
         const next = vi.fn() // Express next() — checking if it's called with an error
 
         // ACT — calling the real function we're testing
-        // await login(req, res, next)
+        try {
+            await login(req, res, next)
+        } catch (err) {
+            next(err)
+        }
 
         // ASSERT — checking the expected outcomes
-        // expect(next).toHaveBeenCalled() // login has to call next() with an UnauthorizedError
-        // expect(prisma.user.findUnique).toHaveBeenCalledWith({
-        //     where: { email: 'inconnu@test.com' }
-        // })
+        expect(next).toHaveBeenCalledWith( //login has to call next() with an error
+            expect.objectContaining({ statusCode: 401 })
+        )
+    })
+
+    it('devrait retourner 401 si mot de passe incorrect', async () => {
+
+        // ARRANGE
+        vi.mocked(prisma.user.findUnique).mockResolvedValue({
+            id_USER: 1,
+            email: 'test@test.com',
+            password: 'wrongPassword',
+            firstname: 'John',
+            lastname: 'Doe',
+            role: 'MEMBER',
+            created_at: new Date(),
+            updated_at: new Date()
+        } satisfies User)
+        // satisfies User = TypeScript check pour s'assurer que l'objet correspond à notre modèle Prisma
+        vi.mocked(argon2.verify).mockResolvedValue(false)
+
+        const req = { body: { email: 'test@test.com', password: 'wrongPassword' } } as any
+        const res = { status: vi.fn().mockReturnThis(), json: vi.fn() } as any
+        const next = vi.fn()
+
+        // ACT
+        try {
+            await login(req, res, next)
+        } catch (err) {
+            next(err)
+        }
+
+        // ASSERT
+        expect(next).toHaveBeenCalledWith(
+            expect.objectContaining({ statusCode: 401 })
+        )
+    })
+
+    it('devrait retourner 200 si connexion réussie', async () => {
+
+        // ARRANGE
+        vi.mocked(prisma.user.findUnique).mockResolvedValue({
+            id_USER: 1,
+            email: 'test@test.com',
+            password: 'correctPassword',
+            firstname: 'John',
+            lastname: 'Doe',
+            role: 'MEMBER',
+            created_at: new Date(),
+            updated_at: new Date()
+        } satisfies User)
+        vi.mocked(argon2.verify).mockResolvedValue(true)
+
+        const req = { body: { email: 'test@test.com', password: 'correctPassword' } } as any
+        const res = { status: vi.fn().mockReturnThis(), json: vi.fn(), cookie: vi.fn() } as any
+        const next = vi.fn()
+
+        // ACT
+        try {
+            await login(req, res, next)
+        } catch (err) {
+            next(err)
+        }
+
+        // ASSERT
+        expect(next).not.toHaveBeenCalled() // pas d'erreur
+        expect(res.json).toHaveBeenCalledWith({ message: "Connexion réussie" })
     })
 })
