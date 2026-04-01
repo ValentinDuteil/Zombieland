@@ -54,14 +54,16 @@
 vi.mock('../../lib/prisma.js', () => ({
     prisma: {
         user: {
-            findUnique: vi.fn()
+            findUnique: vi.fn(),
+            create: vi.fn()
         }
     }
 }))
 
 // Mock argon2
 vi.mock('argon2', () => ({
-    verify: vi.fn()
+    verify: vi.fn(),
+    hash: vi.fn()
 
 
 }))
@@ -77,7 +79,7 @@ vi.mock('jsonwebtoken', () => ({
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { Request, Response, NextFunction } from 'express'
-import { login } from '../../controllers/auth.controller.js'
+import { login, register } from '../../controllers/auth.controller.js'
 import { prisma } from '../../lib/prisma.js'
 import * as argon2 from 'argon2'
 import type { User } from '@prisma/client'
@@ -98,19 +100,27 @@ describe('login', () => {
 
         // ARRANGE — setting up the conditions for the test
         // "If we're looking for an unknown email, Prisma should return null"
+        // Database is fake, we control what it returns
         vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
 
         // Créating fake req, res, next objects to call the controller function
+        // req fakes what the user would send in the body of the request
         const req = {
             body: { email: 'inconnu@test.com', password: 'monMotDePasse' }
         } as any
+        // res fakes the Express response object, with spy functions for status() and json()
+        // .mockReturnThis() = return res itself to allow chaining like res.status(401).json(...)
+        // if necesseray, json: vifn() or  cookies: vifn() are spying that we call json or cookies, 
+        // but they don't do anything by default      
         const res = {
-            status: vi.fn().mockReturnThis(), // .mockReturnThis() = return res itself
-            json: vi.fn()                      // to allow chaining like res.status(401).
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn()
         } as any
-        const next = vi.fn() // Express next() — checking if it's called with an error
+        // next is a spy function to check if we call it with an error
+        const next = vi.fn()
 
         // ACT — calling the real function we're testing
+        // if it throws, we catch the error and pass it to next() to check it in ASSERT
         try {
             await login(req, res, next)
         } catch (err) {
@@ -118,7 +128,10 @@ describe('login', () => {
         }
 
         // ASSERT — checking the expected outcomes
-        expect(next).toHaveBeenCalledWith( //login has to call next() with an error
+        // expect(next) means "I want to verify what happened with the next() function"
+        // .toHaveBeenCalledWith(...) means "Was called with this argument"
+        //expect.objectContaining({ statusCode: 401 }) means "an object that has AT LEAST "statusCode: 401""
+        expect(next).toHaveBeenCalledWith(
             expect.objectContaining({ statusCode: 401 })
         )
     })
@@ -129,18 +142,25 @@ describe('login', () => {
         vi.mocked(prisma.user.findUnique).mockResolvedValue({
             id_USER: 1,
             email: 'test@test.com',
-            password: 'wrongPassword',
+            password: 'hashedPassword',
             firstname: 'John',
             lastname: 'Doe',
             role: 'MEMBER',
             created_at: new Date(),
             updated_at: new Date()
         } satisfies User)
-        // satisfies User = TypeScript check pour s'assurer que l'objet correspond à notre modèle Prisma
+        // satisfies User = TypeScript check to be sur of the shape as Prisma's one
         vi.mocked(argon2.verify).mockResolvedValue(false)
 
-        const req = { body: { email: 'test@test.com', password: 'wrongPassword' } } as any
-        const res = { status: vi.fn().mockReturnThis(), json: vi.fn() } as any
+        const req = {
+            body: {
+                email: 'test@test.com', password: 'wrongPassword'
+            }
+        } as any
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn()
+        } as any
         const next = vi.fn()
 
         // ACT
@@ -171,8 +191,17 @@ describe('login', () => {
         } satisfies User)
         vi.mocked(argon2.verify).mockResolvedValue(true)
 
-        const req = { body: { email: 'test@test.com', password: 'correctPassword' } } as any
-        const res = { status: vi.fn().mockReturnThis(), json: vi.fn(), cookie: vi.fn() } as any
+        const req = {
+            body: {
+                email: 'test@test.com',
+                password: 'correctPassword'
+            }
+        } as any
+        const res = {
+            status: vi.fn().mockReturnThis(), 
+            json: vi.fn(), 
+            cookie: vi.fn()
+        } as any
         const next = vi.fn()
 
         // ACT
@@ -183,21 +212,154 @@ describe('login', () => {
         }
 
         // ASSERT
-        expect(next).not.toHaveBeenCalled() // pas d'erreur
+        expect(next).not.toHaveBeenCalled() // no error should be passed to next()
         expect(res.json).toHaveBeenCalledWith({ message: "Connexion réussie" })
     })
 
     it('devrait retourner 400 si body invalide', async () => {
         // ARRANGE
         const req = {
-            body: { email: 'pas-un-email', password: '' }  // email invalide
+            body: {
+                email: 'pas-un-email',
+                password: ''
+            }  // email invalide
         } as any
-        const res = { status: vi.fn().mockReturnThis(), json: vi.fn(), cookie: vi.fn() } as any
+        const res = {
+            status: vi.fn().mockReturnThis(), 
+            json: vi.fn(), 
+            cookie: vi.fn()
+        } as any
         const next = vi.fn()
 
         // ACT
         try {
             await login(req, res, next)
+        } catch (err) {
+            next(err)
+        }
+
+        // ASSERT
+        expect(next).toHaveBeenCalledWith(
+            expect.objectContaining({ statusCode: 400 })
+        )
+    })
+})
+
+//REGISTER
+//========
+
+describe('register', () => {
+
+    beforeEach(() => {
+        vi.clearAllMocks()
+    })
+
+    it('email déjà existant', async () => {
+
+        // ARRANGE
+        vi.mocked(prisma.user.findUnique).mockResolvedValue({
+            id_USER: 1,
+            email: 'john.doe@example.com',
+            password: 'hashedPassword',
+            firstname: 'John',
+            lastname: 'Doe',
+            role: 'MEMBER',
+            created_at: new Date(),
+            updated_at: new Date()
+        } satisfies User)
+        const req = {
+            body: {
+                email: 'john.doe@example.com',
+                password: 'Password1!',
+                firstname: 'John',
+                lastname: 'Doe'
+            }
+        } as any
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+            cookie: vi.fn()
+        } as any
+        const next = vi.fn()
+
+        // ACT
+        try {
+            await register(req, res, next)
+        } catch (err) {
+            next(err)
+        }
+
+
+        // ASSERT
+        expect(next).toHaveBeenCalledWith(
+            expect.objectContaining({ statusCode: 409 })
+        )
+    })
+
+    it('inscription réussie doit retourner 201', async () => {
+
+        // ARRANGE
+        vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
+        vi.mocked(prisma.user.create).mockResolvedValue({
+            id_USER: 2,
+            email: 'jane.doe@example.com',
+            password: 'Password1!',
+            firstname: 'Jane',
+            lastname: 'Doe',
+            role: 'MEMBER',
+            created_at: new Date(),
+            updated_at: new Date()
+        } satisfies User)
+        const req = {
+            body: {
+                email: 'john.doe@example.com',
+                password: 'Password1!',
+                firstname: 'John',
+                lastname: 'Doe'
+            }
+        } as any
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+            cookie: vi.fn()
+        } as any
+        const next = vi.fn()
+
+        // ACT
+        try {
+            await register(req, res, next)
+        } catch (err) {
+            next(err)
+        }
+
+
+        // ASSERT
+        //no error
+        // response ok
+        // json return user without password
+        expect(next).not.toHaveBeenCalled()
+        expect(res.status).toHaveBeenCalledWith(201)
+        expect(res.json).toHaveBeenCalled()
+    })
+
+    it('devrait retourner 400 si body invalide', async () => {
+        // ARRANGE
+        const req = {
+            body: {
+                email: 'pas-un-email',
+                password: ''
+            }
+        } as any
+        const res = {
+            status: vi.fn().mockReturnThis(), 
+            json: vi.fn(), 
+            cookie: vi.fn()
+        } as any
+        const next = vi.fn()
+
+        // ACT
+        try {
+            await register(req, res, next)
         } catch (err) {
             next(err)
         }
