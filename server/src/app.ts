@@ -15,6 +15,7 @@ import attractionRoutes from './routes/attraction.routes.js'
 import reservationsRouter from './routes/reservations.routes.js'
 import ticketRoutes from './routes/ticket.routes.js'
 import settingRoutes from './routes/setting.routes.js'
+import { fileURLToPath } from 'url'
 
 const app = express()
 
@@ -34,7 +35,9 @@ app.use(helmet({
 app.use(cookieParser())
 
 // Serve uploaded files statically
-app.use('/uploads', express.static(path.join(import.meta.dirname, '../uploads')))
+const __filename=fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
 // Authentication
 app.use('/api/auth', authRoutes)
