@@ -98,6 +98,13 @@ const fakeUser = {
     updated_at: new Date()
 } satisfies User
 
+// reset all mocks before each test to avoid interference
+//=======================================================
+
+beforeEach(() => {
+        vi.clearAllMocks() 
+    })
+
 // TESTS
 // =====
 
@@ -105,10 +112,6 @@ const fakeUser = {
 //=====
 
 describe('login', () => {
-
-    beforeEach(() => {
-        vi.clearAllMocks() // reset all mocks before each test to avoid interference
-    })
 
     it('devrait retourner 401 si email inexistant', async () => {
 
@@ -247,10 +250,6 @@ describe('login', () => {
 
 describe('register', () => {
 
-    beforeEach(() => {
-        vi.clearAllMocks()
-    })
-
     it('devrait retourner 409 si l\'email est déjà utilisé', async () => {
 
         // ARRANGE
@@ -354,10 +353,6 @@ describe('register', () => {
 
 describe('logout', () => {
 
-    beforeEach(() => {
-        vi.clearAllMocks()
-    })
-
     it('devrait retourner 200 lors de la déconnexion', async () => {
 
         // ARRANGE
@@ -386,10 +381,6 @@ describe('logout', () => {
 //==
 
 describe('me', () => {
-
-    beforeEach(() => {
-        vi.clearAllMocks()
-    })
 
     it('devrait retourner 401 si l\'utilisateur n\'est pas connecté', async () => {
 
