@@ -1,9 +1,9 @@
 // Testing users controller
 import { vi, test, expect, beforeEach, it, describe } from 'vitest'
 import { Request, Response, NextFunction } from 'express'
-import { getAllUsers, getProfile, updateProfile } from '../controllers/users.controller.js'
+import { getAllUsers, getProfile, updateProfile } from '../../controllers/users.controller.js'
 import request from "supertest"
-import app from '../app.js'
+import app from '../../app.js'
 import * as argon2 from 'argon2'
 
 
@@ -222,53 +222,55 @@ describe("updateProfile - unit test", () => {
       params: { id: "2" },
       body: {}
     }
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Accès interdit")
 
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("Accès interdit")
-  })
 
-  test("should throw if ID invalid", async () => {
-    const req: any = {
-      user: { id: 1, role: "ADMIN" },
-      params: { id: "abc" },
-      body: {}
-    }
+    test("should throw if ID invalid", async () => {
+      const req: any = {
+        user: { id: 1, role: "ADMIN" },
+        params: { id: "abc" },
+        body: {}
+      }
+      const res: any = {}
+ 
+      await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Id invalide")
+    })
 
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("Id invalide")
-  })
+    test("should throw if Zod validation fails", async () => {
+      const req: any = {
+        user: { id: 1, role: "ADMIN" },
+        params: { id: "1" },
+        body: { email: "not-an-email" }
+      }
 
-  test("should throw if Zod validation fails", async () => {
-    const req: any = {
-      user: { id: 1, role: "ADMIN" },
-      params: { id: "1" },
-      body: { email: "not-an-email" }
-    }
+      await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Données invalides")
+    })
 
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("Données invalides")
-  })
+    test("MEMBER must provide correct password", async () => {
+      mockPrisma.user.findUnique.mockResolvedValue({ id_USER: 1, password: "hashed" })
+      vi.mocked(argon2.verify).mockResolvedValue(false)
 
-  test("MEMBER must provide correct password", async () => {
-    mockPrisma.user.findUnique.mockResolvedValue({ id_USER: 1, password: "hashed" })
-    vi.mocked(argon2.verify).mockResolvedValue(false)
+      const req: any = {
+        user: { id: 1, role: "MEMBER" },
+        params: { id: "1" },
+        body: { currentPassword: "wrong" }
+      }
 
-    const req: any = {
-      user: { id: 1, role: "MEMBER" },
-      params: { id: "1" },
-      body: { currentPassword: "wrong" }
-    }
+      await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Mot de passe incorrect")
+    })
 
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("Mot de passe incorrect")
-  })
+    test("should throw if Prisma fails", async () => {
+      const error = new Error("DB error")
+      mockPrisma.user.update.mockRejectedValue(error)
 
-  test("should throw if Prisma fails", async () => {
-    const error = new Error("DB error")
-    mockPrisma.user.update.mockRejectedValue(error)
+      const req: any = {
+        user: { id: 1, role: "ADMIN" },
+        params: { id: "1" },
+        body: {}
+      }
 
-    const req: any = {
-      user: { id: 1, role: "ADMIN" },
-      params: { id: "1" },
-      body: {}
-    }
-
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("DB error")
+      await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("DB error")
+    })
   })
 })
