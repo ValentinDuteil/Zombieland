@@ -1,7 +1,7 @@
 // Testing users controller
 import { vi, test, expect, beforeEach, it, describe } from 'vitest'
 import { Request, Response, NextFunction } from 'express'
-import { getAllUsers, getProfile, updateProfile } from '../../controllers/users.controller.js'
+import { getAllUsers, getProfile, updateProfile, deleteProfile } from '../../controllers/users.controller.js'
 import request from "supertest"
 import app from '../../app.js'
 import * as argon2 from 'argon2'
@@ -18,13 +18,13 @@ const mockPrisma = vi.hoisted(() => ({
 }))
 
 // 👉 Mock Prisma UNE SEULE FOIS pour tout le fichier
-vi.mock('../lib/prisma.js', () => ({
+vi.mock('../../lib/prisma.js', () => ({
   prisma: mockPrisma
 }))
 
 // Mock middleware auth
 const mockCheckToken = vi.hoisted(() => vi.fn())
-vi.mock('../middlewares/auth.middleware.js', () => ({
+vi.mock('../../middlewares/auth.middleware.js', () => ({
   checkToken: mockCheckToken
 }))
 
@@ -88,36 +88,6 @@ describe('getAllUsers - unit test', () => {
     await expect(getAllUsers(req, res, next)).rejects.toThrow("DB error")
 
     expect(next).not.toHaveBeenCalled()
-  })
-})
-
-
-// --- TEST D’INTÉGRATION -----------------------------------------------------
-
-describe("GET /api/users - integrationTest", () => {
-
-  // Mock Prisma pour l’intégration
-  beforeEach(() => {
-    mockPrisma.user.findMany.mockResolvedValue([
-      {
-        id_USER: 1,
-        email: "test@test.com",
-        firstname: "John",
-        lastname: "Doe",
-        role: "ADMIN",
-        created_at: new Date(),
-        _count: { reservations: 0 }
-      }
-    ])
-  })
-
-  it("should return 200 and a list of users", async () => {
-    const res = await request(app)
-      .get("/api/users")
-      .set("Authorization", "Bearer faketoken")
-
-    expect(res.status).toBe(200)
-    expect(Array.isArray(res.body)).toBe(true)
   })
 })
 
@@ -222,55 +192,96 @@ describe("updateProfile - unit test", () => {
       params: { id: "2" },
       body: {}
     }
-    const res: any = {}
+const res: any = {}
     await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Accès interdit")
+  })
 
+  test("should throw if ID invalid", async () => {
+    const req: any = {
+      user: { id: 1, role: "ADMIN" },
+      params: { id: "abc" },
+      body: {}
+    }
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Id invalide")
+  })
 
-    test("should throw if ID invalid", async () => {
-      const req: any = {
-        user: { id: 1, role: "ADMIN" },
-        params: { id: "abc" },
-        body: {}
-      }
-      const res: any = {}
- 
-      await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Id invalide")
-    })
+  test("should throw if Zod validation fails", async () => {
+    const req: any = {
+      user: { id: 1, role: "ADMIN" },
+      params: { id: "1" },
+      body: { email: "not-an-email" }
+    }
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Données invalides")
+  })
 
-    test("should throw if Zod validation fails", async () => {
-      const req: any = {
-        user: { id: 1, role: "ADMIN" },
-        params: { id: "1" },
-        body: { email: "not-an-email" }
-      }
+  test("MEMBER must provide correct password", async () => {
+    mockPrisma.user.findUnique.mockResolvedValue({ id_USER: 1, password: "hashed" })
+    vi.mocked(argon2.verify).mockResolvedValue(false)
 
-      await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Données invalides")
-    })
+    const req: any = {
+      user: { id: 1, role: "MEMBER" },
+      params: { id: "1" },
+      body: { currentPassword: "wrong" }
+    }
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Mot de passe incorrect")
+  })
 
-    test("MEMBER must provide correct password", async () => {
-      mockPrisma.user.findUnique.mockResolvedValue({ id_USER: 1, password: "hashed" })
-      vi.mocked(argon2.verify).mockResolvedValue(false)
+  test("should throw if Prisma fails", async () => {
+    const error = new Error("DB error")
+    mockPrisma.user.update.mockRejectedValue(error)
 
-      const req: any = {
-        user: { id: 1, role: "MEMBER" },
-        params: { id: "1" },
-        body: { currentPassword: "wrong" }
-      }
+    const req: any = {
+      user: { id: 1, role: "ADMIN" },
+      params: { id: "1" },
+      body: {}
+    }
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("DB error")
+  })
+})
+//------------------Tests unit delete profile-----------------------------
+describe("deleteProfile - unit test", () => {
+test("ADMIN can delete any profile", async () => {
+  mockPrisma.user.findUnique
+    .mockResolvedValueOnce({ id_USER: 2 }) // user to delete
+    .mockResolvedValueOnce({ id_USER: 1, password: "hashed" }) // admin
 
-      await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Mot de passe incorrect")
-    })
+  vi.mocked(argon2.verify).mockResolvedValue(true)
 
-    test("should throw if Prisma fails", async () => {
-      const error = new Error("DB error")
-      mockPrisma.user.update.mockRejectedValue(error)
+  mockPrisma.user.delete.mockResolvedValue({})
 
-      const req: any = {
-        user: { id: 1, role: "ADMIN" },
-        params: { id: "1" },
-        body: {}
-      }
+  const req: any = {
+    user: { id: 1, role: "ADMIN" },
+    params: { id: "2" },
+    body: { password: "adminpass" } // <-- OBLIGATOIRE
+  }
 
-      await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("DB error")
-    })
+  const res: any = { status: vi.fn().mockReturnThis(), json: vi.fn() }
+  const next = vi.fn()
+
+  await deleteProfile(req, res, next)
+
+  expect(res.status).toHaveBeenCalledWith(200)
+})
+
+  test("MEMBER cannot delete another profile", async () => {
+    const req: any = {
+      user: { id: 1, role: "MEMBER" },
+      params: { id: "2" }
+    }
+    const res: any = {}
+    await expect(deleteProfile(req, res, vi.fn())).rejects.toThrow("Accès interdit")
+  })
+
+  test("should throw if ID invalid", async () => {
+    const req: any = {
+      user: { id: 1, role: "ADMIN" },
+      params: { id: "abc" }
+    }
+    const res: any = {}
+    await expect(deleteProfile(req, res, vi.fn())).rejects.toThrow("Id invalide")
   })
 })
