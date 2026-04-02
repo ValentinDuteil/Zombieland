@@ -156,6 +156,9 @@ function Header() {
                                                     <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/members">
                                                         Membres
                                                     </MenuItem>
+                                                    <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/tarifs">
+                                                        Tarifs
+                                                    </MenuItem>
                                                     </>
                                             )}
                                             </Box>

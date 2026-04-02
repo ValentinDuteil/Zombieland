@@ -30,8 +30,8 @@ function Reservation() {
     //CONSTANTS
     //=========
 
-    // Price per ticket in euros
-    const TICKET_PRICE = 66.66
+    // Price per ticket in euros — fetched from the API
+    const [TICKET_PRICE, setTicketPrice] = useState<number>(0)
     // Today's date as "YYYY-MM-DD" string in local time — used as default date and reset value
     const today = toLocalDateString(new Date())
     // Past days config for DayPicker — disables all days strictly before today at midnight
@@ -95,6 +95,13 @@ function Reservation() {
             setMessage("Erreur lors de la récupération des disponibilités")
         }
     }
+
+    // Fetch ticket price from the API on mount
+    useEffect(() => {
+        axios.get(`${API_URL}/api/tickets`)
+            .then(res => setTicketPrice(Number(res.data.price)))
+            .catch(() => {})
+    }, [])
 
     // Fetch availabilities on component mount
     useEffect(() => {

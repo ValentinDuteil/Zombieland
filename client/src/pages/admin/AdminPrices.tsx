@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
-import { Box, Heading, Input, Button, Text, Flex } from "@chakra-ui/react"
+import { Box, Heading, Input, Button, Text, Flex, Spinner } from "@chakra-ui/react"
 import axios, { isAxiosError } from "axios"
 import { API_URL } from "@/config/api"
 import Header from "../../components/Header"
-import bgImage from "../../assets/bg-image.webp"
+import bgImage from "../../assets/labodashboard.png"
+import bgBouton from "../../assets/bg-bouton.webp"
 import Footer from "../../components/Footer"
 import AdminMenu from "@/components/AdminNavlinkMenu"
 import ConfirmModal from "@/components/ConfirmModal"
@@ -113,7 +114,7 @@ const AdminTarifs = () => {
                 <Box
                     flex="1"
                     p={3}
-                    pt="70px"
+                    pt="100px"
                     pb="100px"
                     maxW="1000px"
                     mx="auto"
@@ -130,7 +131,6 @@ const AdminTarifs = () => {
                         Gestion des tarifs
                     </Text>
 
-                    {/* SECTION : Prix du billet */}
                     <Heading
                         fontWeight="bold"
                         color="zombieland.white"
@@ -143,75 +143,123 @@ const AdminTarifs = () => {
                     </Heading>
 
                     {loading ? (
-                        <Text>Chargement...</Text>
+                        <Flex justify="center" mt={10}>
+                            <Spinner color="zombieland.primary" size="xl" />
+                        </Flex>
                     ) : (
                         <>
-                            <Text mb={2}>Prix du billet (€)</Text>
-
-                            <Input
-                                type="number"
-                                value={price}
-                                onChange={(e) => setPrice(Number(e.target.value))}
-                                width="200px"
-                                mb={4}
-                                mr={4}
-                            />
-
-                            <Button
-                                colorScheme="blue"
-                                onClick={() => {
-                                    setAction("price")
-                                    setIsConfirmOpen(true)
-                                }}
+                            {/* SECTION : Prix du billet */}
+                            <Box
+                                bg="rgba(0,0,0,0.5)"
+                                borderRadius="lg"
+                                p={8}
+                                mb={8}
+                                border="1px solid rgba(255,255,255,0.1)"
                             >
-                                Enregistrer
-                            </Button>
-                            {/*message update price*/}
-                            {priceMessage && <Text mt={4}>{priceMessage}</Text>}
-                        </>
-                    )}
+                                <Heading
+                                    fontWeight="bold"
+                                    color="zombieland.white"
+                                    fontFamily="body"
+                                    fontSize="20px"
+                                    mb={6}
+                                    textAlign="center"
+                                >
+                                    Prix du billet
+                                </Heading>
 
-                    {/* SECTION : Capacité du parc */}
-                    <Heading
-                        fontWeight="bold"
-                        color="zombieland.white"
-                        textAlign="left"
-                        fontFamily="body"
-                        fontSize="24px"
-                        mt={12}
-                        mb={8}
-                    >
-                        Admin / Capacité
-                    </Heading>
+                                <Flex direction="column" align="center" gap={4}>
+                                    <Input
+                                        type="number"
+                                        value={price}
+                                        onChange={(e) => setPrice(Number(e.target.value))}
+                                        width="200px"
+                                        color="zombieland.white"
+                                        borderColor="zombieland.primary"
+                                        bg="rgba(0,0,0,0.3)"
+                                        _placeholder={{ color: "whiteAlpha.500" }}
+                                    />
+                                    <Button
+                                        bgImage={`url(${bgBouton})`}
+                                        bgSize="cover"
+                                        bgPosition="center"
+                                        color="zombieland.white"
+                                        border="none"
+                                        _hover={{ opacity: 0.85, boxShadow: "0 8px 16px rgba(0,0,0,0.6), 0 0 30px rgba(250, 130, 52, 0.3)" }}
+                                        fontFamily="heading"
+                                        fontSize="16px"
+                                        py={5}
+                                        px={8}
+                                        borderRadius="md"
+                                        fontWeight="bold"
+                                        boxShadow="0 4px 15px rgba(250, 130, 52, 0.25)"
+                                        transition="all 0.3s ease"
+                                        onClick={() => { setAction("price"); setIsConfirmOpen(true) }}
+                                    >
+                                        Enregistrer
+                                    </Button>
+                                </Flex>
+                                {priceMessage && (
+                                    <Text mt={4} textAlign="center" color={priceMessage.includes("succès") ? "green.300" : "red.400"}>
+                                        {priceMessage}
+                                    </Text>
+                                )}
+                            </Box>
 
-                    {loading ? (
-                        <Text>Chargement...</Text>
-                    ) : (
-                        <>
-                            <Text mb={2}>Capacité du parc</Text>
-
-                            <Input
-                                type="number"
-                                width="200px"
-                                mb={4}
-                                mr={4}
-                                value={capacity}
-                                onChange={(e) => setCapacity(Number(e.target.value))}
-
-                            />
-                            <Button
-                                colorScheme="blue"
-                                onClick={() => {
-                                    setAction("capacity")
-                                    setIsConfirmOpen(true)
-                                }}
+                            {/* SECTION : Capacité du parc */}
+                            <Box
+                                bg="rgba(0,0,0,0.5)"
+                                borderRadius="lg"
+                                p={8}
+                                border="1px solid rgba(255,255,255,0.1)"
                             >
-                                Enregistrer
-                            </Button>
+                                <Heading
+                                    fontWeight="bold"
+                                    color="zombieland.white"
+                                    fontFamily="body"
+                                    fontSize="20px"
+                                    mb={6}
+                                    textAlign="center"
+                                >
+                                    Capacité du parc (billets/jour)
+                                </Heading>
 
-
-                            {/*message update capacity*/}
-                            {capacityMessage && <Text mt={4}>{capacityMessage}</Text>}
+                                <Flex direction="column" align="center" gap={4}>
+                                    <Input
+                                        type="number"
+                                        width="200px"
+                                        value={capacity}
+                                        onChange={(e) => setCapacity(Number(e.target.value))}
+                                        color="zombieland.white"
+                                        borderColor="zombieland.primary"
+                                        bg="rgba(0,0,0,0.3)"
+                                        _placeholder={{ color: "whiteAlpha.500" }}
+                                    />
+                                    <Button
+                                        bgImage={`url(${bgBouton})`}
+                                        bgSize="cover"
+                                        bgPosition="center"
+                                        color="zombieland.white"
+                                        border="none"
+                                        _hover={{ opacity: 0.85, boxShadow: "0 8px 16px rgba(0,0,0,0.6), 0 0 30px rgba(250, 130, 52, 0.3)" }}
+                                        fontFamily="heading"
+                                        fontSize="16px"
+                                        py={5}
+                                        px={8}
+                                        borderRadius="md"
+                                        fontWeight="bold"
+                                        boxShadow="0 4px 15px rgba(250, 130, 52, 0.25)"
+                                        transition="all 0.3s ease"
+                                        onClick={() => { setAction("capacity"); setIsConfirmOpen(true) }}
+                                    >
+                                        Enregistrer
+                                    </Button>
+                                </Flex>
+                                {capacityMessage && (
+                                    <Text mt={4} textAlign="center" color={capacityMessage.includes("succès") ? "green.300" : "red.400"}>
+                                        {capacityMessage}
+                                    </Text>
+                                )}
+                            </Box>
                         </>
                     )}
                 </Box>
