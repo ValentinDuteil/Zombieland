@@ -1,9 +1,9 @@
 // Testing users controller
 import { vi, test, expect, beforeEach, it, describe } from 'vitest'
 import { Request, Response, NextFunction } from 'express'
-import { getAllUsers, getProfile, updateProfile } from '../controllers/users.controller.js'
+import { getAllUsers, getProfile, updateProfile } from '../../controllers/users.controller.js'
 import request from "supertest"
-import app from '../app.js'
+import app from '../../app.js'
 import * as argon2 from 'argon2'
 
 
@@ -18,13 +18,13 @@ const mockPrisma = vi.hoisted(() => ({
 }))
 
 // 👉 Mock Prisma UNE SEULE FOIS pour tout le fichier
-vi.mock('../lib/prisma.js', () => ({
+vi.mock('../../lib/prisma.js', () => ({
   prisma: mockPrisma
 }))
 
 // Mock middleware auth
 const mockCheckToken = vi.hoisted(() => vi.fn())
-vi.mock('../middlewares/auth.middleware.js', () => ({
+vi.mock('../../middlewares/auth.middleware.js', () => ({
   checkToken: mockCheckToken
 }))
 
@@ -222,8 +222,8 @@ describe("updateProfile - unit test", () => {
       params: { id: "2" },
       body: {}
     }
-
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("Accès interdit")
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Accès interdit")
   })
 
   test("should throw if ID invalid", async () => {
@@ -232,8 +232,8 @@ describe("updateProfile - unit test", () => {
       params: { id: "abc" },
       body: {}
     }
-
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("Id invalide")
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Id invalide")
   })
 
   test("should throw if Zod validation fails", async () => {
@@ -242,8 +242,8 @@ describe("updateProfile - unit test", () => {
       params: { id: "1" },
       body: { email: "not-an-email" }
     }
-
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("Données invalides")
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Données invalides")
   })
 
   test("MEMBER must provide correct password", async () => {
@@ -255,8 +255,8 @@ describe("updateProfile - unit test", () => {
       params: { id: "1" },
       body: { currentPassword: "wrong" }
     }
-
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("Mot de passe incorrect")
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("Mot de passe incorrect")
   })
 
   test("should throw if Prisma fails", async () => {
@@ -268,7 +268,7 @@ describe("updateProfile - unit test", () => {
       params: { id: "1" },
       body: {}
     }
-
-    await expect(updateProfile(req, {}, vi.fn())).rejects.toThrow("DB error")
+    const res: any = {}
+    await expect(updateProfile(req, res, vi.fn())).rejects.toThrow("DB error")
   })
 })
