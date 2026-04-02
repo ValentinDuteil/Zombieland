@@ -4,7 +4,7 @@
 // Faux client Prisma : simule les tables nécessaires sans toucher la vraie BDD
 const mockPrisma = vi.hoisted(() => ({
     user: { findUnique: vi.fn() },
-    reservation: { groupBy: vi.fn(), create: vi.fn(), findUnique: vi.fn(), findMany: vi.fn() },
+    reservation: { groupBy: vi.fn(), create: vi.fn(), findUnique: vi.fn(), findMany: vi.fn(), update: vi.fn() },
     ticket: { findUnique: vi.fn() },
     setting: { findUnique: vi.fn() }
 }))
@@ -23,11 +23,17 @@ vi.mock('../../middlewares/auth.middleware.js', () => ({
     checkToken: mockCheckToken
 }))
 
+// contrôlable dans les tests qui vérifient le mot de passe
+vi.mock('argon2', () => ({
+    verify: vi.fn()
+}))
+
 import { vi, describe, test, expect, beforeEach } from 'vitest'
 import { Request, Response, NextFunction } from 'express'
 import supertest from 'supertest'
 import app from '../../app.js'
 import { UnauthorizedError } from '../../utils/AppError.js'
+import * as argon2 from 'argon2'
 
 // Avant chaque test : réinitialise les mocks et simule un membre connecté (id: 1)
 beforeEach(() => {
@@ -46,7 +52,6 @@ beforeEach(() => {
 describe('Scénario : consultation du profil membre', () => {
 
     test('le membre peut consulter son propre profil', async () => {
-        // ARRANGE
         // Simule un utilisateur existant en BDD avec toutes ses données
         mockPrisma.user.findUnique.mockResolvedValue({
             id_USER: 1,
@@ -189,5 +194,109 @@ describe('Scénario : création d\'une réservation par un membre', () => {
         console.log('STATUS:', response.status)
         console.log('BODY:', response.body)
         expect(response.status).toEqual(401)
+    })
+})
+
+// SCÉNARIO 3 : Un membre annule une réservation (règle J-10)
+// Parcours : le membre est connecté → il appelle DELETE /api/reservations/:id
+// Le serveur vérifie le mot de passe, que la réservation lui appartient
+// et que la date est à plus de 10 jours — sinon refuse
+
+describe('Scénario : annulation d\'une réservation (règle J-10)', () => {
+
+    // Date dans le futur à plus de 10 jours (annulation autorisée)
+    const dateLointaine = new Date()
+    dateLointaine.setDate(dateLointaine.getDate() + 20)
+
+    // Date dans le futur à moins de 10 jours (annulation refusée)
+    const dateProche = new Date()
+    dateProche.setDate(dateProche.getDate() + 5)
+
+    const fakeReservation = {
+        id_RESERVATION: 1,
+        nb_tickets: 2,
+        date: dateLointaine,
+        id_TICKET: 1,
+        id_USER: 1,
+        total_amount: 50,
+        status: 'CONFIRMED',
+        created_at: new Date(),
+        updated_at: new Date()
+    }
+
+    test('le membre peut annuler une réservation à plus de 10 jours', async () => {
+        // Simule la réservation existante avec une date lointaine (J+20)
+        mockPrisma.reservation.findUnique.mockResolvedValue(fakeReservation)
+        // Simule le membre en BDD avec un mot de passe correct
+        mockPrisma.user.findUnique.mockResolvedValue({ id_USER: 1, password: 'hashed' })
+        vi.mocked(argon2.verify).mockResolvedValue(true)
+        mockPrisma.reservation.update.mockResolvedValue({ ...fakeReservation, status: 'CANCELLED' })
+
+        // Le membre envoie sa demande d'annulation avec son mot de passe
+        const response = await supertest(app)
+            .delete('/api/reservations/1')
+            .send({ password: 'correct_password' })
+
+        // La réservation doit être annulée avec un 200 et le message de confirmation
+        console.log('STATUS:', response.status)
+        console.log('BODY:', response.body)
+        expect(response.status).toEqual(200)
+        expect(response.body).toHaveProperty('message')
+        expect(mockPrisma.reservation.update).toHaveBeenCalledWith({
+            where: { id_RESERVATION: 1 },
+            data: { status: 'CANCELLED' }
+        })
+    })
+
+    test('le membre ne peut pas annuler une réservation à moins de 10 jours', async () => {
+        // Simule la réservation existante avec une date proche (J+5) → règle J-10 s'applique
+        mockPrisma.reservation.findUnique.mockResolvedValue({ ...fakeReservation, date: dateProche })
+        mockPrisma.user.findUnique.mockResolvedValue({ id_USER: 1, password: 'hashed' })
+        vi.mocked(argon2.verify).mockResolvedValue(true)
+
+        // Le membre tente d'annuler mais la date est trop proche
+        const response = await supertest(app)
+            .delete('/api/reservations/1')
+            .send({ password: 'correct_password' })
+
+        // Le serveur doit refuser avec un 400 (règle J-10)
+        console.log('STATUS:', response.status)
+        console.log('BODY:', response.body)
+        expect(response.status).toEqual(400)
+        expect(mockPrisma.reservation.update).not.toHaveBeenCalled()
+    })
+
+    test('le membre ne peut pas annuler la réservation d\'un autre membre', async () => {
+        // Simule une réservation qui appartient au membre 2 (pas au membre connecté id:1)
+        mockPrisma.reservation.findUnique.mockResolvedValue({ ...fakeReservation, id_USER: 2 })
+        mockPrisma.user.findUnique.mockResolvedValue({ id_USER: 1, password: 'hashed' })
+        vi.mocked(argon2.verify).mockResolvedValue(true)
+
+        // Le membre connecté (id:1) tente d'annuler la réservation du membre 2
+        const response = await supertest(app)
+            .delete('/api/reservations/1')
+            .send({ password: 'correct_password' })
+
+        // Le serveur doit refuser avec un 403 Forbidden
+        console.log('STATUS:', response.status)
+        console.log('BODY:', response.body)
+        expect(response.status).toEqual(403)
+        expect(mockPrisma.reservation.update).not.toHaveBeenCalled()
+    })
+
+    test('le membre ne peut pas annuler sans mot de passe', async () => {
+        // Simule la réservation existante — aucun mot de passe dans le body
+        mockPrisma.reservation.findUnique.mockResolvedValue(fakeReservation)
+
+        // Le membre tente d'annuler sans fournir de mot de passe
+        const response = await supertest(app)
+            .delete('/api/reservations/1')
+            .send({})
+
+        // Le serveur doit refuser avec un 400 (mot de passe requis)
+        console.log('STATUS:', response.status)
+        console.log('BODY:', response.body)
+        expect(response.status).toEqual(400)
+        expect(mockPrisma.reservation.update).not.toHaveBeenCalled()
     })
 })
