@@ -1,0 +1,36 @@
+name: Tests
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Clone the repository on the GitHub runner
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js version 20 on the runner
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Install pnpm package manager version 10
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      # Install all server dependencies using pnpm
+      - name: Install dependencies
+        run: cd server && pnpm install
+
+      # Run the full test suite and fail the workflow if any test fails
+      - name: Run tests
+        run: cd server && pnpm test
