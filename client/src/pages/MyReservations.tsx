@@ -54,11 +54,16 @@ function MyReservations() {
 
     // Filtering and sorting the reservations based on the search term and the current page
     const filteredReservations = reservations
-        .filter((r) => {
-            const search = searchTerm.toLowerCase()
-            const dateStr = new Date(r.date).toLocaleDateString('fr-FR').toLowerCase()
-            return dateStr.includes(search) || r.id_RESERVATION.toString().includes(search)
-        })
+    .filter((r) => {
+        const search = searchTerm.toLowerCase()
+        // Short version 02/04/2026
+        const dateShort = new Date(r.date).toLocaleDateString('fr-FR').toLowerCase()
+        // Long version "mercredi 2 avril 2026"
+        const dateLong = new Date(r.date).toLocaleDateString('fr-FR', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        }).toLowerCase()
+        return dateShort.includes(search) || dateLong.includes(search)
+    })
         // Sort by default by date desc (most recent first)
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
@@ -181,7 +186,7 @@ function MyReservations() {
                 <Input
                     maxW="500px"
                     mb={8}
-                    placeholder="Rechercher par date ou ID..."
+                    placeholder="Rechercher par date"
                     value={searchTerm}
                     onChange={(e) => {
                         setSearchTerm(e.target.value);
