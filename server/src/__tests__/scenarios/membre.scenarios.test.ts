@@ -248,7 +248,7 @@ describe('Scénario : annulation d\'une réservation (règle J-10)', () => {
         expect(response.body).toHaveProperty('message')
         expect(mockPrisma.reservation.update).toHaveBeenCalledWith({
             where: { id_RESERVATION: 1 },
-            data: { status: 'CANCELLED' }
+            data: { status: 'CANCELLED', total_amount: 0 }
         })
     })
 

@@ -100,7 +100,7 @@ const AdminReservations = () => {
 
     //fetch all users
     useEffect(() => {
-        axios
+        axiosInstance
             .get(`${API_URL}/api/users`, { withCredentials: true })
             .then(res => setUsers(res.data.length))
             .catch(() => console.error("Erreur récupération utilisateurs"));
