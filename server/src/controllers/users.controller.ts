@@ -16,6 +16,7 @@ export async function getAllUsers(req: Request, res: Response, next: NextFunctio
     throw new UnauthorizedError('Accès refusé')
   }
   const users = await prisma.user.findMany({
+    where: { deleted_at: null },
     select: {
       id_USER: true,
       email: true,
