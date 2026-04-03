@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
 import bgImage from '../../assets/bg-bouton.webp'
-import bgBouton from '../../assets/bg-bouton.webp'
 import type { Attraction } from "@types"
 import AdminTable from "../../components/AdminTable"
 import AdminMenu from "../../components/AdminNavlinkMenu"

@@ -11,7 +11,6 @@ import AdminNavlinkMenu from "@/components/AdminNavlinkMenu"
 import type { Member } from "@/types/Member"
 import { formatDateForDisplay } from "@/utils/date"
 
-import bgBouton from '../../assets/bg-bouton.webp'
 import bgImage from '../../assets/bg-bouton.webp'
 import { API_URL } from "@/config/api"
 import axios from "axios"
