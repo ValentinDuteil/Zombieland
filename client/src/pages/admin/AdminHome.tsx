@@ -10,7 +10,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdminTable from "@/components/AdminTable";
 import AdminMenu from "@/components/AdminNavlinkMenu";
-import labodashboard from "../../assets/labodashboard.webp"
+import labodashboard from "../../assets/bg-bouton.webp"
 import type { Reservation } from "@/types/Reservations";
 import axios from "axios";
 import { API_URL } from "@/config/api";
@@ -364,8 +364,9 @@ const AdminReservations = () => {
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Rechercher une reservation..."
                             color="zombieland.white"
-                            borderColor="zombieland.primary"
-                            bg="#476182"
+                            borderColor="zombieland.white"
+                            bg="rgba(0,0,0,0.3)"
+                            _placeholder={{ color: "zombieland.white" }}
                             mb={6}
                         />
                     </Flex>

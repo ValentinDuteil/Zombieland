@@ -3,7 +3,7 @@ import { Box, Heading, Input, Button, Text, Flex, Spinner } from "@chakra-ui/rea
 import axios, { isAxiosError } from "axios"
 import { API_URL } from "@/config/api"
 import Header from "../../components/Header"
-import bgImage from "../../assets/labodashboard.webp"
+import bgImage from "../../assets/bg-bouton.webp"
 import bgBouton from "../../assets/bg-bouton.webp"
 import Footer from "../../components/Footer"
 import AdminMenu from "@/components/AdminNavlinkMenu"

@@ -4,7 +4,7 @@ import { Box, Text, Button, Flex, Input, Spinner, Heading } from "@chakra-ui/rea
 import { useNavigate } from "react-router-dom"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
-import bgImage from '../../assets/labodashboard.webp'
+import bgImage from '../../assets/bg-bouton.webp'
 import bgBouton from '../../assets/bg-bouton.webp'
 import type { Attraction } from "@types"
 import AdminTable from "../../components/AdminTable"
@@ -145,24 +145,16 @@ const AdminAttractions = () => {
                     {/* Create new attraction button */}
                     <Flex justifyContent="center" mt={8} mb={6}>
                         <Button
-                            bgImage={`url(${bgBouton})`}
-                            bgSize="cover"
-                            bgPosition="center"
+                            bg="zombieland.cta1orange"
                             color="zombieland.white"
-                            border="none"
-                            _hover={{
-                                opacity: 0.85,
-                                boxShadow: "0 8px 16px rgba(0,0,0,0.6), 0 0 30px rgba(250, 130, 52, 0.3)"
-                            }}
-                            fontFamily="heading"
+                            _hover={{ opacity: 0.85, boxShadow: "0 8px 16px rgba(0,0,0,0.6)" }}
                             fontSize="18px"
                             py={6}
                             px={12}
                             borderRadius="md"
-                            letterSpacing="1px"
                             fontWeight="bold"
-                            boxShadow="0 4px 15px rgba(250, 130, 52, 0.25)"
-                            transition="all 0.3s ease"
+                            fontFamily="heading"
+                            boxShadow="0 4px 15px rgba(0,0,0,0.4)"
                             onClick={() => navigate('/admin/attractions/create')}
                         >
                             Créer une attraction
@@ -176,8 +168,9 @@ const AdminAttractions = () => {
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Rechercher une attraction..."
                             color="zombieland.white"
-                            borderColor="zombieland.primary"
+                            borderColor="zombieland.white"
                             bg="rgba(0,0,0,0.3)"
+                            _placeholder={{ color: "zombieland.white" }}
                             mb={6}
                         />
                     </Flex>
