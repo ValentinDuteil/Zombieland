@@ -17,7 +17,7 @@ import ticketRoutes from './routes/ticket.routes.js'
 import settingRoutes from './routes/setting.routes.js'
 import { fileURLToPath } from 'url'
 //CSRF
-import { setCsrfToken, checkCsrf } from './middlewares/csrf.middlewzre.js'
+import { setCsrfToken, checkCsrf } from './middlewares/csrf.middleware.js'
 
 const app = express()
 

@@ -1,7 +1,7 @@
 // Business logic for users : profile, plannning, delection
 
 import { Request, Response, NextFunction } from 'express';
-import { UpdateProfileSchema  } from '../schemas/auth.schema.js';
+import { UpdateProfileSchema } from '../schemas/auth.schema.js';
 import * as argon2 from 'argon2';
 import { prisma } from '../lib/prisma.js';
 import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } from "../utils/AppError.js";
@@ -187,8 +187,9 @@ export async function deleteProfile(req: Request, res: Response, next: NextFunct
   if (!rightPassword) throw new UnauthorizedError("Mot de passe incorrect")
 
   //4.delete
-  await prisma.user.delete({
-    where: { id_USER: id }
+  await prisma.user.update({
+    where: { id_USER: id },
+    data: { deleted_at: new Date() }
   })
 
   //5.returning confirmation

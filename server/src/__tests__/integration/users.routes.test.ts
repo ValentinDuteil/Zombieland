@@ -11,7 +11,11 @@ const mockPrisma = vi.hoisted(() => ({
   ticket: { findUnique: vi.fn() },
   setting: { findUnique: vi.fn() }
 }))
-
+// Mock CSRF middleware to bypass CSRF protection during tests
+vi.mock('../../middlewares/csrf.middleware.js', () => ({
+    checkCsrf: (_req: any, _res: any, next: any) => next(),
+    setCsrfToken: (_req: any, res: any) => res.json({ csrfToken: 'fake-token' })
+}))
 // Mock Prisma BEFORE importing app
 vi.mock("../../lib/prisma.js", () => ({
   prisma: mockPrisma

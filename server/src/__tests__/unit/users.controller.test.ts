@@ -251,7 +251,7 @@ test("ADMIN can delete any profile", async () => {
 
   vi.mocked(argon2.verify).mockResolvedValue(true)
 
-  mockPrisma.user.delete.mockResolvedValue({})
+  mockPrisma.user.update.mockResolvedValue({}) // soft delete to keep the reservations in DB
 
   const req: any = {
     user: { id: 1, role: "ADMIN" },

@@ -8,9 +8,11 @@ import jwt from "jsonwebtoken"
 import { JwtPayload } from "../types/express.js"
 // Import de la gestion des erreurs
 import { UnauthorizedError } from "../utils/AppError.js"
+// Import Prisma client to access the database
+import { prisma } from "../lib/prisma.js"
 
 // Middleware that checks if the user has a valid JWT token
-export function checkToken(req: Request, res: Response, next: NextFunction): void {
+export async function checkToken(req: Request, res: Response, next: NextFunction): Promise<void> {
   
   
   // Get the Token from the cookie created in auth.controller (register ou login)
@@ -30,6 +32,11 @@ export function checkToken(req: Request, res: Response, next: NextFunction): voi
       process.env.JWT_SECRET as string
     ) as JwtPayload
     
+    const user = await prisma.user.findUnique({ where: { id_USER: decoded.id } })
+if (user?.deleted_at) {
+    next(new UnauthorizedError("Compte supprimé"))
+    return
+}
     
     // Attach the decoded user info to the request object
     req.user = decoded

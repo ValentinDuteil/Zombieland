@@ -95,7 +95,8 @@ const fakeUser = {
     lastname: 'Doe',
     role: 'MEMBER',
     created_at: new Date(),
-    updated_at: new Date()
+    updated_at: new Date(),
+    deleted_at: null
 } satisfies User
 
 // reset all mocks before each test to avoid interference

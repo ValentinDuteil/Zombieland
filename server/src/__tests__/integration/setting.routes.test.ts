@@ -20,6 +20,10 @@ vi.mock('@prisma/adapter-pg', () => ({ PrismaPg: class { } }))
 vi.mock('@prisma/client', () => ({
     PrismaClient: class { constructor() { Object.assign(this, mockPrisma) } }
 }))
+vi.mock('../../middlewares/csrf.middleware.js', () => ({
+    checkCsrf: (_req: any, _res: any, next: any) => next(),
+    setCsrfToken: (_req: any, res: any) => res.json({ csrfToken: 'fake-token' })
+}))
 vi.mock('../../middlewares/auth.middleware.js', () => ({
     checkToken: mockCheckToken
 }))

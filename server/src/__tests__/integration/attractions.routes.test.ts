@@ -16,6 +16,11 @@ const mockPrisma = vi.hoisted(() => ({
         findUnique: vi.fn()
     }
 }))
+// Mock CSRF middleware to bypass CSRF protection during tests
+vi.mock('../../middlewares/csrf.middleware.js', () => ({
+    checkCsrf: (_req: any, _res: any, next: any) => next(),
+    setCsrfToken: (_req: any, res: any) => res.json({ csrfToken: 'fake-token' })
+}))
 
 const mockCheckToken = vi.hoisted(() => vi.fn())
 const mockCheckRole = vi.hoisted(() => vi.fn())
@@ -51,7 +56,8 @@ const fakeUser = {
     lastname: 'User',
     role: 'ADMIN',
     created_at: new Date(),
-    updated_at: new Date()
+    updated_at: new Date(),
+    deleted_at: null
 } satisfies User
 
 const fakeAttraction = {
@@ -64,7 +70,7 @@ const fakeAttraction = {
     capacity: 20,
     intensity: 'HIGH',
     created_at: new Date(),
-    updated_at: new Date()
+    updated_at: new Date(),
 } satisfies Attraction
 
 beforeEach(() => {

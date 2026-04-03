@@ -25,6 +25,11 @@ vi.mock('@prisma/adapter-pg', () => ({ PrismaPg: class { } }))
 vi.mock('@prisma/client', () => ({
   PrismaClient: class { constructor() { Object.assign(this, mockPrisma) } }
 }))
+// Mock CSRF middleware to bypass CSRF protection during tests
+vi.mock('../../middlewares/csrf.middleware.js', () => ({
+    checkCsrf: (_req: any, _res: any, next: any) => next(),
+    setCsrfToken: (_req: any, res: any) => res.json({ csrfToken: 'fake-token' })
+}))
 
 // Mock the authentication middleware with our mockCheckToken
 vi.mock('../../middlewares/auth.middleware.js', () => ({

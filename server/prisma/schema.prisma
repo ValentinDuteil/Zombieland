@@ -15,6 +15,7 @@ model User {
   role         Role          @default(MEMBER)
   created_at   DateTime      @default(now())
   updated_at   DateTime      @updatedAt
+  deleted_at DateTime? // null = actif, date = supprimé
   reservations Reservation[]
 }
 
