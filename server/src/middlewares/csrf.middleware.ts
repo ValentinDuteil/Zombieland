@@ -11,9 +11,10 @@ import { ForbiddenError } from '../utils/AppError.js'
 export function setCsrfToken(req: Request, res: Response): void {
     const token = crypto.randomBytes(32).toString('hex')
     res.cookie('XSRF-TOKEN', token, {
-        httpOnly: false, // ← must be readable by JS (Axios reads it)
+        httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        path: '/',
     })
     res.json({ csrfToken: token })
 }
