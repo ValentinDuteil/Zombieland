@@ -1,23 +1,27 @@
 // Axios instance configured with CSRF token support
-// Reads the XSRF-TOKEN cookie and sends it automatically as X-XSRF-TOKEN header
+// Token is stored in memory after the initial /api/auth/csrf call
+// This approach works in cross-origin (production) unlike cookie-based CSRF
 
 import axios from 'axios'
 import { API_URL } from '@/config/api'
 
+// In-memory CSRF token — set once on app load via setCsrfTokenMemory()
+// Stored in memory instead of a cookie because cross-origin JS cannot read
+// cookies from a different domain (front on Vercel, back on Render)
+let csrfToken: string | null = null
+
+// Called in main.tsx after fetching /api/auth/csrf
+export function setCsrfTokenMemory(token: string) {
+    csrfToken = token
+}
+
 const axiosInstance = axios.create({
     baseURL: API_URL,
-    withCredentials: true,        // sends httpOnly JWT cookie
-    xsrfCookieName: 'XSRF-TOKEN', // reads this cookie
-    xsrfHeaderName: 'X-XSRF-TOKEN' // sends it in this header
+    withCredentials: true, // sends httpOnly JWT cookie on every request
 })
 
-// Manually read XSRF-TOKEN cookie and add it to every request header
-// Needed because Axios doesn't send XSRF header automatically in cross-origin requests
+// Attach CSRF token from memory to every non-GET request
 axiosInstance.interceptors.request.use((config) => {
-    const match = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('XSRF-TOKEN='))
-    const csrfToken = match?.split('=')[1]
     if (csrfToken) {
         config.headers['X-XSRF-TOKEN'] = csrfToken
     }

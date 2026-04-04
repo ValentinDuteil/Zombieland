@@ -6,7 +6,7 @@ import { API_URL } from "@/config/api";
 import type { Reservation } from "@/types/Reservations";
 import { Badge, Box, Button, Flex, Heading, Input, Spinner, Text } from "@chakra-ui/react";
 import AdminTable from "@/components/AdminTable";
-import bgImage from '../../assets/labodashboard.webp'
+import bgImage from '../../assets/bg-bouton.webp'
 import ConfirmModal from "@/components/ConfirmModal";
 import AdminMenu from "@/components/AdminNavlinkMenu";
 import { useNavigate } from "react-router-dom";
@@ -155,8 +155,9 @@ const AdminReservations = () => {
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Rechercher une réservation..."
                             color="zombieland.white"
-                            borderColor="zombieland.primary"
+                            borderColor="zombieland.white"
                             bg="rgba(0,0,0,0.3)"
+                            _placeholder={{ color: "zombieland.white" }}
                             mb={6}
                         />
                     </Flex>
