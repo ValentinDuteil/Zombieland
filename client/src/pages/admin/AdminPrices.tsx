@@ -10,11 +10,11 @@ import Footer from "../../components/Footer"
 import AdminMenu from "@/components/AdminNavlinkMenu"
 import ConfirmModal from "@/components/ConfirmModal"
 
-// fetch price 
+// fetch price.
 const AdminTarifs = () => {
     const [action, setAction] = useState<"price" | "capacity" | null>(null)
-    const [capacity, setCapacity] = useState<number>(0)
-    const [price, setPrice] = useState<number>(0)
+    const [capacity, setCapacity] = useState<string>("")
+    const [price, setPrice] = useState<string>("")
     const [loading, setLoading] = useState(true)    
     const [priceMessage, setPriceMessage] = useState("")
     const [capacityMessage, setCapacityMessage] = useState("")
@@ -24,7 +24,7 @@ const AdminTarifs = () => {
     const fetchPrice = async () => {
         try {
             const res = await axiosInstance.get(`${API_URL}/api/tickets`, { withCredentials: true })
-            setPrice(res.data.price)
+            setPrice(String(res.data.price))
         } catch {
             setPriceMessage("Erreur lors du chargement du tarif")    
         }
@@ -48,7 +48,7 @@ const AdminTarifs = () => {
                 withCredentials: true
             })
 
-            setCapacity(parseInt(res.data.value))
+            setCapacity(String(res.data.value))
 
         } catch {
             setCapacityMessage("Erreur lors du chargement de la capacité")
@@ -172,7 +172,7 @@ const AdminTarifs = () => {
                                     <Input
                                         type="number"
                                         value={price}
-                                        onChange={(e) => setPrice(Number(e.target.value))}
+                                        onChange={(e) => setPrice(e.target.value)}
                                         width="200px"
                                         color="zombieland.white"
                                         borderColor="zombieland.primary"
@@ -229,7 +229,7 @@ const AdminTarifs = () => {
                                         type="number"
                                         width="200px"
                                         value={capacity}
-                                        onChange={(e) => setCapacity(Number(e.target.value))}
+                                        onChange={(e) => setCapacity(e.target.value)}
                                         color="zombieland.white"
                                         borderColor="zombieland.primary"
                                         bg="rgba(0,0,0,0.3)"
