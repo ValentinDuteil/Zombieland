@@ -179,7 +179,9 @@ function MyReservations() {
             const response = await axiosInstance.get(url, { withCredentials: true })
             setReservations(response.data)
             setMessage('Votre annulation a bien été prise en compte.')
-            navigate('/my-account/reservations')
+            if (!isAdminUser) {
+                navigate('/my-account/reservations')
+            }
 
         } catch (error) {
             const message = "Votre annulation n'a pas été prise en compte"
