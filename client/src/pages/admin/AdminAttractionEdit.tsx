@@ -1,29 +1,20 @@
 // Admin page to edit an attraction : visual card with editable fields
 import { useEffect, useState, useRef } from "react"
-import { Box, Text, Button, Input, Select, Spinner, Flex, Image } from "@chakra-ui/react"
+import { Box, Text, Input, Select, Spinner, Flex, Image } from "@chakra-ui/react"
 import { useNavigate, useParams } from "react-router-dom"
 import { FaCamera } from "react-icons/fa"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
-import bgImage from '../../assets/bg-bouton.webp'
-import bgBouton from '../../assets/bg-bouton.webp'
+import AdminMenu from "@/components/AdminNavlinkMenu"
+import { ZButton, CancelButton } from "@/components/Buttons"
+import barbed from '../../assets/barbed-bg.webp'
 import Card from '../../assets/Card.webp'
 import ConfirmModal from "../../components/ConfirmModal"
 import type { AttractionWithCategories } from "@types"
-import img1 from "../../assets/quarantaine.webp"
-import img2 from "../../assets/ridebiomasse.webp"
-import img3 from "../../assets/marche.webp"
-import img4 from "../../assets/grand8.webp"
-import img5 from "../../assets/fossecadavres.webp"
-import img6 from "../../assets/centrerecherche.webp"
+import defaultImage from "../../assets/quarantaine.webp"
 import { API_URL } from "@/config/api"
 import axiosInstance from "@/lib/axiosInstance"
 import { isAxiosError } from "axios"
-
-// Map attraction id to local image
-const attractionImages: Record<number, string> = {
-    1: img1, 2: img2, 3: img3, 4: img4, 5: img5, 6: img6
-}
 
 const categoryColors: Record<string, string> = {
     LOW: "green",
@@ -41,7 +32,6 @@ const AdminAttractionEdit = () => {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [dbImage, setDbImage] = useState<string | null>(null)
 
-
     // Form fields state
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
@@ -49,7 +39,7 @@ const AdminAttractionEdit = () => {
     const [duration, setDuration] = useState<number | "">("")
     const [capacity, setCapacity] = useState<number | "">("")
     const [intensity, setIntensity] = useState<"LOW" | "MEDIUM" | "HIGH">("LOW")
-    const [attractionId, setAttractionId] = useState<number>(0)
+    const [_attractionId, setAttractionId] = useState<number>(0)
     const [previewImage, setPreviewImage] = useState<string | null>(null)
 
     // Fetch the attraction to pre-fill the form
@@ -58,7 +48,6 @@ const AdminAttractionEdit = () => {
             setLoading(true)
             try {
                 const res = await axiosInstance.get<AttractionWithCategories>(`${API_URL}/api/attractions/${id}`)
-
 
                 setName(res.data.name)
                 setDescription(res.data.description ?? "")
@@ -88,63 +77,55 @@ const AdminAttractionEdit = () => {
     }
 
     const handleSubmit = async (password: string) => {
-        let errorMessage = "Erreur lors de l'upload de l'image"
+        setError(null); // reset general error
+        setErrors({});  // reset field-specific errors
+
+        let imageSuccess = false;
+
         try {
-
-            // If a new image was selected, upload it first
+            // 1. if there's a new image, upload it first (so we don't update text if image upload fails)
             if (fileInputRef.current?.files?.[0]) {
-                const formData = new FormData()
-                formData.append('image', fileInputRef.current.files[0])
-
-                await axiosInstance.patch(`${API_URL}/api/attractions/${id}/image`, formData,
-                    {
-
-                        withCredentials: true,
-                        headers: { 'Content-Type': 'multipart/form-data' }
-                    })
-
-
-            }
-            errorMessage = "Erreur lors de la modification de l'attraction"
-            // Then update the other fields
-            await axiosInstance.patch(`${API_URL}/api/attractions/${id}`,
-                {
-                    name,
-                    description,
-                    min_height: minHeight,
-                    duration,
-                    capacity,
-                    intensity,
-                    password
-                },
-                {
-
+                const formData = new FormData();
+                formData.append('image', fileInputRef.current.files[0]);
+                await axiosInstance.patch(`${API_URL}/api/attractions/${id}/image`, formData, {
                     withCredentials: true,
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                imageSuccess = true;
+            }
 
-                })
+            // 2. then update the rest of the attraction data
+            await axiosInstance.patch(`${API_URL}/api/attractions/${id}`, {
+                name,
+                description,
+                min_height: minHeight,
+                duration,
+                capacity,
+                intensity,
+                password
+            }, { withCredentials: true });
 
+            // if everything succeeded, go back to the list
+            navigate('/admin/attractions');
 
-
-            setTimeout(() => navigate('/admin/attractions'), 1500)
         } catch (err) {
             if (isAxiosError(err)) {
+                // if image upload succeeded but data update failed, 
+                // we want to show both the success message for the image and the error message for the data
+                const prefix = imageSuccess ? "Image mise à jour, mais : " : "";
+
                 if (err.response?.data.details) {
-                    // Zod field errors
-                    const newErrors: Record<string, string> = {}
+                    const newErrors: Record<string, string> = {};
                     err.response?.data.details.forEach((d: { champ: string, message: string }) => {
-                        newErrors[d.champ] = d.message
-                    })
-                    setErrors(newErrors)
+                        newErrors[d.champ] = d.message;
+                    });
+                    setErrors(newErrors);
                 } else {
-                    // Generic back error
-                    setError(err.response?.data.message || errorMessage)
+                    setError(prefix + (err.response?.data.message || "Erreur de modification"));
                 }
-            } else {
-                // Network or unexpected error
-                setError(errorMessage)
             }
         }
-    }
+    };
 
 
     // Shared input style matching the card theme
@@ -162,11 +143,11 @@ const AdminAttractionEdit = () => {
     return (
         <Box
             minH="100vh"
-            bgImage={`url(${bgImage})`}
+            bgImage={`url(${barbed})`}
             bgSize="cover"
+            bgPosition="center"
             bgRepeat="no-repeat"
             bgAttachment="fixed"
-            bgPosition="center top"
             display="flex"
             flexDirection="column"
             w="100%"
@@ -174,190 +155,178 @@ const AdminAttractionEdit = () => {
         >
             <Header />
 
-            <Box
-                flex={1}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                minH="70vh"
-                py="100px"
-            >
-                {loading && <Spinner color="zombieland.primary" size="xl" />}
-                {error && <Text color="red.400">{error}</Text>}
+            <Flex flex="1">
+                {/* LEFT SIDEBAR */}
+                <Box
+                    width={{ base: "0px", lg: "250px" }}
+                    minWidth={{ base: "0px", lg: "250px" }}
+                    overflow="hidden"
+                    transition="width 0.3s ease, min-width 0.3s ease"
+                    borderRight="1px solid rgba(255,255,255,0.1)"
+                >
+                    <AdminMenu />
+                </Box>
 
-                {!loading && (
-                    <Box w="600px" p={10} borderRadius="md">
+                {/* RIGHT CONTENT */}
+                <Box
+                    flex="1"
+                    minWidth="0"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    py="100px"
+                >
+                    {loading && <Spinner color="zombieland.primary" size="xl" />}
+                    {error && <Text color="red.400">{error}</Text>}
 
-                        {/* Editable name as heading */}
-                        <Input
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            fontSize="4xl"
-                            fontWeight="bold"
-                            fontFamily="heading"
-                            mb={6}
-                            bg="transparent"
-                            border="none"
-                            borderBottom="2px solid"
-                            borderColor="zombieland.primary"
-                            color="zombieland.white"
-                            borderRadius="none"
-                            _hover={{ borderColor: "zombieland.cta1orange" }}
-                            _focus={{ borderColor: "zombieland.cta1orange", boxShadow: "none" }}
-                            textAlign="center"
-                        />
-                        {errors['name'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['name']}</Text>}
-                        <Box
-                            borderRadius="lg"
-                            overflow="visible"
-                            boxShadow="0 0 15px rgba(0,0,0,0.5)"
-                            bgImage={`url(${Card})`}
-                            bgSize="cover"
-                            bgPosition="center"
-                            color="white"
-                            display="flex"
-                            flexDirection="column"
+                    {!loading && (
+                        <Box w="600px" p={10} borderRadius="md">
 
-                        >
-                            {/* Image zone - clickable to upload */}
+                            {/* Editable name as heading */}
+                            <Input
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                fontSize="4xl"
+                                fontWeight="bold"
+                                fontFamily="heading"
+                                mb={6}
+                                bg="transparent"
+                                border="none"
+                                borderBottom="2px solid"
+                                borderColor="zombieland.primary"
+                                color="zombieland.white"
+                                borderRadius="none"
+                                _hover={{ borderColor: "zombieland.cta1orange" }}
+                                _focus={{ borderColor: "zombieland.cta1orange", boxShadow: "none" }}
+                                textAlign="center"
+                            />
+                            {errors['name'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['name']}</Text>}
                             <Box
-                                width="100%"
-                                height="300px"
+                                borderRadius="lg"
                                 overflow="visible"
+                                boxShadow="0 0 15px rgba(0,0,0,0.5)"
+                                bgImage={`url(${Card})`}
+                                bgSize="cover"
+                                bgPosition="center"
+                                color="white"
                                 display="flex"
-                                justifyContent="center"
-                                mt={8}
-                                position="relative"
-                                cursor="pointer"
-                                onClick={() => fileInputRef.current?.click()}
-                                _hover={{ opacity: 0.8 }}
+                                flexDirection="column"
                             >
-                                {/* Hidden file input */}
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    style={{ display: "none" }}
-                                    onChange={handleImageChange}
-                                />
-
-                                {/* Editable intensity select */}
-                                <Select
-                                    position="absolute"
-                                    top="-12px"
-                                    left="8px"
-                                    w="110px"
-                                    size="xs"
-                                    bg={`${categoryColors[intensity]}.500`}
-                                    color="white"
-                                    border="none"
-                                    borderRadius="md"
-                                    zIndex={2}
-                                    value={intensity}
-                                    onChange={(e) => setIntensity(e.target.value as "LOW" | "MEDIUM" | "HIGH")}
-                                    _focus={{ boxShadow: "none" }}
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <option value="LOW" style={{ background: "#1a1a1a" }}>PEUR ACCEPTABLE</option>
-                                    <option value="MEDIUM" style={{ background: "#1a1a1a" }}>PEUR SURVIVABLE</option>
-                                    <option value="HIGH" style={{ background: "#1a1a1a" }}>PEUR MORTELLE</option>
-                                </Select>
-
-                                {/* Camera icon overlay in the center */}
+                                {/* Image zone - clickable to upload */}
                                 <Box
-                                    position="absolute"
-                                    top="50%"
-                                    left="50%"
-                                    transform="translate(-50%, -50%)"
-                                    bg="rgba(0,0,0,0.5)"
-                                    borderRadius="full"
-                                    p={4}
-                                    zIndex={2}
-                                    color="white"
-                                    fontSize="2xl"
+                                    width="100%"
+                                    height="300px"
+                                    overflow="visible"
+                                    display="flex"
+                                    justifyContent="center"
+                                    mt={8}
+                                    position="relative"
+                                    cursor="pointer"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    _hover={{ opacity: 0.8 }}
                                 >
-                                    <FaCamera />
+                                    {/* Hidden file input */}
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        style={{ display: "none" }}
+                                        onChange={handleImageChange}
+                                    />
+
+                                    {/* Editable intensity select */}
+                                    <Select
+                                        position="absolute"
+                                        top="-12px"
+                                        left="8px"
+                                        w="125px"
+                                        size="xs"
+                                        bg={`${categoryColors[intensity]}.500`}
+                                        color="white"
+                                        border="none"
+                                        borderRadius="md"
+                                        zIndex={2}
+                                        value={intensity}
+                                        onChange={(e) => setIntensity(e.target.value as "LOW" | "MEDIUM" | "HIGH")}
+                                        _focus={{ boxShadow: "none" }}
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <option value="LOW" style={{ background: "#1a1a1a" }}>PEUR ACCEPTABLE</option>
+                                        <option value="MEDIUM" style={{ background: "#1a1a1a" }}>PEUR SURVIVABLE</option>
+                                        <option value="HIGH" style={{ background: "#1a1a1a" }}>PEUR MORTELLE</option>
+                                    </Select>
+
+                                    {/* Camera icon overlay in the center */}
+                                    <Box
+                                        position="absolute"
+                                        top="50%"
+                                        left="50%"
+                                        transform="translate(-50%, -50%)"
+                                        bg="rgba(0,0,0,0.5)"
+                                        borderRadius="full"
+                                        p={4}
+                                        zIndex={2}
+                                        color="white"
+                                        fontSize="2xl"
+                                    >
+                                        <FaCamera />
+                                    </Box>
+
+                                    <Image
+                                        width="90%"
+                                        height="100%"
+                                        objectFit="cover"
+                                        borderRadius="md"
+                                        src={previewImage || (dbImage ? `${API_URL}${dbImage}` : defaultImage)}
+                                    />
                                 </Box>
 
-                                <Image
-                                    width="90%"
-                                    height="100%"
-                                    objectFit="cover"
-                                    borderRadius="md"
-                                    src={previewImage || (dbImage ? `${import.meta.env.VITE_API_URL}${dbImage}` : attractionImages[attractionId]) || img1}
-                                />
+                                <Box p={6} display="flex" flexDirection="column" flex="1" gap={3} alignItems="center" w="100%">
+
+                                    <Input
+                                        {...inputStyle}
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        placeholder="Description"
+                                        w="80%"
+                                        textAlign="center"
+                                    />
+                                    {errors['description'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['description']}</Text>}
+                                    <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
+                                        <Text fontSize="sm" whiteSpace="nowrap">Durée :</Text>
+                                        <Input {...inputStyle} type="number" value={duration} onChange={(e) => setDuration(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Durée (min)" />
+                                        <Text fontSize="sm" color="whiteAlpha.700">min</Text>
+                                    </Flex>
+                                    {errors['duration'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['duration']}</Text>}
+
+                                    <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
+                                        <Text fontSize="sm" whiteSpace="nowrap">Capacité :</Text>
+                                        <Input {...inputStyle} type="number" value={capacity} onChange={(e) => setCapacity(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Capacité" />
+                                        <Text fontSize="sm" color="whiteAlpha.700">personnes</Text>
+                                    </Flex>
+                                    {errors['capacity'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['capacity']}</Text>}
+
+                                    <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
+                                        <Text fontSize="sm" whiteSpace="nowrap">Taille requise :</Text>
+                                        <Input {...inputStyle} type="number" value={minHeight} onChange={(e) => setMinHeight(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Taille min. (cm)" />
+                                        <Text fontSize="sm" color="whiteAlpha.700">cm</Text>
+                                    </Flex>
+                                    {errors['min_height'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['min_height']}</Text>}
+
+                                    <ZButton onClick={() => setIsConfirmOpen(true)} mt={4}>
+                                        Enregistrer les modifications
+                                    </ZButton>
+                                </Box>
                             </Box>
 
-                            <Box p={6} display="flex" flexDirection="column" flex="1" gap={3} alignItems="center" w="100%">
-
-                                <Input
-                                    {...inputStyle}
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="Description"
-                                    w="80%"
-                                    textAlign="center"
-                                />
-                                {errors['description'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['description']}</Text>}
-                                <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
-                                    <Text fontSize="sm" whiteSpace="nowrap">Durée :</Text>
-                                    <Input {...inputStyle} type="number" value={duration} onChange={(e) => setDuration(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Durée (min)" />
-                                    <Text fontSize="sm" color="whiteAlpha.700">min</Text>
-                                </Flex>
-                                {errors['duration'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['duration']}</Text>}
-
-                                <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
-                                    <Text fontSize="sm" whiteSpace="nowrap">Capacité :</Text>
-                                    <Input {...inputStyle} type="number" value={capacity} onChange={(e) => setCapacity(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Capacité" />
-                                    <Text fontSize="sm" color="whiteAlpha.700">personnes</Text>
-                                </Flex>
-                                {errors['capacity'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['capacity']}</Text>}
-
-                                <Flex alignItems="center" justifyContent="center" gap={2} w="80%">
-                                    <Text fontSize="sm" whiteSpace="nowrap">Taille requise :</Text>
-                                    <Input {...inputStyle} type="number" value={minHeight} onChange={(e) => setMinHeight(e.target.value === "" ? "" : parseInt(e.target.value))} placeholder="Taille min. (cm)" />
-                                    <Text fontSize="sm" color="whiteAlpha.700">cm</Text>
-                                </Flex>
-                                {errors['min_height'] && <Text color="zombieland.warningprimary" fontSize="sm">{errors['min_height']}</Text>}
-
-                                <Button
-                                    bgImage={`url(${bgBouton})`}
-                                    color="zombieland.secondary"
-                                    _hover={{ opacity: 0.8 }}
-                                    fontFamily="body"
-                                    fontSize="20px"
-                                    py={6}
-                                    px={3}
-                                    borderRadius="full"
-                                    letterSpacing="1px"
-                                    fontWeight="bold"
-                                    boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
-                                    textTransform="uppercase"
-                                    mt={2}
-                                    w="80%"
-                                    onClick={() => setIsConfirmOpen(true)}
-                                >
-                                    Enregistrer
-                                </Button>
-                            </Box>
+                            {/* Cancel button */}
+                            <CancelButton onClick={() => navigate('/admin/attractions')}>
+                                ← Annuler
+                            </CancelButton>
                         </Box>
-
-                        {/* Cancel button */}
-                        <Button
-                            mt={4}
-                            border="2px solid"
-                            borderColor="zombieland.primary"
-                            color="zombieland.white"
-                            bg="transparent"
-                            _hover={{ borderColor: "zombieland.cta1orange", color: "zombieland.cta1orange" }}
-                            onClick={() => navigate('/admin/attractions')}
-                        >
-                            ← Annuler
-                        </Button>
-                    </Box>
-                )}
-
-            </Box>
+                    )}
+                </Box>
+            </Flex>
 
             {/* Confirm modal with password before saving */}
             <ConfirmModal

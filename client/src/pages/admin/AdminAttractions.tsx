@@ -1,10 +1,11 @@
 // Admin page to manage attractions : list, filter, edit and delete
 import { useEffect, useState } from "react"
-import { Box, Text, Button, Flex, Input, Spinner, Heading } from "@chakra-ui/react"
+import { Box, Button, Text, Flex, Input, Spinner, Heading } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
-import bgImage from '../../assets/bg-bouton.webp'
+import { ZButton } from "@/components/Buttons"
+import barbed from '../../assets/barbed-bg.webp'
 import type { Attraction } from "@types"
 import AdminTable from "../../components/AdminTable"
 import AdminMenu from "../../components/AdminNavlinkMenu"
@@ -95,16 +96,20 @@ const AdminAttractions = () => {
         "Taille min.": "min_height"
     } as const
 
+    const currentSortHeader = Object.keys(headerToField).find(
+        key => headerToField[key as keyof typeof headerToField] === sort.by
+    ) ?? ""
+
     return (
         <Box
             display="flex"
             flexDirection="column"
             minHeight="100vh"
-            bgAttachment="fixed"
-            bgImage={`url(${bgImage})`}
+            bgImage={`url(${barbed})`}
             bgSize="cover"
-            bgRepeat="no-repeat"
-            bgPosition="center top"
+            bgPosition="center, center"
+            bgRepeat="no-repeat, no-repeat"
+            bgAttachment="fixed, fixed"
             w="100%"
             overflow="hidden"
         >
@@ -116,48 +121,43 @@ const AdminAttractions = () => {
                 {/* LEFT SIDEBAR */}
 
                 <Box
-                    display={{ base: 'none', lg: 'block' }}
-                    minWidth="240px"
-                    maxWidth="240px"
+                    width={{ base: "0px", lg: "250px" }}
+                    minWidth={{ base: "0px", lg: "250px" }}
+                    overflow="hidden"
+                    transition="width 0.3s ease, min-width 0.3s ease"
                     borderRight="1px solid rgba(255,255,255,0.1)"
                 >
                     <AdminMenu />
                 </Box>
 
                 {/* RIGHT CONTENT */}
-                <Box flex="1" p={3} pt="100px" pb="100px" maxW="1000px" mx="auto" w="100%">
+                <Box
+                    flex="1"
+                    minWidth="0"
+                    px={{ base: 4, md: 10 }}
+                    pt="60px"
+                    pb="100px"
+                >
 
                     <Text fontWeight="bold" color="zombieland.white" mb={6} textAlign="center" fontFamily="heading" fontSize="54px">
                         Gestion des attractions
                     </Text>
                     <Heading
-                                            fontWeight="bold"
-                                            color="zombieland.white"
-                                            textAlign="left"
-                                            fontFamily="body"
-                                            fontSize="24px"
-                                            mb={8}
-                                        >
-                                            Admin / Attractions
-                                        </Heading>
+                        fontWeight="bold"
+                        color="zombieland.white"
+                        textAlign="left"
+                        fontFamily="body"
+                        fontSize="24px"
+                        mb={8}
+                    >
+                        Admin / Attractions
+                    </Heading>
 
                     {/* Create new attraction button */}
                     <Flex justifyContent="center" mt={8} mb={6}>
-                        <Button
-                            bg="zombieland.cta1orange"
-                            color="zombieland.white"
-                            _hover={{ opacity: 0.85, boxShadow: "0 8px 16px rgba(0,0,0,0.6)" }}
-                            fontSize="18px"
-                            py={6}
-                            px={12}
-                            borderRadius="md"
-                            fontWeight="bold"
-                            fontFamily="heading"
-                            boxShadow="0 4px 15px rgba(0,0,0,0.4)"
-                            onClick={() => navigate('/admin/attractions/create')}
-                        >
+                        <ZButton onClick={() => navigate('/admin/attractions/create')}>
                             Créer une attraction
-                        </Button>
+                        </ZButton>
                     </Flex>
 
                     {/* Searchbar */}
@@ -191,6 +191,8 @@ const AdminAttractions = () => {
                                 const field = headerToField[header as keyof typeof headerToField]
                                 if (field) handleSortChange(field)
                             }}
+                            currentSortHeader={currentSortHeader}
+                            currentSortDir={sort.direction as "asc" | "desc"}
                             columns={[
                                 {
                                     header: "Nom",

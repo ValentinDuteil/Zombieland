@@ -84,6 +84,8 @@ const AttractionCard = ({ id_ATTRACTION, name, description, intensity, image, sh
                     borderRadius="md"
                     fontSize="0.8rem"
                     zIndex={2}
+                    whiteSpace="nowrap"
+                    maxW="none"
                 >
                     {cat.toUpperCase()}
                 </Badge>

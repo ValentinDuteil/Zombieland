@@ -1,13 +1,5 @@
 // MyAccount page - user's profile which can be update or deleted
 
-// ⚠️ DETTE TECHNIQUE - Sécurité formulaire profil
-// Actuellement : confirmation du nouveau mot de passe uniquement côté front
-// À implémenter :
-//   1. Champ "mot de passe actuel" pour valider toute modification
-//   2. Vérification Argon2 côté back avant d'appliquer les changements
-//   3. Pop-up de confirmation avec saisie du mot de passe actuel
-//   4. Séparer la logique "modifier infos" et "modifier mot de passe"
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { Box, Button, Heading, Input, Text, Checkbox } from '@chakra-ui/react'
@@ -125,16 +117,6 @@ function MyAccount() {
         setMessage('Une erreur est survenue.')
       }
     }
-    // axios commentaire:
-    // Sending the updated profile data to the api with axios patch method
-    // Using currentUser?.id_USER (got on mount via /api/auth/me)
-    // to build the URL of the PATCH route
-
-
-    //fetching on the api with patch methode
-    //geting the informations of the connected user via currentUser on mount
-    //We are using currentUser?.id_USER (got on mount via /api/auth/me)
-    //to build the URL of the PATCH route
   }
 
   const handleDelete = async (password: string) => {
