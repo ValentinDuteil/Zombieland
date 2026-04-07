@@ -23,6 +23,10 @@ const app = express()
 
 // Middlewares
 app.use(express.json())
+// Trust the first proxy in front of the app (required for Render, Heroku, etc.)
+// Without this, express-rate-limit cannot identify users via X-Forwarded-For header 
+// and will block all users behind the same proxy after the limit is reached
+app.set('trust proxy', 1)
 app.use(cors({
     // URL from Vite (the only one authorized for now)
     // For prod : add "CLIENT_URL=https://ton-url" in .env
