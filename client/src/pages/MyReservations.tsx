@@ -5,7 +5,7 @@ import { Box, Button, Input, Heading, Text, Flex, Spinner } from '@chakra-ui/rea
 import bgImage from '../assets/bg-image.webp'
 import barbed from '../assets/barbed-bg.webp'
 import bgBouton from '../assets/bg-bouton.webp'
-import bgFiltres from '../assets/bg-bouton-filtres.webp'
+import bgAdmin from '../assets/bgadmin.webp'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import AdminMenu from '../components/AdminNavlinkMenu'
@@ -233,7 +233,7 @@ function MyReservations() {
                                 key={s}
                                 size="sm"
                                 onClick={() => { setStatusFilter(s); setCurrentPage(1) }}
-                                bgImage={`url(${bgFiltres})`}
+                                bgImage={`url(${bgAdmin})`}
                                 bgSize="120%"
                                 bgPosition="center"
                                 bgRepeat="no-repeat"
@@ -266,7 +266,7 @@ function MyReservations() {
                                     }
                                     setCurrentPage(1)
                                 }}
-                                bgImage={`url(${bgFiltres})`}
+                                bgImage={`url(${bgAdmin})`}
                                 bgSize="120%"
                                 bgPosition="center"
                                 bgRepeat="no-repeat"

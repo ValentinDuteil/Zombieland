@@ -6,7 +6,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import bgImage from '../assets/bg-image.webp';
 import defaultImage from "../assets/quarantaine.webp"
-import bgFiltres from '../assets/bg-bouton-filtres.webp'
+import bgAdmin from '../assets/bgadmin.webp'
 import { PageBackground } from "../components/PageBackground";
 import { API_URL } from "@/config/api";
 import axiosInstance from "@/lib/axiosInstance";
@@ -58,7 +58,7 @@ const AttractionsPage = () => {
                             key={cat ?? "all"}
                             size="sm"
                             onClick={() => setSelectedCategory(cat)}
-                            bgImage={`url(${bgFiltres})`}
+                            bgImage={`url(${bgAdmin})`}
                             bgSize="120%"
                             bgPosition="center"
                             bgRepeat="no-repeat"
