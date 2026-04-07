@@ -40,7 +40,7 @@ function LoginModal({ isOpen, onClose, onConfirm, title }: LoginModalProps) {
         setTimeout(() => { //giving the time to read the message before closing the modal
           onClose()
           onConfirm()
-        }, 1500)
+        }, 800)
       } catch (error) {
         //otherwise displaying an error message getting from the back if possible, otherwise a default one
         const message = 'Email ou mot de passe invalide.'
