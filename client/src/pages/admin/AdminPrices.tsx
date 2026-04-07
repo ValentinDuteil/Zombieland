@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import { Box, Heading, Input, Button, Text, Flex, Spinner } from "@chakra-ui/react"
+import { Box, Heading, Input, Text, Flex, Spinner } from "@chakra-ui/react"
 import axiosInstance from "@/lib/axiosInstance"
 import { isAxiosError } from "axios"
 import { API_URL } from "@/config/api"
 import Header from "../../components/Header"
-import bgImage from "../../assets/bg-bouton.webp"
-import bgBouton from "../../assets/bg-bouton.webp"
+import barbed from '../../assets/barbed-bg.webp'
 import Footer from "../../components/Footer"
+import { ZButton } from "../../components/Buttons"
 import AdminMenu from "@/components/AdminNavlinkMenu"
 import ConfirmModal from "@/components/ConfirmModal"
 
@@ -15,7 +15,7 @@ const AdminTarifs = () => {
     const [action, setAction] = useState<"price" | "capacity" | null>(null)
     const [capacity, setCapacity] = useState<string>("")
     const [price, setPrice] = useState<string>("")
-    const [loading, setLoading] = useState(true)    
+    const [loading, setLoading] = useState(true)
     const [priceMessage, setPriceMessage] = useState("")
     const [capacityMessage, setCapacityMessage] = useState("")
     // Modals
@@ -26,7 +26,7 @@ const AdminTarifs = () => {
             const res = await axiosInstance.get(`${API_URL}/api/tickets`, { withCredentials: true })
             setPrice(String(res.data.price))
         } catch {
-            setPriceMessage("Erreur lors du chargement du tarif")    
+            setPriceMessage("Erreur lors du chargement du tarif")
         }
     }
     //fetch update price
@@ -89,11 +89,11 @@ const AdminTarifs = () => {
             display="flex"
             flexDirection="column"
             minHeight="100vh"
-            bgAttachment="fixed"
-            bgImage={`url(${bgImage})`}
+            bgImage={`url(${barbed})`}
             bgSize="cover"
+            bgPosition="center"
             bgRepeat="no-repeat"
-            bgPosition="center top"
+            bgAttachment="fixed"
             w="100%"
             overflow="hidden"
         >
@@ -103,9 +103,10 @@ const AdminTarifs = () => {
             <Flex flex="1">
                 {/* LEFT SIDEBAR */}
                 <Box
-                    display={{ base: "none", lg: "block" }}
-                    minWidth="240px"
-                    maxWidth="240px"
+                    width={{ base: "0px", lg: "250px" }}
+                    minWidth={{ base: "0px", lg: "250px" }}
+                    overflow="hidden"
+                    transition="width 0.3s ease, min-width 0.3s ease"
                     borderRight="1px solid rgba(255,255,255,0.1)"
                 >
                     <AdminMenu />
@@ -120,6 +121,7 @@ const AdminTarifs = () => {
                     maxW="1000px"
                     mx="auto"
                     w="100%"
+                    minWidth="0" 
                 >
                     <Text
                         fontWeight="bold"
@@ -172,32 +174,21 @@ const AdminTarifs = () => {
                                     <Input
                                         type="number"
                                         value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
+                                        onChange={(e) => {
+                                            setPrice(e.target.value);
+                                            if (priceMessage) setPriceMessage(""), setCapacityMessage("");
+                                        }}
                                         width="200px"
                                         color="zombieland.white"
                                         borderColor="zombieland.primary"
                                         bg="rgba(0,0,0,0.3)"
                                         _placeholder={{ color: "whiteAlpha.500" }}
                                     />
-                                    <Button
-                                        bgImage={`url(${bgBouton})`}
-                                        bgSize="cover"
-                                        bgPosition="center"
-                                        color="zombieland.white"
-                                        border="none"
-                                        _hover={{ opacity: 0.85, boxShadow: "0 8px 16px rgba(0,0,0,0.6), 0 0 30px rgba(250, 130, 52, 0.3)" }}
-                                        fontFamily="heading"
-                                        fontSize="16px"
-                                        py={5}
-                                        px={8}
-                                        borderRadius="md"
-                                        fontWeight="bold"
-                                        boxShadow="0 4px 15px rgba(250, 130, 52, 0.25)"
-                                        transition="all 0.3s ease"
+                                    <ZButton
                                         onClick={() => { setAction("price"); setIsConfirmOpen(true) }}
                                     >
                                         Enregistrer
-                                    </Button>
+                                    </ZButton>
                                 </Flex>
                                 {priceMessage && (
                                     <Text mt={4} textAlign="center" color={priceMessage.includes("succès") ? "green.300" : "red.400"}>
@@ -229,31 +220,20 @@ const AdminTarifs = () => {
                                         type="number"
                                         width="200px"
                                         value={capacity}
-                                        onChange={(e) => setCapacity(e.target.value)}
+                                        onChange={(e) => {
+                                            setCapacity(e.target.value);
+                                            if (priceMessage) setPriceMessage(""), setCapacityMessage("");
+                                        }}
                                         color="zombieland.white"
                                         borderColor="zombieland.primary"
                                         bg="rgba(0,0,0,0.3)"
                                         _placeholder={{ color: "whiteAlpha.500" }}
                                     />
-                                    <Button
-                                        bgImage={`url(${bgBouton})`}
-                                        bgSize="cover"
-                                        bgPosition="center"
-                                        color="zombieland.white"
-                                        border="none"
-                                        _hover={{ opacity: 0.85, boxShadow: "0 8px 16px rgba(0,0,0,0.6), 0 0 30px rgba(250, 130, 52, 0.3)" }}
-                                        fontFamily="heading"
-                                        fontSize="16px"
-                                        py={5}
-                                        px={8}
-                                        borderRadius="md"
-                                        fontWeight="bold"
-                                        boxShadow="0 4px 15px rgba(250, 130, 52, 0.25)"
-                                        transition="all 0.3s ease"
+                                    <ZButton
                                         onClick={() => { setAction("capacity"); setIsConfirmOpen(true) }}
                                     >
                                         Enregistrer
-                                    </Button>
+                                    </ZButton>
                                 </Flex>
                                 {capacityMessage && (
                                     <Text mt={4} textAlign="center" color={capacityMessage.includes("succès") ? "green.300" : "red.400"}>

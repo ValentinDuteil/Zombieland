@@ -13,31 +13,31 @@ import { prisma } from "../lib/prisma.js"
 
 // Middleware that checks if the user has a valid JWT token
 export async function checkToken(req: Request, res: Response, next: NextFunction): Promise<void> {
-  
-  
+
+
   // Get the Token from the cookie created in auth.controller (register ou login)
   const token = req.cookies.token
-  
+
   // Check if the token exists
   if (!token) {
     // Token is invalid or expired → 401 Unauthorized
     next(new UnauthorizedError("Token manquant"))
     return
   }
-  
+
   try {
     // Verify and decode the token using the secret key from .env
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string
     ) as JwtPayload
-    
+
     const user = await prisma.user.findUnique({ where: { id_USER: decoded.id } })
-if (user?.deleted_at) {
-    next(new UnauthorizedError("Compte supprimé"))
-    return
-}
-    
+    if (user?.deleted_at) {
+      next(new UnauthorizedError("Compte supprimé"))
+      return
+    }
+
     // Attach the decoded user info to the request object
     req.user = decoded
 

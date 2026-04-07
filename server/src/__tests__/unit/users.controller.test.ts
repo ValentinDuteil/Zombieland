@@ -60,7 +60,10 @@ describe('getAllUsers - unit test', () => {
 
     mockPrisma.user.findMany.mockResolvedValue(fakeUsers)
 
-    const mockReq = { user: { id: 1, role: 'ADMIN' } } as Request
+    const mockReq = { 
+      user: { id: 1, role: 'ADMIN' },
+      query: {}
+    } as unknown as Request
     const mockRes = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn().mockReturnThis()
@@ -78,7 +81,10 @@ describe('getAllUsers - unit test', () => {
     const error = new Error("DB error")
     mockPrisma.user.findMany.mockRejectedValue(error)
 
-    const req: any = { user: { id: 1, role: "ADMIN" } }
+    const req: any = { 
+      user: { id: 1, role: "ADMIN" },
+      query: {}
+ }
     const res: any = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn().mockReturnThis()

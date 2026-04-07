@@ -1,11 +1,13 @@
 // Admin page to manage reservations: list, filter, edit and delete
 import { useEffect, useState } from "react";
-import { Box, Text, Button, Flex, Spinner, Badge, Heading, Input, SimpleGrid } from "@chakra-ui/react";
+import { Box, Text, Button, Flex, Spinner, Heading, Input, SimpleGrid } from "@chakra-ui/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdminTable from "@/components/AdminTable";
+import { StatusBadge } from "@/components/AdminTable";
 import AdminMenu from "@/components/AdminNavlinkMenu";
-import labodashboard from "../../assets/bg-bouton.webp"
+import bgAnnuler from "../../assets/bg-bouton-annuler.webp"
+import barbed from "../../assets/barbed-bg.webp"
 import type { Reservation } from "@/types/Reservations";
 import axiosInstance from "@/lib/axiosInstance";
 import { API_URL } from "@/config/api";
@@ -16,6 +18,7 @@ const AdminHome = () => {
     //tate to manage sorting and search of reservations in the table
     const [sort, setSort] = useState({ by: "name", direction: "asc" })
     const [search, setSearch] = useState("")
+    const [hideDeleted, setHideDeleted] = useState(true)
     //State to store the total of attractions
     const [attractions, setAttractions] = useState(Number);
     //State to store the total of Members
@@ -82,20 +85,19 @@ const AdminHome = () => {
                 const response = await axiosInstance.get(`${API_URL}/api/attractions`)
                 setAttractions(response.data.length);
             } catch (err) {
-                console.error("Erreur de récupération des attractions");
+                setError("Erreur de récupération des attractions")
             }
         };
 
         axiosAttractions();
     }, [location]);
-    // const totalAttractions = attractions.length;
 
     //fetch all users
     useEffect(() => {
         axiosInstance
             .get(`${API_URL}/api/users`, { withCredentials: true })
             .then(res => setUsers(res.data.length))
-            .catch(() => console.error("Erreur récupération utilisateurs"));
+            .catch(() => setError("Erreur récupération utilisateurs"));
     }, [location]);
 
     //  CALCUL REVENUS total
@@ -109,6 +111,7 @@ const AdminHome = () => {
 
     const filteredReservations = reservations
         .filter(r => {
+            if (hideDeleted && r.user?.deleted_at) return false
             const fullName = `${r.user?.firstname ?? ""} ${r.user?.lastname ?? ""}`.toLowerCase()
 
             return (
@@ -161,17 +164,20 @@ const AdminHome = () => {
         "Total": "total"
     } as const
 
+    const currentSortHeader = Object.keys(headerToField).find(
+        key => headerToField[key as keyof typeof headerToField] === sort.by
+    ) ?? ""
 
     return (
         <Box
             display="flex"
             flexDirection="column"
             minHeight="100vh"
-            bgAttachment="fixed"
-            bgImage={`url(${labodashboard})`}
+            bgImage={`url(${barbed})`}
             bgSize="cover"
+            bgPosition="center"
             bgRepeat="no-repeat"
-            bgPosition="center top"
+            bgAttachment="fixed"
             w="100%"
             overflowX="hidden"
             overflowY="auto"
@@ -183,19 +189,19 @@ const AdminHome = () => {
 
                 {/* LEFT SIDEBAR — 30% */}
                 <Box
-                    display={{ base: 'none', lg: 'block' }}
-                    minWidth="250px"
-                    maxWidth="350px"
+                    width={{ base: "0px", lg: "250px" }}
+                    minWidth={{ base: "0px", lg: "250px" }}
+                    overflow="hidden"
+                    transition="width 0.3s ease, min-width 0.3s ease"
                     borderRight="1px solid rgba(255,255,255,0.1)"
-
                 >
                     <AdminMenu />
                 </Box>
                 {/* RIGHT CONTENT — 70% */}
-                <Box 
-                    flex="1" 
+                <Box
+                    flex="1"
                     minWidth="0"
-                    px={{ base: 4, md: 10 }} 
+                    px={{ base: 4, md: 10 }}
                     pt="60px"
                 >
                     <Heading
@@ -335,7 +341,7 @@ const AdminHome = () => {
 
                         </Box>
                         <Box
-                            onClick={() => navigate('/admin/price')}
+                            onClick={() => navigate('/admin/tarifs')}
                             h={{ base: "120px", md: "150px", lg: "180px" }}
                             bg="rgba(0, 0, 0, 0.5)"
                             border="2px solid"
@@ -353,7 +359,7 @@ const AdminHome = () => {
                             <Flex direction="column" justify="space-evenly" align="center" h="100%" p={2}>
                                 <Text
                                     // Carte Total revenus uniquement
-fontSize={{ base: "18px", md: "28px", lg: "36px" }}
+                                    fontSize={{ base: "18px", md: "28px", lg: "36px" }}
                                     color="zombieland.white"
                                     fontWeight="extrabold"
                                     lineHeight="1"
@@ -363,7 +369,7 @@ fontSize={{ base: "18px", md: "28px", lg: "36px" }}
                                     {`${totalAmount.toFixed(2)} €`}
                                 </Text>
                                 <Text
-                                mt={3}
+                                    mt={3}
                                     fontSize={{ base: "16px", md: "16px", lg: "20px" }}
                                     color="zombieland.white"
                                     fontFamily="heading"
@@ -374,19 +380,6 @@ fontSize={{ base: "18px", md: "28px", lg: "36px" }}
                             </Flex>
                         </Box>
                     </SimpleGrid>
-
-                    <Flex justifyContent={{ base: "center", lg: "flex-end" }} mb={6}>
-                        <Input
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher une reservation..."
-                            color="zombieland.white"
-                            borderColor="zombieland.white"
-                            bg="rgba(0,0,0,0.3)"
-                            _placeholder={{ color: "zombieland.white" }}
-                            mb={6}
-                        />
-                    </Flex>
 
                     <Heading
                         fontWeight="bold"
@@ -399,6 +392,30 @@ fontSize={{ base: "18px", md: "28px", lg: "36px" }}
                     >
                         Gestion des réservations
                     </Heading>
+
+                    <Flex justifyContent="center" gap={3} mb={6} wrap="wrap">
+                        <Input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Rechercher une reservation..."
+                            color="zombieland.white"
+                            borderColor="zombieland.white"
+                            bg="rgba(0,0,0,0.3)"
+                            _placeholder={{ color: "zombieland.white" }}
+                            flex="1"
+                        />
+                        <Button
+                            size="sm"
+                            onClick={() => setHideDeleted(h => !h)}
+                            border="2px solid"
+                            borderColor={hideDeleted ? "transparent" : "zombieland.cta1orange"}
+                            bg="rgba(0,0,0,0.3)"
+                            color="zombieland.white"
+                            _hover={{ borderColor: "zombieland.cta1orange" }}
+                        >
+                            {hideDeleted ? "Afficher comptes supprimés" : "Masquer comptes supprimés"}
+                        </Button>
+                    </Flex>
 
                     {/* Loading spinner */}
                     {loading && (
@@ -414,22 +431,28 @@ fontSize={{ base: "18px", md: "28px", lg: "36px" }}
                         {!loading && (
                             <AdminTable
                                 data={lastReservations}
-                                onRowClick={(r) => navigate(`/admin/members/${r.id_USER}/reservations?reservationId=${r.id_RESERVATION}`)}
+                                onRowClick={(r) => navigate(`/admin/members/${r.id_USER}/reservations`)}
                                 onHeaderClick={(header) => {
                                     const field = headerToField[header as keyof typeof headerToField]
                                     if (field) handleSortChange(field)
                                 }}
+                                currentSortHeader={currentSortHeader}
+                                currentSortDir={sort.direction as "asc" | "desc"}
 
                                 columns={[
                                     {
                                         header: "Nom",
-                                        render: (r) => r.user
-                                            ? `${r.user.firstname} ${r.user.lastname}`
-                                            : "Utilisateur inconnu"
+                                        render: (r) => (
+                                            <Text color={r.user?.deleted_at ? "gray.500" : "inherit"}>
+                                                {r.user ? `${r.user.firstname} ${r.user.lastname}` : "Utilisateur inconnu"}
+                                                {r.user?.deleted_at && <Text as="span" fontSize="10px" color="gray.500" ml={1}>(supprimé)</Text>}
+                                            </Text>
+                                        )
                                     },
                                     {
                                         header: "N° Membre",
-                                        render: (r) => r.id_USER
+                                        render: (r) => r.id_USER,
+                                        hideOnMobile: true
                                     },
                                     {
                                         header: "Date",
@@ -442,7 +465,8 @@ fontSize={{ base: "18px", md: "28px", lg: "36px" }}
                                     },
                                     {
                                         header: "Billets",
-                                        render: (r) => r.nb_tickets
+                                        render: (r) => r.nb_tickets,
+                                        hideOnMobile: true
                                     },
                                     {
                                         header: "Total",
@@ -452,21 +476,27 @@ fontSize={{ base: "18px", md: "28px", lg: "36px" }}
                                     {
                                         header: "Statut",
                                         render: (r) => (
-                                            <Badge colorScheme={r.status === "CONFIRMED" ? "green" : "red"}>
-                                                {r.status}
-                                            </Badge>
-                                        )
+                                            <StatusBadge status={r.status} />
+                                        ),
+                                        hideOnMobile: true
                                     },
                                     {
                                         header: "Actions",
                                         render: (r) => (
                                             <Flex gap={3}>
-                                                {r.status === "CONFIRMED" && (
+                                                {r.status === "CONFIRMED" && !r.user?.deleted_at && (
                                                     <Button
                                                         size="sm"
-                                                        bg="#8C6E21"
-                                                        color="white"
-                                                        _hover={{ bg: "#6e5519" }}
+                                                        bgImage={`url(${bgAnnuler})`}
+                                                        bgSize="120%"
+                                                        bgPosition="center"
+                                                        bgRepeat="no-repeat"
+                                                        color="zombieland.white"
+                                                        fontWeight="bold"
+                                                        border="2px solid"
+                                                        borderColor="zombieland.primary"
+                                                        borderRadius="md"
+                                                        _hover={{ opacity: 0.8, borderColor: "zombieland.cta1orange" }}
                                                         onClick={(e) => {
                                                             e.stopPropagation()
                                                             setReservationToCancel(r.id_RESERVATION)
@@ -476,7 +506,7 @@ fontSize={{ base: "18px", md: "28px", lg: "36px" }}
                                                     </Button>
                                                 )}
                                                 {r.status === "CANCELLED" && (
-                                                    <Text color="red.400" fontWeight="bold">Annulée</Text>
+                                                    <Text></Text>
                                                 )}
                                             </Flex >
                                         )

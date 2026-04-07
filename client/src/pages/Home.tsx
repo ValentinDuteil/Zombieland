@@ -15,26 +15,13 @@ import grandhuit from '../assets/grandhuit.webp';
 import reception from '../assets/reception.webp';
 import train from '../assets/train.webp';
 import parkEntryLandscape from '../assets/park-entry-landscape.webp';
-import img1 from "../assets/quarantaine.webp"
-import img2 from "../assets/ridebiomasse.webp"
-import img3 from "../assets/marche.webp"
-import img4 from "../assets/grand8.webp"
-import img5 from "../assets/fossecadavres.webp"
-import img6 from "../assets/centrerecherche.webp"
-
-
+import defaultImage from "../assets/quarantaine.webp"
 
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "@/config/api";
 import axiosInstance from "@/lib/axiosInstance";
 
 // Conversion catégories → enum backend
-const categoryToEnum: Record<string, string> = {
-    "Peur Acceptable": "LOW",
-    "Peur Survivable": "MEDIUM",
-    "Peur Mortelle": "HIGH",
-};
-
 const carouselImages = [
     { src: zombi, alt: "Zombie" },
     { src: fosse, alt: "Fosse de cadavres" },
@@ -49,7 +36,6 @@ const HomePage = () => {
     // États & logique de données
 
     const [attractions, setAttractions] = useState<Attraction[]>([]);
-    const [selectedCategory] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     // Current slide index for the carousel
@@ -57,16 +43,6 @@ const HomePage = () => {
 
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure()
-
-    // Images associées aux attractions
-    const attractionImages: Record<number, string> = {
-        1: img1,
-        2: img2,
-        3: img3,
-        4: img4,
-        5: img5,
-        6: img6,
-    };
 
     // Récupération des attractions
     useEffect(() => {
@@ -90,10 +66,6 @@ const HomePage = () => {
     // Go to next slide
     const nextSlide = () => setCurrentSlide((prev) => (prev === carouselImages.length - 1 ? 0 : prev + 1))
 
-    // Attractions pictures filtered by category (if any)
-    const filteredAttractions = selectedCategory
-        ? attractions.filter(a => a.intensity === categoryToEnum[selectedCategory])
-        : attractions;
     return (
         <PageBackground bgImage={bgImage}>
             <Header />
@@ -133,7 +105,7 @@ const HomePage = () => {
                     opacity: 0.9
                 }}
                 _active={{ transform: "translateY(-1px)" }}
-                mb={8}
+                mt={12}
                 fontWeight="bold"
                 fontSize="18px"
                 py={6}
@@ -290,11 +262,11 @@ const HomePage = () => {
 
             {/* Attractions cards*/}
             <Wrap spacing="50px" justify="center" maxW="1000px" mx="auto" mb={8}>
-                {filteredAttractions.slice(0, 3).map((attraction) => (
+                {attractions.slice(0, 3).map((attraction) => (
                     <WrapItem key={attraction.id_ATTRACTION}>
                         <AttractionCard
                             {...attraction}
-                            image={attractionImages[attraction.id_ATTRACTION]}
+                            image={attraction.image ? `${API_URL}${attraction.image}` : defaultImage}
                         />
                     </WrapItem>
                 ))}
@@ -307,6 +279,7 @@ const HomePage = () => {
                 bgImage={`url(${bgButton})`}
                 bgSize="cover"
                 mb={12}
+                mt={4}
                 bgPosition="center"
                 mx="auto"
                 color="zombieland.secondary"
@@ -321,7 +294,7 @@ const HomePage = () => {
                 fontWeight="bold"
                 fontSize="18px"
                 py={6}
-                px={12}
+                px={8}
                 boxShadow="0 4px 12px rgba(0,0,0,0.3)"
                 aria-label="Voir toutes nos attractions"
             >

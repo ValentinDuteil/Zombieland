@@ -5,5 +5,6 @@ export interface Member {
     lastname: string,
     role: "MEMBER" | "ADMIN",
     created_at: string,
+    deleted_at: string | null,
     _count: { reservations: number }
 }

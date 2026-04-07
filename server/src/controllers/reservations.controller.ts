@@ -14,7 +14,7 @@ export const getAllReservations = async (req: Request, res: Response, next: Next
     const reservations = await prisma.reservation.findMany({
         include: {
             user: {
-                select: { email: true, firstname: true, lastname: true }
+                select: { email: true, firstname: true, lastname: true, deleted_at: true }
             }
         }
     })

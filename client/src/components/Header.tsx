@@ -1,6 +1,6 @@
 // Header component - navigation bar
 
-import { Box, Flex, Image, Text, IconButton, Menu, MenuItem, MenuList, MenuButton } from '@chakra-ui/react'
+import { Box, Flex, Image, Text, IconButton, Menu, MenuItem, MenuList, MenuButton, MenuDivider } from '@chakra-ui/react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import logo from '../assets/logo.webp'
@@ -9,24 +9,16 @@ import axiosInstance from '@/lib/axiosInstance'
 import { API_URL } from '@/config/api'
 
 function Header() {
-    // State to manage the burger menu open/close
-
     const [firstname, setFirstname] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
-    const navigate = useNavigate()
     const [role, setRole] = useState<string | null>(null)
+    const navigate = useNavigate()
     const location = useLocation()
-    const isAdminPage = location.pathname.startsWith('/admin')
-
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                
-                const response = await axiosInstance.get(`${API_URL}/api/auth/me`,
-    
-                    { withCredentials: true },
-                );
+                const response = await axiosInstance.get(`${API_URL}/api/auth/me`, { withCredentials: true })
                 const data = response.data
                 setFirstname(data.firstname)
                 setRole(data.role)
@@ -36,21 +28,35 @@ function Header() {
             }
         }
         fetchUser()
-    }, [location]) // re-fetch user on every route change to sync header state after login/logout via modal
+    }, [location]) // re-fetch user on every route change to sync header state after login/logout
 
     const handleLogout = async () => {
         try {
-
-            await axiosInstance.post(`${API_URL}/api/auth/logout`,
-                {},
-                {
-                    withCredentials: true,
-                });
-            setFirstname(null);
+            await axiosInstance.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true })
+            setFirstname(null)
             navigate('/')
         } catch (error) {
             console.error(error)
         }
+    }
+
+    const isAdmin = role === 'ADMIN'
+
+    // Shared menu item styles
+    const publicStyle = {
+        bg: "transparent",
+        color: "zombieland.white",
+        fontWeight: "bold",
+        fontFamily: "body",
+        _hover: { bg: 'whiteAlpha.200' }
+    }
+
+    const adminStyle = {
+        bg: "transparent",
+        color: "zombieland.cta1orange",
+        fontWeight: "bold",
+        fontFamily: "body",
+        _hover: { bg: 'whiteAlpha.200' }
     }
 
     return (
@@ -65,121 +71,84 @@ function Header() {
                 zIndex={100}
             >
                 <Flex alignItems="center" justifyContent="space-between">
-                    {/* Logo + navigation links grouped on the left */}
+
+                    {/* Logo + desktop nav links */}
                     <Flex alignItems="center" gap={8}>
                         <Link to="/">
-                            <Image
-                                src={logo}
-                                alt="ZombieLand"
-                                h="50px"
-                                cursor="pointer"
-                            />
+                            <Image src={logo} alt="ZombieLand" h="50px" cursor="pointer" />
                         </Link>
-
                         <Flex alignItems="center" gap={8} display={{ base: 'none', lg: 'flex' }}>
-                            <Link to="/">
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Accueil</Text>
-                            </Link>
-                            <Link to="/reservation">
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Réservation</Text>
-                            </Link>
-                            <Link to="/attractions">
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Attractions</Text>
-                            </Link>
-                            <Link to="/plan">
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Plan</Text>
-                            </Link>
-                            <Link to="/contact">
-                                <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Contact</Text>
-                            </Link>
+                            <Link to="/"><Text {...publicStyle}>Accueil</Text></Link>
+                            <Link to="/reservation"><Text {...publicStyle}>Réservation</Text></Link>
+                            <Link to="/attractions"><Text {...publicStyle}>Attractions</Text></Link>
+                            <Link to="/plan"><Text {...publicStyle}>Plan</Text></Link>
+                            <Link to="/contact"><Text {...publicStyle}>Contact</Text></Link>
                         </Flex>
                     </Flex>
 
-                    {/* Login and register links on the right - hidden on mobile */}
-                    <Flex gap={6} display={{ base: 'none', lg: 'flex' }} marginLeft="auto">
-                        {isLoading ? (
-                            <Box w="120px" h="24px" />
-                        ) : !firstname ? (
+                    {/* Desktop right side — login/register if not logged in, profile icon if logged in */}
+                    <Flex gap={6} display={{ base: 'none', lg: 'flex' }} marginLeft="auto" alignItems="center">
+                        {!isLoading && !firstname && (
                             <>
-                                <Link to="/login">
-                                    <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Connexion</Text>
-                                </Link>
-                                <Link to="/register">
-                                    <Text color="zombieland.white" cursor="pointer" fontWeight="bold" fontFamily="body">Inscription</Text>
-                                </Link>
+                                <Link to="/login"><Text {...publicStyle}>Connexion</Text></Link>
+                                <Link to="/register"><Text {...publicStyle}>Inscription</Text></Link>
                             </>
-                        ) : null}
+                        )}
+                        {!isLoading && firstname && (
+                            <Flex alignItems="center" gap={2}>
+                                <Text
+                                    color="zombieland.cta1orange"
+                                    fontFamily="body"
+                                    fontWeight="bold"
+                                    fontSize="13px"
+                                >
+                                    {firstname}
+                                </Text>
+                                <Menu>
+                                    <MenuButton
+                                        as={IconButton}
+                                        aria-label="Mon compte"
+                                        variant="ghost"
+                                        color="zombieland.white"
+                                        fontSize="24px"
+                                        icon={<FaUserCircle />}
+                                        _hover={{ bg: 'whiteAlpha.200' }}
+                                        _active={{ bg: 'whiteAlpha.300' }}
+                                    />
+                                    <MenuList bg="#1A1A1A" borderColor="whiteAlpha.300">
+                                        {isAdmin && (
+                                            <>
+                                                <MenuItem {...adminStyle} as={Link} to="/admin">Dashboard</MenuItem>
+                                                <MenuItem {...adminStyle} as={Link} to="/admin/attractions">Attractions</MenuItem>
+                                                <MenuItem {...adminStyle} as={Link} to="/admin/reservations">Réservations</MenuItem>
+                                                <MenuItem {...adminStyle} as={Link} to="/admin/members">Membres</MenuItem>
+                                                <MenuItem {...adminStyle} as={Link} to="/admin/tarifs">Tarifs</MenuItem>
+                                                <MenuDivider borderColor="whiteAlpha.300" />
+                                            </>
+                                        )}
+                                        <MenuItem {...publicStyle} as={Link} to="/my-account">Mon profil</MenuItem>
+                                        <MenuItem {...publicStyle} onClick={handleLogout}>Se déconnecter</MenuItem>
+                                    </MenuList>
+                                </Menu>
+                            </Flex>
+                        )}
                     </Flex>
 
-
+                    {/* Mobile right side — firstname indicator + burger menu */}
                     <Flex alignItems="center" gap={3}>
                         {!isLoading && firstname && (
-                            <Menu>
-                                <MenuButton
-                                    as={IconButton}
-                                    mt="8px"
-                                    display="flex"
-                                    aria-label="Mon compte"
-                                    variant="ghost"
-                                    color="zombieland.white"
-                                    fontSize="24px"
-                                    icon={<FaUserCircle />}
-                                    _hover={{ bg: 'whiteAlpha.200' }}
-                                    _active={{ bg: 'whiteAlpha.300' }}
-                                />
-                                <MenuList bg="#1A1A1A" borderColor="whiteAlpha.300">
-                                    <MenuItem
-                                        bg="#1A1A1A"
-                                        color="zombieland.white"
-                                        fontWeight="bold"
-                                        fontFamily="body"
-                                        _hover={{ bg: 'whiteAlpha.200' }}
-                                        as={Link}
-                                        to="/my-account"
-                                    >
-                                        Mon profil
-                                    </MenuItem>
-                                    {firstname && role === 'ADMIN' && (
-                                        <>
-                                            <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin">
-                                                Dashboard
-                                            </MenuItem>
-                                        <Box display={{ base: 'block', lg:'none' }}>
-                                            {isAdminPage && (
-                                                <>
-                                                    <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/attractions">
-                                                        Attractions
-                                                    </MenuItem>
-                                                    <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/reservations">
-                                                        Réservations
-                                                    </MenuItem>
-                                                    <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/members">
-                                                        Membres
-                                                    </MenuItem>
-                                                    <MenuItem bg="transparent" color="zombieland.cta1orange" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/admin/tarifs">
-                                                        Tarifs
-                                                    </MenuItem>
-                                                    </>
-                                            )}
-                                            </Box>
-                                            </>
-                                    )}
-
-                                    <MenuItem
-                                        bg="#1A1A1A"
-                                        color="zombieland.white"
-                                        fontWeight="bold"
-                                        fontFamily="body"
-                                        _hover={{ bg: 'whiteAlpha.200' }}
-                                        onClick={handleLogout}
-                                    >
-                                        Se déconnecter
-                                    </MenuItem>
-                                </MenuList>
-                            </Menu>
+                            <Text
+                                display={{ base: 'flex', lg: 'none' }}
+                                color="zombieland.cta1orange"
+                                fontFamily="body"
+                                fontWeight="bold"
+                                fontSize="13px"
+                            >
+                                {firstname}
+                            </Text>
                         )}
 
-                        {/* Burger menu - visible on mobile only */}
+                        {/* Burger menu — mobile only */}
                         <Menu>
                             <MenuButton
                                 as={IconButton}
@@ -188,20 +157,53 @@ function Header() {
                                 variant="ghost"
                                 color="zombieland.white"
                                 fontSize="24px"
+                                _hover={{ bg: 'whiteAlpha.200' }}
+                                _active={{ bg: 'whiteAlpha.300' }}
                                 icon={<Text>☰</Text>}
                             />
                             <MenuList bg="rgba(26, 26, 26, 0.95)" borderColor="whiteAlpha.300" minW="200px" p={2}>
-                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/">Accueil</MenuItem>
-                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/reservation">Réserver</MenuItem>
-                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/attractions">Attractions</MenuItem>
-                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/plan">Plan</MenuItem>
-                                <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/contact">Contact</MenuItem>
 
-                                {/* Show connexion/inscription only if not logged in */}
-                                {!firstname && (
+                                {/* — SITE — */}
+                                <Text px={3} py={1} fontSize="10px" color="whiteAlpha.500" textTransform="uppercase" letterSpacing="2px">
+                                    Site
+                                </Text>
+                                <MenuItem {...publicStyle} as={Link} to="/">Accueil</MenuItem>
+                                <MenuItem {...publicStyle} as={Link} to="/reservation">Réserver</MenuItem>
+                                <MenuItem {...publicStyle} as={Link} to="/attractions">Nos attractions</MenuItem>
+                                <MenuItem {...publicStyle} as={Link} to="/plan">Plan</MenuItem>
+                                <MenuItem {...publicStyle} as={Link} to="/contact">Contact</MenuItem>
+
+                                {/* — ADMIN — visible for admins only */}
+                                {isAdmin && (
                                     <>
-                                        <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/login">Connexion</MenuItem>
-                                        <MenuItem bg="transparent" color="zombieland.white" fontWeight="bold" fontFamily="body" _hover={{ bg: 'whiteAlpha.200' }} as={Link} to="/register">Inscription</MenuItem>
+                                        <MenuDivider borderColor="whiteAlpha.300" />
+                                        <Text px={3} py={1} fontSize="10px" color="zombieland.cta1orange" textTransform="uppercase" letterSpacing="2px">
+                                            Admin
+                                        </Text>
+                                        <MenuItem {...adminStyle} as={Link} to="/admin">Dashboard</MenuItem>
+                                        <MenuItem {...adminStyle} as={Link} to="/admin/attractions">Gestion des attractions</MenuItem>
+                                        <MenuItem {...adminStyle} as={Link} to="/admin/attractions/create">Nouvelle attraction</MenuItem>
+                                        <MenuItem {...adminStyle} as={Link} to="/admin/reservations">Gestion des réservations</MenuItem>
+                                        <MenuItem {...adminStyle} as={Link} to="/admin/members">Gestion des membres</MenuItem>
+                                        <MenuItem {...adminStyle} as={Link} to="/register">Nouveau membre</MenuItem>
+                                        <MenuItem {...adminStyle} as={Link} to="/admin/tarifs">Gestion des prix</MenuItem>
+                                    </>
+                                )}
+
+                                {/* — MY ACCOUNT — */}
+                                <MenuDivider borderColor="whiteAlpha.300" />
+                                <Text px={3} py={1} fontSize="10px" color="whiteAlpha.500" textTransform="uppercase" letterSpacing="2px">
+                                    My account
+                                </Text>
+                                {firstname ? (
+                                    <>
+                                        <MenuItem {...publicStyle} as={Link} to="/my-account">Mon profil</MenuItem>
+                                        <MenuItem {...publicStyle} onClick={handleLogout}>Se déconnecter</MenuItem>
+                                    </>
+                                ) : (
+                                    <>
+                                        <MenuItem {...publicStyle} as={Link} to="/login">Connexion</MenuItem>
+                                        <MenuItem {...publicStyle} as={Link} to="/register">Inscription</MenuItem>
                                     </>
                                 )}
                             </MenuList>

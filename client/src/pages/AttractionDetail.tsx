@@ -4,21 +4,15 @@ import type { AttractionWithCategories } from "@/types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/lib/axiosInstance";
-import { Badge, Box, Button, Flex, Heading, Image, Text, Wrap, WrapItem } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Heading, Image, Text } from "@chakra-ui/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import bgImage from '../assets/bg-image.webp'
 import Card from '../assets/Card.webp';
+import defaultImage from "../assets/quarantaine.webp"
 import { PageBackground } from "@/components/PageBackground";
 import { API_URL } from '../config/api.ts'
 import bgBouton from '../assets/bg-bouton.webp'
-import img1 from "../assets/quarantaine.webp"
-import img2 from "../assets/ridebiomasse.webp"
-import img3 from "../assets/marche.webp"
-import img4 from "../assets/grand8.webp"
-import img5 from "../assets/fossecadavres.webp"
-import img6 from "../assets/centrerecherche.webp"
-
 
 const categoryColors: Record<string, string> = {
   "Peur Acceptable": "#556739",
@@ -37,15 +31,6 @@ const AttractionDetailPage = () => {
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate();
 
-  const attractionImages: Record<number, string> = {
-    1: img1,
-    2: img2,
-    3: img3,
-    4: img4,
-    5: img5,
-    6: img6,
-
-  };
   // refact fetch with axios
   useEffect(() => {
     setIsLoading(true);
@@ -60,7 +45,6 @@ const AttractionDetailPage = () => {
       }
     };
     axiosAttraction();
-
   }, [id]);
 
   const intensityMap: Record<string, string> = {
@@ -74,7 +58,7 @@ const AttractionDetailPage = () => {
     return <p>Chargement de l'attraction...</p>;
   }
   if (error) {
-    return <p>Erreur</p>
+    return <p>{error}</p>
   }
   if (!attraction) {
     return <p>Attraction non trouvé</p>
@@ -154,9 +138,9 @@ const AttractionDetailPage = () => {
 
               <Image
                 src={
-                  attraction.image
-                    ? `${API_URL}${attraction.image}`
-                    : attractionImages[attraction.id_ATTRACTION]
+                  attraction.image 
+                  ? `${API_URL}${attraction.image}` 
+                  : defaultImage
                 }
                 width="100%"
                 height="100%"
@@ -182,21 +166,12 @@ const AttractionDetailPage = () => {
               </Text>
 
               <Text mb={2}>
-                📏 Taille min : {attraction.min_height ?? "Aucune"} cm
+                💀 Taille min : {attraction.min_height ?? "Aucune"} cm
               </Text>
 
               <Text mb={4}>
-                👥 Capacité : {attraction.capacity ?? "N/A"}
+                🧟‍♂️🧟‍♀️ Capacité : {attraction.capacity ?? "N/A"}
               </Text>
-
-              {/* CATEGORIES */}
-              <Wrap mb={4}>
-                {attraction.categories?.map((cat) => (
-                  <WrapItem key={cat.category.id_CATEGORY}>
-
-                  </WrapItem>
-                ))}
-              </Wrap>
 
               {/* BOUTONS */}
               <Flex
@@ -247,9 +222,6 @@ const AttractionDetailPage = () => {
           </Box>
         </Flex>
       </Box>
-
-      {error && <Text>{error}</Text>}
-
       <Footer />
     </PageBackground>
   );

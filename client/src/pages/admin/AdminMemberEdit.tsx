@@ -4,11 +4,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Box, Button, Flex, Heading, Input, Text, Select } from '@chakra-ui/react'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
-import AdminNavlinkMenu from '../../components/AdminNavlinkMenu'
+import AdminMenu from '../../components/AdminNavlinkMenu'
 import ConfirmModal from '@/components/ConfirmModal'
-import bgImage from '../../assets/bg-bouton.webp'
+import barbed from '../../assets/barbed-bg.webp'
 import bgBouton from '../../assets/bg-bouton.webp'
 import type { Member } from '@/types/Member'
+import type { Reservation } from "@/types/Reservations";
 import { API_URL } from '@/config/api'
 import axiosInstance from '@/lib/axiosInstance'
 import { isAxiosError } from 'axios'
@@ -21,7 +22,7 @@ const AdminMemberEdit = () => {
   const [_error, setError] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [message, setMessage] = useState('')
-  const [reservations, setReservations] = useState<any[]>([])
+  const [reservations, setReservations] = useState<Reservation[]>([])
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
@@ -106,11 +107,11 @@ const AdminMemberEdit = () => {
       display="flex"
       flexDirection="column"
       minHeight="100vh"
-      bgImage={`url(${bgImage})`}
+      bgImage={`url(${barbed})`}
       bgSize="cover"
+      bgPosition="center"
       bgRepeat="no-repeat"
       bgAttachment="fixed"
-      bgPosition="center top"
       w="100%"
       overflow="hidden">
 
@@ -120,11 +121,13 @@ const AdminMemberEdit = () => {
 
         {/* LEFT */}
         <Box
-          display={{ base: 'none', lg: 'block' }}
-          minWidth="240px"
-          maxWidth="240px"
-          borderRight="1px solid rgba(255,255,255,0.1)">
-          <AdminNavlinkMenu />
+          width={{ base: "0px", lg: "250px" }}
+          minWidth={{ base: "0px", lg: "250px" }}
+          overflow="hidden"
+          transition="width 0.3s ease, min-width 0.3s ease"
+          borderRight="1px solid rgba(255,255,255,0.1)"
+        >
+          <AdminMenu />
         </Box>
 
         {/* RIGHT */}
@@ -133,6 +136,7 @@ const AdminMemberEdit = () => {
           pt="100px"
           pb="100px"
           maxW="600px"
+          minWidth="0"
           mx="auto"
           w="100%">
 
@@ -236,9 +240,21 @@ const AdminMemberEdit = () => {
             }
             w="100%"
             bgImage={`url(${bgBouton})`}
+            bgSize="cover"
+            bgPosition="center"
             color="zombieland.secondary"
+            fontFamily="body"
+            fontWeight="bold"
+            fontSize={{ base: "12px", md: "16px" }}
+            py={5}
+            px={4}
             borderRadius="full"
-            mb={4}>
+            letterSpacing="1px"
+            textTransform="uppercase"
+            boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+            _hover={{ bg: "zombieland.cta2orange", color: "zombieland.white" }}
+            aria-label="Sauvegarder les modifications"
+            mb={6}>
             → Sauvegarder
           </Button>
 
@@ -268,14 +284,14 @@ const AdminMemberEdit = () => {
               Dernières réservations du membre
             </Text>
 
-            {reservations.filter((r: any) => r.status !== 'CANCELLED').length === 0 ? (
+            {reservations.filter((r: Reservation) => r.status !== 'CANCELLED').length === 0 ? (
               <Text color="zombieland.white" textAlign="center">Aucune réservation active.</Text>
             ) : (
               reservations
-                .filter((r: any) => r.status !== 'CANCELLED')
+                .filter((r: Reservation) => r.status !== 'CANCELLED')
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                 .slice(0, 3) // Keep only the 3 most recent reservations
-                .map((r: any) => (
+                .map((r: Reservation) => (
                   <Box
                     key={r.id_RESERVATION}
                     mb={4} p={4}
@@ -302,8 +318,20 @@ const AdminMemberEdit = () => {
               mt={4}
               w="100%"
               bgImage={`url(${bgBouton})`}
+              bgSize="cover"
+              bgPosition="center"
               color="zombieland.secondary"
-              borderRadius="full">
+              fontFamily="body"
+              fontWeight="bold"
+              fontSize={{ base: "12px", md: "16px" }}
+              py={5}
+              px={4}
+              borderRadius="full"
+              letterSpacing="1px"
+              textTransform="uppercase"
+              boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+              _hover={{ bg: "zombieland.cta2orange", color: "zombieland.white" }}
+              aria-label="Voir tout l'historique">
               → Voir tout l'historique
             </Button>
 
@@ -312,11 +340,21 @@ const AdminMemberEdit = () => {
             onClick={() =>
               setIsDeleteModalOpen(true)}
             w="100%"
-            bg="red.500"
-            color="white"
-            _hover={{ bg: "red.600" }}
+            bgImage={`url(${bgBouton})`}
+            bgSize="cover"
+            bgPosition="center"
+            color="zombieland.secondary"
+            fontFamily="body"
+            fontWeight="bold"
+            fontSize={{ base: "12px", md: "16px" }}
+            py={5}
+            px={4}
             borderRadius="full"
-            mt={8}>
+            letterSpacing="1px"
+            textTransform="uppercase"
+            boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+            _hover={{ bg: "zombieland.cta2orange", color: "zombieland.white" }}
+            aria-label="Supprimer mon compte définitivement">
             → Supprimer le compte
           </Button>
         </Box>
