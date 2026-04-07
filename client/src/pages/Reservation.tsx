@@ -101,7 +101,7 @@ function Reservation() {
     useEffect(() => {
         axiosInstance.get(`${API_URL}/api/tickets`)
             .then(res => setTicketPrice(Number(res.data.price)))
-            .catch(() => {})
+            .catch(() => { })
     }, [])
 
     // Fetch availabilities on component mount
@@ -157,7 +157,7 @@ function Reservation() {
                 } else {
                     // Otherwise, display a generic error message
                     const errorData = error.response?.data
-                    setMessage(errorData.message || 'Une erreur est survenue, veuillez réessayer.')
+                    setPartialFullMessage(errorData.message || 'Une erreur est survenue, veuillez réessayer.')
                 }
             } else {
                 setMessage('Une erreur est survenue, veuillez réessayer.')
@@ -466,7 +466,10 @@ function Reservation() {
 
             <InfoModal
                 isOpen={partialFullMessage !== null}
-                onClose={() => setPartialFullMessage(null)}
+                onClose={() => {
+                    setPartialFullMessage(null)
+                    navigate(0)
+                }}
                 title="Pas assez de places 🧟"
                 message={partialFullMessage ?? ""}
                 titleColor="zombieland.warningprimary"
@@ -475,8 +478,11 @@ function Reservation() {
             <LoginModal
                 isOpen={isLoginModalOpen}
                 onClose={() => setIsLoginModalOpen(false)}
-                onConfirm={() => {
+                onConfirm={async () => {
                     setIsLoginModalOpen(false)
+                    // Wait a bit to ensure the login process is complete 
+                    // and the cookie is set before retrying the reservation submission
+                    await new Promise(r => setTimeout(r, 500))
                     handleSubmit()
                 }}
                 title="Connexion"

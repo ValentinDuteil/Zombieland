@@ -1,34 +1,37 @@
 // Entry point for application routes
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-// Pages
-import Register from './pages/Register'
-import Login from './pages/Login'
-import MyAccount from './pages/MyAccount'
-import Reservation from './pages/Reservation'
-import MyReservations from './pages/MyReservations'
-import AttractionsPage from "./pages/Attractions"
-import AttractionDetailPage from './pages/AttractionDetail'
-import Faq from './pages/Faq'
-import Home from './pages/Home'
-import Contact from './pages/Contact'
-import Plan from './pages/Plan'
-// Admin pages
-import AdminHomePage from './pages/admin/AdminHome'
-import AdminMembers from './pages/admin/AdminMembers'
-import AdminMemberEdit from './pages/admin/AdminMemberEdit'
-import AdminReservations from './pages/admin/AdminReservations'
-import AdminAttractions from "./pages/admin/AdminAttractions"
-import AdminAttractionCreate from './pages/admin/AdminAttractionCreate'
-import AdminAttractionEdit from './pages/admin/AdminAttractionEdit'
-import AdminPrices from './pages/admin/AdminPrices'
+import { lazy, Suspense } from 'react'
 // Components
 import ScrollToTop from './components/ScrollToTop'
 import AdminGuard from './components/AdminGuard'
+// Public pages
+const Home = lazy(() => import('./pages/Home'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const AttractionsPage = lazy(() => import('./pages/Attractions'))
+const AttractionDetailPage = lazy(() => import('./pages/AttractionDetail'))
+const Faq = lazy(() => import('./pages/Faq'))
+const Contact = lazy(() => import('./pages/Contact'))
+const Plan = lazy(() => import('./pages/Plan'))
+const MyAccount = lazy(() => import('./pages/MyAccount'))
+const MyReservations = lazy(() => import('./pages/MyReservations'))
+const Reservation = lazy(() => import('./pages/Reservation'))
+
+// Admin pages
+const AdminHomePage = lazy(() => import('./pages/admin/AdminHome'))
+const AdminMembers = lazy(() => import('./pages/admin/AdminMembers'))
+const AdminMemberEdit = lazy(() => import('./pages/admin/AdminMemberEdit'))
+const AdminReservations = lazy(() => import('./pages/admin/AdminReservations'))
+const AdminAttractions = lazy(() => import('./pages/admin/AdminAttractions'))
+const AdminAttractionCreate = lazy(() => import('./pages/admin/AdminAttractionCreate'))
+const AdminAttractionEdit = lazy(() => import('./pages/admin/AdminAttractionEdit'))
+const AdminPrices = lazy(() => import('./pages/admin/AdminPrices'))
 
 const App = () => {
     return (
         <BrowserRouter>
             <ScrollToTop />
+            <Suspense fallback={null}>
             <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<Home />} />
@@ -54,6 +57,7 @@ const App = () => {
                 <Route path="/admin/members/:id" element={<AdminGuard><AdminMemberEdit /></AdminGuard>} />
                 <Route path="/admin/members/:id/reservations" element={<AdminGuard><MyReservations /></AdminGuard>} />
             </Routes>
+            </Suspense>
         </BrowserRouter>
     );
 };
