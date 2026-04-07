@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
 import AdminTable from "@/components/AdminTable"
-import AdminNavlinkMenu from "@/components/AdminNavlinkMenu"
+import AdminMenu from "@/components/AdminNavlinkMenu"
 
 import type { Member } from "@/types/Member"
 import { formatDateForDisplay } from "@/utils/date"
 
-import bgImage from '../../assets/bg-bouton.webp'
+import bgBouton from '../../assets/bg-bouton.webp'
+import barbed from '../../assets/barbed-bg.webp'
 import { API_URL } from "@/config/api"
 import axiosInstance from "@/lib/axiosInstance"
 
@@ -23,16 +24,18 @@ const AdminMembers = () => {
   // State for filters and sorting
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState({ by: "lastname", direction: "asc" })
+  const [showDeleted, setShowDeleted] = useState(false)
   // Navigate hook
   const navigate = useNavigate()
 
   // Fetch members from API
-  const fetchMembers = async () => {
+  const fetchMembers = async (includeDeleted = false) => {
     setLoading(true)
     try {
-      const res = await axiosInstance.get<Member[]>(`${API_URL}/api/users`, {
-        withCredentials: true
-      })
+      const res = await axiosInstance.get<Member[]>(
+        `${API_URL}/api/users${includeDeleted ? '?includeDeleted=true' : ''}`,
+        { withCredentials: true }
+      )
       setMembers(res.data)
     } catch (error) {
       setError("Erreur lors de la récupération des membres")
@@ -42,8 +45,8 @@ const AdminMembers = () => {
   }
 
   useEffect(() => {
-    fetchMembers()
-  }, [])
+    fetchMembers(showDeleted)
+  }, [showDeleted])
 
   const filterTool = search.trim().toLowerCase()
   const filteredMembers = members
@@ -51,7 +54,7 @@ const AdminMembers = () => {
       m.lastname.trim().toLowerCase().includes(filterTool) ||
       m.email.trim().toLowerCase().includes(filterTool) ||
       (m.role === "ADMIN" ? "admin" : "membre").includes(filterTool) ||
-      m.created_at.trim().toLowerCase().includes(filterTool) || m._count.reservations.toString().includes(filterTool))
+      formatDateForDisplay(m.created_at).includes(filterTool) || m._count.reservations.toString().includes(filterTool))
     .sort((a, b) => {
       // If we sort by creation date
       if (sort.by === "created_at") {
@@ -100,11 +103,11 @@ const AdminMembers = () => {
       display="flex"
       flexDirection="column"
       minHeight="100vh"
-      bgImage={`url(${bgImage})`}
+      bgImage={`url(${barbed})`}
       bgSize="cover"
+      bgPosition="center"
       bgRepeat="no-repeat"
       bgAttachment="fixed"
-      bgPosition="center top"
       w="100%"
       overflow="hidden"
     >
@@ -113,22 +116,22 @@ const AdminMembers = () => {
       <Flex flex="1">
         {/*LEFT COLUMN*/}
         <Box
-          display={{ base: 'none', lg: 'block' }}
-          minWidth="240px"
-          maxWidth="240px"
+          width={{ base: "0px", lg: "250px" }}
+          minWidth={{ base: "0px", lg: "250px" }}
+          overflow="hidden"
+          transition="width 0.3s ease, min-width 0.3s ease"
           borderRight="1px solid rgba(255,255,255,0.1)"
         >
-          <AdminNavlinkMenu />
+          <AdminMenu />
         </Box>
         {/*right COLUMN*/}
         <Box
           flex="1"
-          p={3}
-          pt="100px"
+          minWidth="0"
+          px={{ base: 4, md: 10 }}
+          pt="60px"
           pb="100px"
-          maxW="1000px"
-          mx="auto"
-          w="100%">
+        >
 
           <Text
             fontWeight="bold"
@@ -140,29 +143,40 @@ const AdminMembers = () => {
             Gestion des membres
           </Text>
           <Heading
-                                  fontWeight="bold"
-                                  color="zombieland.white"
-                                  textAlign="left"
-                                  fontFamily="body"
-                                  fontSize="24px"
-                                  mb={8}
-                              >
-                                  Admin / Members
-                              </Heading>
+            fontWeight="bold"
+            color="zombieland.white"
+            textAlign="left"
+            fontFamily="body"
+            fontSize="24px"
+            mb={8}
+          >
+            Admin / Members
+          </Heading>
 
           {/* Create member button */}
           <Flex justifyContent="center" mt={8} mb={6}>
             <Button
-              bg="zombieland.cta1orange"
-              color="zombieland.white"
-              _hover={{ opacity: 0.85, boxShadow: "0 8px 16px rgba(0,0,0,0.6)" }}
-              fontSize="18px"
+              bgImage={`url(${bgBouton})`}
+              bgSize="cover"
+              bgPosition="center"
+              color="zombieland.secondary"
+              fontSize={{ base: "13px", sm: "14px", md: "16px" }}
               py={6}
-              px={12}
-              borderRadius="md"
+              px={{ base: 6, sm: 8, md: 12 }}
+              borderRadius="full"
               fontWeight="bold"
-              fontFamily="heading"
-              boxShadow="0 4px 15px rgba(0,0,0,0.4)"
+              fontFamily="body"
+              textTransform="uppercase"
+              boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+              _hover={{
+                bg: "zombieland.cta2orange",
+                color: "zombieland.white"
+              }}
+              mt={4}
+              w={{ base: "90%", sm: "60%", md: "auto" }}
+              minW={{ md: "250px" }}
+              maxW="100%"
+              aria-label="Créer un nouveau membre"
               onClick={() => navigate('/register')}
             >
               Créer un nouveau membre
@@ -170,16 +184,29 @@ const AdminMembers = () => {
           </Flex>
 
           {/* Searchbar */}
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher un membre..."
-            color="zombieland.white"
-            borderColor="zombieland.white"
-            bg="rgba(0,0,0,0.3)"
-            _placeholder={{ color: "zombieland.white" }}
-            mb={6}
-          />
+          <Flex gap={3} mb={6} wrap="wrap">
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher un membre..."
+              color="zombieland.white"
+              borderColor="zombieland.white"
+              bg="rgba(0,0,0,0.3)"
+              _placeholder={{ color: "zombieland.white" }}
+              flex="1"
+            />
+            <Button
+              size="sm"
+              onClick={() => setShowDeleted(s => !s)}
+              border="2px solid"
+              borderColor={showDeleted ? "zombieland.cta1orange" : "transparent"}
+              bg="rgba(0,0,0,0.3)"
+              color="zombieland.white"
+              _hover={{ borderColor: "zombieland.cta1orange" }}
+            >
+              {showDeleted ? "Masquer comptes supprimés" : "Afficher comptes supprimés"}
+            </Button>
+          </Flex>
 
           {/* Loading spinner */}
           {loading && (
@@ -194,6 +221,10 @@ const AdminMembers = () => {
           {!loading && (
             <AdminTable
               data={filteredMembers}
+              currentSortHeader={Object.keys(headerToField).find(
+                key => headerToField[key as keyof typeof headerToField] === sort.by
+              )}
+              currentSortDir={sort.direction as "asc" | "desc"}
               onHeaderClick={(header) => {
                 const field = headerToField[header as keyof typeof headerToField]
                 if (field) {
@@ -208,9 +239,10 @@ const AdminMembers = () => {
                     <Text
                       fontWeight="bold"
                       cursor="pointer"
+                      color={m.deleted_at ? "gray.500" : "inherit"}
                       _hover={{ color: "zombieland.cta1orange", textDecoration: "underline" }}
                     >
-                      {m.lastname}
+                      {m.lastname} {m.deleted_at && <Text as="span" fontSize="10px" ml={1}>(supprimé)</Text>}
                     </Text>
                   )
                 },

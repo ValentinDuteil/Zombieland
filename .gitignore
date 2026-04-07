@@ -67,3 +67,5 @@ coverage/
 .nyc_output/
 /generated/prisma
 cookies*.txt
+server/uploads/*
+!server/uploads/.gitkeep

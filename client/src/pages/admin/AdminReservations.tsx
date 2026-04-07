@@ -4,9 +4,10 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { API_URL } from "@/config/api";
 import type { Reservation } from "@/types/Reservations";
-import { Badge, Box, Button, Flex, Heading, Input, Spinner, Text } from "@chakra-ui/react";
-import AdminTable from "@/components/AdminTable";
-import bgImage from '../../assets/bg-bouton.webp'
+import { Box, Button, Flex, Heading, Input, Spinner, Text } from "@chakra-ui/react";
+import AdminTable, { StatusBadge } from "@/components/AdminTable";
+import barbed from '../../assets/barbed-bg.webp'
+import bgAnnuler from '../../assets/bg-bouton-annuler.webp'
 import ConfirmModal from "@/components/ConfirmModal";
 import AdminMenu from "@/components/AdminNavlinkMenu";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +28,7 @@ const AdminReservations = () => {
     // State to search and filter reservations
     const [search, setSearch] = useState("")
     const [sort, setSort] = useState({ by: "id_RESERVATION", direction: "asc" })
+    const [hideDeleted, setHideDeleted] = useState(true)
     // Navigate hook
     const navigate = useNavigate()
 
@@ -55,31 +57,32 @@ const AdminReservations = () => {
 
     // Function to update the status of a reservation via DELETE request
     const handleCancel = async (id: number, password: string) => {
-    try {
-        await axiosInstance.delete(`${API_URL}/api/reservations/${id}`, {
-            data: { password },
-            withCredentials: true
-        })
-        // Re-fetch pour mettre à jour le state
-        const response = await axiosInstance.get(`${API_URL}/api/reservations`, { withCredentials: true })
-        setReservations(response.data)
-    } catch (error) {
-        setError("Erreur lors de l'annulation")
+        try {
+            await axiosInstance.delete(`${API_URL}/api/reservations/${id}`, {
+                data: { password },
+                withCredentials: true
+            })
+            // Re-fetch pour mettre à jour le state
+            const response = await axiosInstance.get(`${API_URL}/api/reservations`, { withCredentials: true })
+            setReservations(response.data)
+        } catch (error) {
+            setError("Erreur lors de l'annulation")
+        }
     }
-}
 
     // Filter reservations by status and sort by id (ascending)
-    // If filterStatus is "All", show all reservations
-    // Otherwise, show only reservations matching the selected status
     const filterTool = search.trim().toLowerCase()
     const filteredReservations = reservations
-        .filter(r =>
-            String(r.id_RESERVATION).includes(filterTool) ||
-            String(r.nb_tickets).includes(filterTool) ||
-            r.user?.email.toLowerCase().includes(filterTool) ||
-            r.status.toLowerCase().includes(filterTool) ||
-            r.total_amount.includes(filterTool)
-        )
+        .filter(r => {
+            if (hideDeleted && r.user?.deleted_at) return false
+            return (
+                String(r.id_RESERVATION).includes(filterTool) ||
+                String(r.nb_tickets).includes(filterTool) ||
+                r.user?.email.toLowerCase().includes(filterTool) ||
+                r.status.toLowerCase().includes(filterTool) ||
+                r.total_amount.includes(filterTool)
+            )
+        })
         .sort((a, b) => {
             if (sort.by === "date") return (new Date(a.date).getTime() - new Date(b.date).getTime()) * (sort.direction === "asc" ? 1 : -1)
             if (sort.by === "nb_tickets") return (a.nb_tickets - b.nb_tickets) * (sort.direction === "asc" ? 1 : -1)
@@ -106,16 +109,20 @@ const AdminReservations = () => {
         "Statut": "status"
     } as const
 
+    const currentSortHeader = Object.keys(headerToField).find(
+        key => headerToField[key as keyof typeof headerToField] === sort.by
+    ) ?? ""
+
     return (
         <Box
             display="flex"
             flexDirection="column"
             minHeight="100vh"
-            bgAttachment="fixed"
-            bgImage={`url(${bgImage})`}
+            bgImage={`url(${barbed})`}
             bgSize="cover"
+            bgPosition="center"
             bgRepeat="no-repeat"
-            bgPosition="center top"
+            bgAttachment="fixed"
             w="100%"
             overflow="hidden"
         >
@@ -125,15 +132,22 @@ const AdminReservations = () => {
 
                 {/* LEFT SIDEBAR — 30% */}
                 <Box
-                    display={{ base: 'none', lg: 'block' }}
-                    minWidth="240px"
-                    maxWidth="240px"
+                    width={{ base: "0px", lg: "250px" }}
+                    minWidth={{ base: "0px", lg: "250px" }}
+                    overflow="hidden"
+                    transition="width 0.3s ease, min-width 0.3s ease"
                     borderRight="1px solid rgba(255,255,255,0.1)"
                 >
                     <AdminMenu />
                 </Box>
 
-                <Box flex="1" p={3} pt="100px" pb="100px" maxW="1000px" mx="auto" w="100%">
+                <Box
+                    flex="1"
+                    minWidth="0"
+                    px={{ base: 4, md: 10 }}
+                    pt="60px"
+                    pb="100px"
+                >
 
                     <Text fontWeight="bold" color="zombieland.white" mb={6} textAlign="center" fontFamily="heading" fontSize="54px">
                         Gestion des réservations
@@ -149,17 +163,28 @@ const AdminReservations = () => {
                         Admin / Réservations
                     </Heading>
                     {/* Searchbar */}
-                    <Flex justifyContent={{ base: "center", lg: "flex-end" }} mb={6}>
+                    <Flex gap={3} mb={6} wrap="wrap">
                         <Input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher une réservation..."
+                            placeholder="Rechercher un membre..."
                             color="zombieland.white"
                             borderColor="zombieland.white"
                             bg="rgba(0,0,0,0.3)"
                             _placeholder={{ color: "zombieland.white" }}
-                            mb={6}
+                            flex="1"
                         />
+                        <Button
+                            size="sm"
+                            onClick={() => setHideDeleted(s => !s)}
+                            border="2px solid"
+                            borderColor={hideDeleted ? "transparent" : "zombieland.cta1orange"}
+                            bg="rgba(0,0,0,0.3)"
+                            color="zombieland.white"
+                            _hover={{ borderColor: "zombieland.cta1orange" }}
+                        >
+                            {hideDeleted ? "Masquer comptes supprimés" : "Afficher comptes supprimés"}
+                        </Button>
                     </Flex>
 
                     {/* Loading spinner */}
@@ -178,6 +203,8 @@ const AdminReservations = () => {
                                 const field = headerToField[header as keyof typeof headerToField]
                                 if (field) handleSortChange(field)
                             }}
+                            currentSortHeader={currentSortHeader}
+                            currentSortDir={sort.direction as "asc" | "desc"}
                             onRowClick={(r) => navigate(`/admin/members/${r.id_USER}`)}
                             columns={[
                                 {
@@ -186,7 +213,12 @@ const AdminReservations = () => {
                                 },
                                 {
                                     header: "Membre",
-                                    render: (r) => r.user?.email ?? "—"
+                                    render: (r) => (
+                                        <Text fontWeight="bold" color={r.user?.deleted_at ? "gray.500" : "inherit"}>
+                                            {r.user?.email ?? "Utilisateur inconnu"}
+                                            {r.user?.deleted_at && <Text as="span" fontSize="10px" color="gray.500" ml={1}>(supprimé)</Text>}
+                                        </Text>
+                                    )
                                 },
                                 {
                                     header: "Date",
@@ -209,21 +241,27 @@ const AdminReservations = () => {
                                 {
                                     header: "Statut",
                                     render: (r) => (
-                                        <Badge colorScheme={r.status === "CONFIRMED" ? "green" : "red"}>
-                                            {r.status}
-                                        </Badge>
-                                    )
+                                        <StatusBadge status={r.status} />
+                                    ),
+                                    hideOnMobile: true
                                 },
                                 {
                                     header: "Actions",
                                     render: (r) => (
                                         <Flex gap={3}>
-                                            {r.status === "CONFIRMED" && (
+                                            {r.status === "CONFIRMED" && !r.user?.deleted_at && (
                                                 <Button
                                                     size="sm"
-                                                    bg="#8C6E21"
-                                                    color="white"
-                                                    _hover={{ bg: "#6e5519" }}
+                                                    bgImage={`url(${bgAnnuler})`}
+                                                    bgSize="120%"
+                                                    bgPosition="center"
+                                                    bgRepeat="no-repeat"
+                                                    color="zombieland.white"
+                                                    fontWeight="bold"
+                                                    border="2px solid"
+                                                    borderColor="zombieland.primary"
+                                                    borderRadius="md"
+                                                    _hover={{ opacity: 0.8, borderColor: "zombieland.cta1orange" }}
                                                     onClick={(e) => {
                                                         e.stopPropagation()
                                                         setReservationToCancel(r.id_RESERVATION)
@@ -233,7 +271,7 @@ const AdminReservations = () => {
                                                 </Button>
                                             )}
                                             {r.status === "CANCELLED" && (
-                                                <Text color="red.400" fontWeight="bold">Annulée</Text>
+                                                <Text>Annulé</Text>
                                             )}
                                         </Flex>
                                     )
@@ -243,12 +281,6 @@ const AdminReservations = () => {
                     )}
                 </Box>
                 {/* Confirmation modal: opens when the admin clicks "Annuler" on a reservation */}
-                {/* The admin must enter their password to confirm the cancellation */}
-                {/* isOpen: true when a reservation id is stored in reservationToCancel */}
-                {/* onClose: resets the state to null, closing the modal */}
-                {/* onConfirm: calls handleStatusChange with "CANCELLED" status then closes the modal */}
-                {/* The password parameter comes from the modal input but is not sent to the API */}
-                {/* It serves as a confirmation step to prevent accidental cancellations */}
                 <ConfirmModal
                     isOpen={reservationToCancel !== null}
                     onClose={() => setReservationToCancel(null)}

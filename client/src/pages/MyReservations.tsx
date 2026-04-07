@@ -3,9 +3,12 @@
 import { useEffect, useState } from 'react'
 import { Box, Button, Input, Heading, Text, Flex, Spinner } from '@chakra-ui/react'
 import bgImage from '../assets/bg-image.webp'
+import barbed from '../assets/barbed-bg.webp'
 import bgBouton from '../assets/bg-bouton.webp'
+import bgFiltres from '../assets/bg-bouton-filtres.webp'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import AdminMenu from '../components/AdminNavlinkMenu'
 import { PageBackground } from '../components/PageBackground'
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom'
 import ConfirmModal from '../components/ConfirmModal'
@@ -46,6 +49,7 @@ function MyReservations() {
     const navigate = useNavigate()
     const [message, setMessage] = useState('')
     const [currentUser, setCurrentUser] = useState<{ role: string } | null>(null)
+    const [memberName, setMemberName] = useState<string | null>(null)
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [reservationToCancel, setReservationToCancel] = useState<number | null>(null)
     const [blockedMessage, setBlockedMessage] = useState<string | null>(null)
@@ -108,17 +112,20 @@ function MyReservations() {
                 setCurrentUser(userData)
 
                 // 2. Then fetch reservations based on role
+
                 const isAdminUser = userData.role === 'ADMIN' && !!id
-                //ATTENTION MODIf
+                // Fetch member name if admin consulting a member's reservations
+                if (isAdminUser) {
+                    const resMember = await axiosInstance.get(`${API_URL}/api/users/${id}/profile`, { withCredentials: true })
+                    setMemberName(`${resMember.data.firstname} ${resMember.data.lastname}`)
+                }
+
                 const url = isAdminUser
-                    //  ? `${API_URL}/api/reservations/user/${id}` route n'existe pas
-                    ? `${API_URL}/api/reservations/user/${id}`   // ← route qui existe
+                    ? `${API_URL}/api/reservations/user/${id}`
                     : `${API_URL}/api/reservations/me`
 
                 const response = await axiosInstance.get(url, { withCredentials: true })
-                const data = response.data
-                setReservations(data)
-
+                setReservations(response.data)
 
             } catch (error) {
                 setMessage("Erreur lors de la récupération d'une réservation")
@@ -171,7 +178,6 @@ function MyReservations() {
                 : `${API_URL}/api/reservations/me`
             const response = await axiosInstance.get(url, { withCredentials: true })
             setReservations(response.data)
-
             setMessage('Votre annulation a bien été prise en compte.')
             navigate('/my-account/reservations')
 
@@ -185,274 +191,240 @@ function MyReservations() {
         }
     }
 
-    return (
-        <PageBackground bgImage={bgImage}>
-            <Header />
-
-            <Box
-                flex={1}
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                px={8}
-                py={10}
-                minH="70vh"
+    // Page content — shared between admin and public layouts
+    const pageContent = (
+        <Box
+            flex={1}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            px={8}
+            py={10}
+            minH="70vh"
+        >
+            <Heading
+                mb={10}
+                fontFamily="heading"
+                fontSize={{ base: "36px", md: "54px" }}
+                textAlign="center"
+                color="zombieland.white"
             >
-                <Heading
-                    mb={10}
-                    fontFamily="heading"
-                    fontSize="54px"
-                    textAlign="center"
-                    color="zombieland.white"
-                >
-                    {isAdmin ? "Réservations du membre" : "Mes réservations"}
-                </Heading>
+                {isAdmin
+                    ? `Réservations de ${memberName ?? '...'}`
+                    : "Mes réservations"}
+            </Heading>
 
-                {/* Search + filters — hidden when filtering by reservationId */}
-                {!reservationId && (
-                    <Flex direction="column" align="center" gap={3} maxW="500px" w="100%" mb={8}>
-                        <Input
-                            placeholder="Rechercher par date..."
-                            value={searchTerm}
-                            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1) }}
-                            color="zombieland.white"
-                            borderColor="zombieland.primary"
-                            bg="rgba(0,0,0,0.3)"
-                            _placeholder={{ color: "gray.400" }}
-                        />
-                        <Flex gap={2} wrap="wrap" justify="center">
-                            {/* Filtre statut */}
-                            {(['ALL', 'CONFIRMED', 'CANCELLED'] as const).map((s) => (
-                                <Button
-                                    key={s}
-                                    size="sm"
-                                    onClick={() => { setStatusFilter(s); setCurrentPage(1) }}
-                                    variant={statusFilter === s ? 'solid' : 'outline'}
-                                    bg={statusFilter === s
-                                        ? s === 'CONFIRMED' ? 'zombieland.successprimary'
-                                            : s === 'CANCELLED' ? 'zombieland.warningprimary'
-                                                : 'zombieland.primary'
-                                        : 'transparent'}
-                                    color="zombieland.white"
-                                    borderColor="zombieland.primary"
-                                    _hover={{ opacity: 0.8 }}
-                                >
-                                    {s === 'ALL' ? 'Toutes' : s === 'CONFIRMED' ? 'En cours' : 'Annulées'}
-                                </Button>
-                            ))}
-                        </Flex>
-                        <Flex gap={2} wrap="wrap" justify="center">
-                            {/* Tri */}
-                            {([
-                                { value: 'created_at', label: 'N° réservation' },
-                                { value: 'date', label: 'Date visite' },
-                                { value: 'total_amount', label: 'Montant' }
-                            ] as const).map((opt) => (
-                                <Button
-                                    key={opt.value}
-                                    size="sm"
-                                    onClick={() => {
-                                        if (sortBy === opt.value) {
-                                            setSortDir(d => d === 'asc' ? 'desc' : 'asc')
-                                        } else {
-                                            setSortBy(opt.value)
-                                            setSortDir('desc')
-                                        }
-                                        setCurrentPage(1)
-                                    }}
-                                    variant={sortBy === opt.value ? 'solid' : 'outline'}
-                                    colorScheme="orange"
-                                    color={sortBy === opt.value ? 'black' : 'zombieland.white'}
-                                    borderColor="zombieland.primary"
-                                >
-                                    {opt.label} {sortBy === opt.value ? (sortDir === 'asc' ? '↑' : '↓') : ''}
-                                </Button>
-                            ))}
-                        </Flex>
-                    </Flex>
-                )}
-
-                {loading ? (
-                    <Spinner color="zombieland.white" size="xl" />
-                ) : filteredReservations.length === 0 ? (
-                    <Box display="flex" flexDirection="column" alignItems="center" gap={4}>
-                        <Text color="zombieland.white" fontFamily="body" fontWeight="300">
-                            {searchTerm ? "Aucun résultat pour cette recherche." : "Vous n'avez pas encore de réservations."}
-                        </Text>
-                        {!searchTerm && (
+            {!reservationId && (
+                <Flex direction="column" align="center" gap={3} maxW="500px" w="100%" mb={8}>
+                    <Input
+                        placeholder="Rechercher par date..."
+                        value={searchTerm}
+                        onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1) }}
+                        color="zombieland.white"
+                        borderColor="zombieland.primary"
+                        bg="rgba(0,0,0,0.3)"
+                        _placeholder={{ color: "gray.400" }}
+                    />
+                    <Flex gap={2} wrap="wrap" justify="center">
+                        {(['ALL', 'CONFIRMED', 'CANCELLED'] as const).map((s) => (
                             <Button
-                                onClick={() => navigate('/reservation')}
-                                bgImage={`url(${bgBouton})`}
-                                bgSize="cover"
-                                bgPosition="center"
-                                color="zombieland.secondary"
-                                fontFamily="body"
-                                fontWeight="bold"
-                                fontSize={{ base: "12px", md: "16px" }}
-                                py={5}
-                                px={4}
-                                borderRadius="full"
-                                letterSpacing="1px"
-                                textTransform="uppercase"
-                                boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
-                                _hover={{ bg: "zombieland.cta2orange", color: "zombieland.white" }}
-                                aria-label="Réserver une visite à Zombieland"
-                            >
-                                → Réserver maintenant
-                            </Button>
-                        )}
-                    </Box>
-                ) : (
-                    <>
-                        {currentItems.map((reservation: Reservation) => (
-                            <Box
-                                key={reservation.id_RESERVATION}
-                                mb={4}
-                                p={6}
-                                w="100%"
-                                maxW="500px"
-                                borderRadius="md"
-                                bg="rgba(0,0,0,0.3)"
-                                boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
-                                border="2px solid"
-                                borderColor="zombieland.primary"
-                                transition="all 0.3s ease"
-                                _hover={{
-                                    transform: "translateY(-4px)",
-                                    boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
-                                    borderColor: "zombieland.cta1orange",
-                                    bg: "rgba(0,0,0,0.5)"
-                                }}
-                                cursor="pointer">
-
-                                <Text
-                                    color="zombieland.white"
-                                    fontFamily="body"
-                                    fontWeight="300"
-                                    mb={1}>
-                                    - Date :
-                                    {new Date(reservation.date)
-                                        .toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                                </Text>
-                                <Text
-                                    color="zombieland.white"
-                                    fontFamily="body"
-                                    fontWeight="300"
-                                    mb={1}>
-                                    - Billets :
-                                    {reservation.nb_tickets}
-                                </Text>
-                                <Text
-                                    color="zombieland.white"
-                                    fontFamily="body"
-                                    fontWeight="300"
-                                    mb={1}>
-                                    - Montant : {reservation.status === 'CANCELLED'
-                                        ? '👣​​ Remboursé'
-                                        : `${Number(reservation.total_amount).toFixed(2)} €`}
-                                </Text>
-                                <Text
-                                    color="zombieland.white"
-                                    fontFamily="body"
-                                    fontWeight="300"
-                                    mb={4}>
-                                    - Statut :
-                                    {reservation.status}
-                                </Text>
-
-                                {new Date(reservation.date) >= new Date() && reservation.status !== 'CANCELLED' && (
-                                    <Flex justifyContent="flex-end">
-                                        <Button
-                                            onClick={() => {
-                                                // if it's an admin, we skip the 10 days check and directly open the confirmation modal with password, 
-                                                // because admins should be able to cancel at any time
-                                                // otherwise, check the 10 days rule before opening the modal
-                                                if (currentUser?.role === 'ADMIN') {
-                                                    setReservationToCancel(reservation.id_RESERVATION);
-                                                } else {
-                                                    handleCancelClick(reservation);
-                                                }
-                                            }}
-                                            bgImage={`url(${bgBouton})`}
-                                            bgSize="cover"
-                                            bgPosition="center"
-                                            color="zombieland.secondary"
-                                            fontFamily="body"
-                                            fontWeight="bold"
-                                            fontSize={{ base: "12px", md: "14px" }}
-                                            py={3}
-                                            px={4}
-                                            borderRadius="full"
-                                            boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
-                                            _hover={{ opacity: 0.8 }}
-                                            aria-label={`Annuler la réservation du ${new Date(reservation.date).toLocaleDateString('fr-FR')}`}
-                                        >
-                                            Annuler
-                                        </Button>
-                                    </Flex>
-                                )}
-                            </Box>
-                        ))}
-
-                        {/* Pagination controls */}
-                        <Flex mt={6} gap={4} alignItems="center" justifyContent="center">
-                            <Button
+                                key={s}
                                 size="sm"
-                                variant="outline"
-                                color="zombieland.white"
-                                borderColor="zombieland.primary"
-                                _hover={{ bg: "zombieland.primary", color: "black" }}
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                isDisabled={currentPage === 1}
-                                aria-label="Page précédente"
+                                onClick={() => { setStatusFilter(s); setCurrentPage(1) }}
+                                bgImage={`url(${bgFiltres})`}
+                                bgSize="120%"
+                                bgPosition="center"
+                                bgRepeat="no-repeat"
+                                color="zombieland.secondary"
+                                fontWeight="bold"
+                                border="2px solid"
+                                borderColor={statusFilter === s ? "zombieland.cta1orange" : "transparent"}
+                                boxShadow={statusFilter === s ? "0 0 8px rgba(184, 95, 0, 0.5)" : "none"}
+                                _hover={{ opacity: 0.85, borderColor: "zombieland.cta1orange" }}
                             >
-                                Précédent
+                                {s === 'ALL' ? 'Toutes' : s === 'CONFIRMED' ? 'Confirmées' : 'Annulées'}
                             </Button>
+                        ))}
+                    </Flex>
+                    <Flex gap={2} wrap="wrap" justify="center">
+                        {([
+                            { value: 'created_at', label: 'N° réservation' },
+                            { value: 'date', label: 'Date visite' },
+                            { value: 'total_amount', label: 'Montant' }
+                        ] as const).map((opt) => (
+                            <Button
+                                key={opt.value}
+                                size="sm"
+                                onClick={() => {
+                                    if (sortBy === opt.value) {
+                                        setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+                                    } else {
+                                        setSortBy(opt.value)
+                                        setSortDir('desc')
+                                    }
+                                    setCurrentPage(1)
+                                }}
+                                bgImage={`url(${bgFiltres})`}
+                                bgSize="120%"
+                                bgPosition="center"
+                                bgRepeat="no-repeat"
+                                color="zombieland.secondary"
+                                fontWeight="bold"
+                                border="2px solid"
+                                borderColor={sortBy === opt.value ? "zombieland.cta1orange" : "transparent"}
+                                boxShadow={sortBy === opt.value ? "0 0 8px rgba(184, 95, 0, 0.5)" : "none"}
+                                _hover={{ opacity: 0.85, borderColor: "zombieland.cta1orange" }}
+                            >
+                                {opt.label} {sortBy === opt.value ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+                            </Button>
+                        ))}
+                    </Flex>
+                </Flex>
+            )}
 
-                            <Text color="zombieland.white" fontSize="sm">
-                                Page {currentPage} sur {totalPages || 1}
+            {loading ? (
+                <Spinner color="zombieland.white" size="xl" />
+            ) : filteredReservations.length === 0 ? (
+                <Box display="flex" flexDirection="column" alignItems="center" gap={4}>
+                    <Text color="zombieland.white" fontFamily="body" fontWeight="300">
+                        {searchTerm ? "Aucun résultat pour cette recherche." : "Vous n'avez pas encore de réservations."}
+                    </Text>
+                    {!searchTerm && !isAdmin && (
+                        <Button
+                            onClick={() => navigate('/reservation')}
+                            bgImage={`url(${bgBouton})`}
+                            bgSize="cover"
+                            bgPosition="center"
+                            color="zombieland.secondary"
+                            fontFamily="body"
+                            fontWeight="bold"
+                            fontSize={{ base: "12px", md: "16px" }}
+                            py={5}
+                            px={4}
+                            borderRadius="full"
+                            letterSpacing="1px"
+                            textTransform="uppercase"
+                            boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+                            _hover={{ bg: "zombieland.cta2orange", color: "zombieland.white" }}
+                            aria-label="Réserver une visite à Zombieland"
+                        >
+                            → Réserver maintenant
+                        </Button>
+                    )}
+                </Box>
+            ) : (
+                <>
+                    {currentItems.map((reservation: Reservation) => (
+                        <Box
+                            key={reservation.id_RESERVATION}
+                            mb={4}
+                            p={6}
+                            w="100%"
+                            maxW="500px"
+                            borderRadius="md"
+                            bg="rgba(0,0,0,0.3)"
+                            boxShadow="inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05)"
+                            border="2px solid"
+                            borderColor="zombieland.primary"
+                            transition="all 0.3s ease"
+                            _hover={{
+                                transform: "translateY(-4px)",
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                                borderColor: "zombieland.cta1orange",
+                                bg: "rgba(0,0,0,0.5)"
+                            }}
+                            cursor="pointer"
+                        >
+                            <Text color="zombieland.white" fontFamily="body" fontWeight="300" mb={1}>
+                                - Date : {new Date(reservation.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            </Text>
+                            <Text color="zombieland.white" fontFamily="body" fontWeight="300" mb={1}>
+                                - Billets : {reservation.nb_tickets}
+                            </Text>
+                            <Text color="zombieland.white" fontFamily="body" fontWeight="300" mb={1}>
+                                - Montant : {reservation.status === 'CANCELLED'
+                                    ? '👣 Remboursé'
+                                    : `${Number(reservation.total_amount).toFixed(2)} €`}
+                            </Text>
+                            <Text color="zombieland.white" fontFamily="body" fontWeight="300" mb={4}>
+                                - Statut : {reservation.status}
                             </Text>
 
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                color="zombieland.white"
-                                borderColor="zombieland.primary"
-                                _hover={{ bg: "zombieland.primary", color: "black" }}
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                isDisabled={currentPage === totalPages || totalPages === 0}
-                                aria-label="Page suivante"
-                            >
-                                Suivant
-                            </Button>
-                        </Flex>
-                    </>
-                )}
-            </Box>
+                            {new Date(reservation.date) >= new Date() && reservation.status !== 'CANCELLED' && (
+                                <Flex justifyContent="flex-end">
+                                    <Button
+                                        onClick={() => {
+                                            if (currentUser?.role === 'ADMIN') {
+                                                setReservationToCancel(reservation.id_RESERVATION)
+                                            } else {
+                                                handleCancelClick(reservation)
+                                            }
+                                        }}
+                                        bgImage={`url(${bgBouton})`}
+                                        bgSize="cover"
+                                        bgPosition="center"
+                                        color="zombieland.secondary"
+                                        fontFamily="body"
+                                        fontWeight="bold"
+                                        fontSize={{ base: "12px", md: "14px" }}
+                                        py={3}
+                                        px={4}
+                                        borderRadius="full"
+                                        boxShadow="inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.5)"
+                                        _hover={{ opacity: 0.8 }}
+                                        aria-label={`Annuler la réservation du ${new Date(reservation.date).toLocaleDateString('fr-FR')}`}
+                                    >
+                                        Annuler
+                                    </Button>
+                                </Flex>
+                            )}
+                        </Box>
+                    ))}
 
-            {
-                message && (
-                    <Text
-                        mt={4}
-                        textAlign="center"
-                        fontFamily="body"
-                        fontWeight="300"
-                        color="zombieland.white"
-                    >
-                        {message}
-                    </Text>
-                )
-            }
+                    <Flex mt={6} gap={4} alignItems="center" justifyContent="center">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            color="zombieland.white"
+                            borderColor="zombieland.primary"
+                            _hover={{ bg: "zombieland.primary", color: "black" }}
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            isDisabled={currentPage === 1}
+                            aria-label="Page précédente"
+                        >
+                            Précédent
+                        </Button>
+                        <Text color="zombieland.white" fontSize="sm">
+                            Page {currentPage} sur {totalPages || 1}
+                        </Text>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            color="zombieland.white"
+                            borderColor="zombieland.primary"
+                            _hover={{ bg: "zombieland.primary", color: "black" }}
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            isDisabled={currentPage === totalPages || totalPages === 0}
+                            aria-label="Page suivante"
+                        >
+                            Suivant
+                        </Button>
+                    </Flex>
+                </>
+            )}
 
-            {/* Confirm cancellation modal with password */}
+            {message && (
+                <Text mt={4} textAlign="center" fontFamily="body" fontWeight="300" color="zombieland.white">
+                    {message}
+                </Text>
+            )}
+
             <InfoModal
                 isOpen={blockedMessage !== null}
                 onClose={() => setBlockedMessage(null)}
                 title="Annulation impossible"
                 message={blockedMessage ?? ""}
             />
-
-            {/* Confirm cancellation modal with password */}
             <ConfirmModal
                 isOpen={reservationToCancel !== null}
                 onClose={() => setReservationToCancel(null)}
@@ -460,37 +432,75 @@ function MyReservations() {
                 message="Voulez-vous vraiment annuler cette réservation ? Cette action est irréversible."
                 onConfirm={(password) => {
                     if (reservationToCancel) {
-                        // Small delay to let the ConfirmModal close before showing the success modal
-                        setTimeout(() => {
-                            handleCancel(reservationToCancel, password)
-                        }, 300)
+                        setTimeout(() => { handleCancel(reservationToCancel, password) }, 300)
                     }
                     setReservationToCancel(null)
                 }}
             />
-
-            {/* 3. Success modal */}
             <InfoModal
                 isOpen={showSuccessModal}
                 onClose={() => {
-                    setShowSuccessModal(false);
-                    // Small delay before redirect to avoid visual flash
-                    // If the user is an admin, we redirect to the member's reservations page, 
-                    // otherwise we redirect to the user's own reservations page
+                    setShowSuccessModal(false)
                     setTimeout(() => {
                         const destination = (isAdmin && id)
                             ? `/admin/members/${id}`
-                            : '/my-account/reservations';
-                        navigate(destination);
+                            : '/my-account/reservations'
+                        navigate(destination)
                     }, 300)
                 }}
                 title="Annulation confirmée"
                 message="Votre réservation a été annulée avec succès. Vous allez être redirigé."
             />
+        </Box>
+    )
 
+    // Admin layout — with sidebar
+    if (isAdmin) {
+        return (
+            <Box
+                display="flex"
+                flexDirection="column"
+                minHeight="100vh"
+                bgImage={`url(${barbed})`}
+                bgSize="cover"
+                bgRepeat="no-repeat"
+                bgAttachment="fixed"
+                bgPosition="center top"
+                w="100%"
+                overflowX="hidden"
+                overflowY="auto"
+            >
+                <Header />
+                <Flex flex="1">
+                    {/* LEFT COLUMN — sidebar */}
+                    <Box
+                        width={{ base: "0px", lg: "250px" }}
+                        minWidth={{ base: "0px", lg: "250px" }}
+                        overflow="hidden"
+                        transition="width 0.3s ease, min-width 0.3s ease"
+                        borderRight="1px solid rgba(255,255,255,0.1)"
+                    >
+                        <AdminMenu />
+                    </Box>
+                    {/* RIGHT COLUMN — content */}
+                    <Box flex="1" minWidth="0">
+                        {pageContent}
+                    </Box>
+                </Flex>
+                <Footer />
+            </Box>
+        )
+    }
+
+    // Public layout
+    return (
+        <PageBackground bgImage={bgImage}>
+            <Header />
+            {pageContent}
             <Footer />
-        </PageBackground >
+        </PageBackground>
     )
 }
+
 
 export default MyReservations

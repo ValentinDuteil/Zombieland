@@ -1,26 +1,24 @@
 // Admin page to manage reservations: list, filter, edit and delete
 import { useEffect, useState } from "react";
-import {
-    Box, Text, Button, Flex, Spinner,
-    Badge, Heading,
-    Input,
-} from "@chakra-ui/react";
-
+import { Box, Text, Button, Flex, Spinner, Heading, Input, SimpleGrid } from "@chakra-ui/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdminTable from "@/components/AdminTable";
+import { StatusBadge } from "@/components/AdminTable";
 import AdminMenu from "@/components/AdminNavlinkMenu";
-import labodashboard from "../../assets/bg-bouton.webp"
+import bgAnnuler from "../../assets/bg-bouton-annuler.webp"
+import barbed from "../../assets/barbed-bg.webp"
 import type { Reservation } from "@/types/Reservations";
 import axiosInstance from "@/lib/axiosInstance";
 import { API_URL } from "@/config/api";
 import ConfirmModal from "@/components/ConfirmModal";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const AdminReservations = () => {
+const AdminHome = () => {
+    //tate to manage sorting and search of reservations in the table
     const [sort, setSort] = useState({ by: "name", direction: "asc" })
-
     const [search, setSearch] = useState("")
+    const [hideDeleted, setHideDeleted] = useState(true)
     //State to store the total of attractions
     const [attractions, setAttractions] = useState(Number);
     //State to store the total of Members
@@ -35,7 +33,6 @@ const AdminReservations = () => {
     const [reservationToCancel, setReservationToCancel] = useState<number | null>(null)
     const navigate = useNavigate()
     const location = useLocation()
-    // x
 
     // Fetch all reservations from the API when the component mounts
     useEffect(() => {
@@ -55,7 +52,7 @@ const AdminReservations = () => {
                 setLoading(false)
             } catch (error) {
                 // Display error message if the API call fails
-                setError("Erreur lors du chargement")
+                setError("Erreur de récupération des réservations")
             }
         };
         // Call the function
@@ -68,45 +65,43 @@ const AdminReservations = () => {
     // status: the new status ("CONFIRMED" or "CANCELLED")
     const handleCancel = async (id: number, password: string) => {
         try {
-        await axiosInstance.delete(`${API_URL}/api/reservations/${id}`, {
-            data: { password },
-            withCredentials: true
-        })
-        const response = await axiosInstance.get(`${API_URL}/api/reservations`, { withCredentials: true })
-        setReservations(response.data)
-    } catch (error) {
-        setError("Erreur lors de l'annulation")
+            await axiosInstance.delete(`${API_URL}/api/reservations/${id}`, {
+                data: { password },
+                withCredentials: true
+            })
+            const response = await axiosInstance.get(`${API_URL}/api/reservations`, {
+                withCredentials: true
+            })
+            setReservations(response.data)
+        } catch (error) {
+            setError("Erreur lors de l'annulation")
+        }
     }
-}
 
     //fetch all attractions
     useEffect(() => {
-        const fetchAttractions = async () => {
+        const axiosAttractions = async () => {
             try {
-                const res = await axiosInstance.get(`${API_URL}/api/attractions`);
-                setAttractions(res.data.length);
+                const response = await axiosInstance.get(`${API_URL}/api/attractions`)
+                setAttractions(response.data.length);
             } catch (err) {
-                console.error("Erreur récupération attractions");
+                setError("Erreur de récupération des attractions")
             }
         };
 
-        fetchAttractions();
+        axiosAttractions();
     }, [location]);
-    // const totalAttractions = attractions.length;
 
     //fetch all users
     useEffect(() => {
         axiosInstance
             .get(`${API_URL}/api/users`, { withCredentials: true })
             .then(res => setUsers(res.data.length))
-            .catch(() => console.error("Erreur récupération utilisateurs"));
+            .catch(() => setError("Erreur récupération utilisateurs"));
     }, [location]);
 
-
-
-
     //  CALCUL REVENUS total
-    if (!Array.isArray(reservations)) return null;
+    if (!Array.isArray(reservations)) return null
 
     const totalAmount = reservations.reduce(
         (sum, r) => sum + Number(r.total_amount),
@@ -116,6 +111,7 @@ const AdminReservations = () => {
 
     const filteredReservations = reservations
         .filter(r => {
+            if (hideDeleted && r.user?.deleted_at) return false
             const fullName = `${r.user?.firstname ?? ""} ${r.user?.lastname ?? ""}`.toLowerCase()
 
             return (
@@ -136,27 +132,21 @@ const AdminReservations = () => {
                         `${a.user.firstname} ${a.user.lastname}`
                             .localeCompare(`${b.user.firstname} ${b.user.lastname}`)
                     ) * dir
-
                 case "member":
                     return (a.id_USER - b.id_USER) * dir
-
                 case "date":
                     return a.date.localeCompare(b.date) * dir
-
                 case "tickets":
                     return (a.nb_tickets - b.nb_tickets) * dir
-
                 case "status":
                     return a.status.localeCompare(b.status) * dir
-
                 case "total":
                     return (Number(a.total_amount) - Number(b.total_amount)) * dir
-
                 default:
                     return 0
             }
         })
-    const lastReservations = filteredReservations.slice(-4).reverse();
+    const lastReservations = filteredReservations.slice(-20).reverse();
     const handleSortChange = (by: "name" | "member" | "date" | "tickets" | "status" | "total") => {
         if (sort.by === by) {
             setSort({ by, direction: sort.direction === "asc" ? "desc" : "asc" })
@@ -174,19 +164,23 @@ const AdminReservations = () => {
         "Total": "total"
     } as const
 
+    const currentSortHeader = Object.keys(headerToField).find(
+        key => headerToField[key as keyof typeof headerToField] === sort.by
+    ) ?? ""
 
     return (
         <Box
             display="flex"
             flexDirection="column"
             minHeight="100vh"
-            bgAttachment="fixed"
-            bgImage={`url(${labodashboard})`}
+            bgImage={`url(${barbed})`}
             bgSize="cover"
+            bgPosition="center"
             bgRepeat="no-repeat"
-            bgPosition="center top"
+            bgAttachment="fixed"
             w="100%"
-            overflow="hidden"
+            overflowX="hidden"
+            overflowY="auto"
         >
             <Header />
 
@@ -195,23 +189,27 @@ const AdminReservations = () => {
 
                 {/* LEFT SIDEBAR — 30% */}
                 <Box
-                    display={{ base: 'none', lg: 'block' }}
-                    width={30}
-                    minWidth="250px"
-                    maxWidth="350px"
+                    width={{ base: "0px", lg: "250px" }}
+                    minWidth={{ base: "0px", lg: "250px" }}
+                    overflow="hidden"
+                    transition="width 0.3s ease, min-width 0.3s ease"
                     borderRight="1px solid rgba(255,255,255,0.1)"
-
                 >
                     <AdminMenu />
                 </Box>
                 {/* RIGHT CONTENT — 70% */}
-                <Box width={70} flex="1" px={10} pt="60px">
+                <Box
+                    flex="1"
+                    minWidth="0"
+                    px={{ base: 4, md: 10 }}
+                    pt="60px"
+                >
                     <Heading
                         fontWeight="bold"
                         color="zombieland.white"
                         textAlign="center"
                         fontFamily="heading"
-                        fontSize="54px"
+                        fontSize={{ base: "36px", md: "54px" }}
                         mt={6}
                         mb={8}
                     >
@@ -228,20 +226,21 @@ const AdminReservations = () => {
                         Admin / Dashboard
                     </Heading>
                     {/* the flex put 4 cards on same line*/}
-                    <Flex
-                        wrap="wrap"
-                        gap="6"
-                        justify={{ base: "center", lg: "center" }}
-                        flexDirection="row"
+                    <SimpleGrid
+                        columns={{ base: 2, lg: 4 }}
+                        spacing="4"
                         w="100%"
+                        mb={10}
                     >
                         {/* Description and details of 1 card*/}
                         <Box
                             onClick={() => navigate('/admin/reservations')}
-                            w={{ base: "100%", md: "45%", lg: "22%" }}
-                            h="300px"
+                            h={{ base: "120px", md: "150px", lg: "180px" }}
                             bg="rgba(0, 0, 0, 0.5)"
-                            border="2px"
+                            border="2px solid"
+                            borderColor="zombieland.primary"
+                            borderRadius="md"
+                            cursor="pointer"
                             _hover={{
                                 transform: "translateY(-3px)",
                                 boxShadow: "0 8px 20px rgba(250, 235, 220, 0.2)",
@@ -249,18 +248,23 @@ const AdminReservations = () => {
                             }}
                         >
                             {/* 2 flex text between 1 flex */}
-                            <Flex direction="column" justify="space-between" h="100%">
-                                <Flex justify="center" mt={2}  >
-                                    <Text fontSize="60" color="zombieland.white" fontWeight="extrabold">
-                                        {reservations.length}
-                                    </Text>
-                                </Flex>
-
-                                <Flex justify="center" >
-                                    <Text fontSize="45" color="zombieland.white" fontFamily="heading" >
-                                        Réservations
-                                    </Text>
-                                </Flex>
+                            <Flex direction="column" justify="space-evenly" align="center" h="100%" p={2} >
+                                <Text
+                                    fontSize={{ base: "32px", md: "42px", lg: "52px" }}
+                                    color="zombieland.white"
+                                    fontWeight="extrabold"
+                                    lineHeight="1"
+                                >
+                                    {reservations.length}
+                                </Text>
+                                <Text
+                                    fontSize={{ base: "16px", md: "16px", lg: "20px" }}
+                                    color="zombieland.white"
+                                    fontFamily="heading"
+                                    textAlign="center"
+                                >
+                                    Réservations
+                                </Text>
                             </Flex>
                         </Box >
 
@@ -268,10 +272,11 @@ const AdminReservations = () => {
 
                         <Box
                             onClick={() => navigate('/admin/members')}
-                            w={{ base: "100%", md: "45%", lg: "22%" }}
-                            h="300px"
+                            h={{ base: "120px", md: "150px", lg: "180px" }}
                             bg="rgba(0, 0, 0, 0.5)"
-                            border="2px"
+                            border="2px solid"
+                            borderColor="zombieland.primary"
+                            borderRadius="md"
                             _hover={{
                                 transform: "translateY(-3px)",
                                 boxShadow: "0 8px 20px rgba(250, 235, 220, 0.2)",
@@ -280,26 +285,33 @@ const AdminReservations = () => {
 
                         >
                             {/* 2 flex text between 1 flex */}
-                            <Flex direction="column" justify="space-between" h="100%">
-                                <Flex justify="center" mt={2}>
-                                    <Text fontSize="60" color="zombieland.white" fontWeight="extrabold">
-                                        {users}
-                                    </Text>
-                                </Flex>
-
-                                <Flex justify="center" >
-                                    <Text fontSize="45" color="zombieland.white" fontFamily="heading" >
-                                        Membres
-                                    </Text>
-                                </Flex>
+                            <Flex direction="column" justify="space-evenly" align="center" h="100%" p={2} >
+                                <Text
+                                    fontSize={{ base: "32px", md: "42px", lg: "52px" }}
+                                    color="zombieland.white"
+                                    fontWeight="extrabold"
+                                    lineHeight="1"
+                                >
+                                    {users}
+                                </Text>
+                                <Text
+                                    fontSize={{ base: "16px", md: "16px", lg: "20px" }}
+                                    color="zombieland.white"
+                                    fontFamily="heading"
+                                    textAlign="center"
+                                >
+                                    Membres
+                                </Text>
                             </Flex>
                         </Box>
                         <Box
                             onClick={() => navigate('/admin/attractions')}
-                            w={{ base: "100%", md: "45%", lg: "22%" }}
-                            h="300px"
+                            h={{ base: "120px", md: "150px", lg: "180px" }}
                             bg="rgba(0, 0, 0, 0.5)"
-                            border="2px"
+                            border="2px solid"
+                            borderColor="zombieland.primary"
+                            borderRadius="md"
+                            cursor="pointer"
                             _hover={{
                                 transform: "translateY(-3px)",
                                 boxShadow: "0 8px 20px rgba(250, 235, 220, 0.2)",
@@ -307,28 +319,35 @@ const AdminReservations = () => {
                             }}
                         >
                             {/* 2 flex text between 1 flex */}
-                            <Flex direction="column" justify="space-between" h="100%" >
-                                <Flex justify="center" mt={2}>
-                                    <Text fontSize="60" color="zombieland.white" fontWeight="extrabold">
-                                        {attractions}
-                                    </Text>
-                                </Flex>
-
-                                <Flex justify="center" >
-                                    <Text fontSize="45" color="zombieland.white" fontFamily="heading" >
-                                        Attractions
-                                    </Text>
-                                </Flex>
+                            <Flex direction="column" justify="space-evenly" align="center" h="100%" p={2} >
+                                <Text
+                                    fontSize={{ base: "32px", md: "42px", lg: "52px" }}
+                                    color="zombieland.white"
+                                    fontWeight="extrabold"
+                                    lineHeight="1"
+                                >
+                                    {attractions}
+                                </Text>
+                                <Text
+                                    fontSize={{ base: "16px", md: "16px", lg: "20px" }}
+                                    color="zombieland.white"
+                                    fontFamily="heading"
+                                    textAlign="center"
+                                >
+                                    Attractions
+                                </Text>
                             </Flex>
 
 
                         </Box>
                         <Box
-                            w={{ base: "100%", md: "45%", lg: "22%" }}
-                            h="300px"
+                            onClick={() => navigate('/admin/tarifs')}
+                            h={{ base: "120px", md: "150px", lg: "180px" }}
                             bg="rgba(0, 0, 0, 0.5)"
-                            border="2px"
-                            onClick={() => navigate('/admin/price')}
+                            border="2px solid"
+                            borderColor="zombieland.primary"
+                            borderRadius="md"
+                            cursor="pointer"
                             _hover={{
                                 transform: "translateY(-3px)",
                                 boxShadow: "0 8px 20px rgba(250, 235, 220, 0.2)",
@@ -337,35 +356,30 @@ const AdminReservations = () => {
 
                         >
                             {/* 2 flex text between 1 flex */}
-                            <Flex direction="column" justify="space-between" h="100%">
-                                <Flex justify="center" mt={2}>
-                                    <Text fontSize="60" color="zombieland.white" fontWeight="extrabold">
-                                        {`${totalAmount.toFixed(2)} €`}
-                                    </Text>
-                                </Flex>
-
-                                <Flex justify="center" >
-                                    <Text fontSize="45" color="zombieland.white" fontFamily="heading" >
-                                        Total revenus
-                                    </Text>
-                                </Flex>
+                            <Flex direction="column" justify="space-evenly" align="center" h="100%" p={2}>
+                                <Text
+                                    // Carte Total revenus uniquement
+                                    fontSize={{ base: "18px", md: "28px", lg: "36px" }}
+                                    color="zombieland.white"
+                                    fontWeight="extrabold"
+                                    lineHeight="1"
+                                    textAlign="center"
+                                    wordBreak="break-word"
+                                >
+                                    {`${totalAmount.toFixed(2)} €`}
+                                </Text>
+                                <Text
+                                    mt={3}
+                                    fontSize={{ base: "16px", md: "16px", lg: "20px" }}
+                                    color="zombieland.white"
+                                    fontFamily="heading"
+                                    textAlign="center"
+                                >
+                                    Total revenus
+                                </Text>
                             </Flex>
-
-
                         </Box>
-                    </Flex>
-                    <Flex justifyContent={{ base: "center", lg: "flex-end" }} mt={8} mb={6}>
-                        <Input
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher une reservation..."
-                            color="zombieland.white"
-                            borderColor="zombieland.white"
-                            bg="rgba(0,0,0,0.3)"
-                            _placeholder={{ color: "zombieland.white" }}
-                            mb={6}
-                        />
-                    </Flex>
+                    </SimpleGrid>
 
                     <Heading
                         fontWeight="bold"
@@ -374,10 +388,34 @@ const AdminReservations = () => {
                         fontFamily="heading"
                         fontSize="30px"
                         mb={10}
-                        mt={10}
+                        mt={4}
                     >
                         Gestion des réservations
                     </Heading>
+
+                    <Flex justifyContent="center" gap={3} mb={6} wrap="wrap">
+                        <Input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Rechercher une reservation..."
+                            color="zombieland.white"
+                            borderColor="zombieland.white"
+                            bg="rgba(0,0,0,0.3)"
+                            _placeholder={{ color: "zombieland.white" }}
+                            flex="1"
+                        />
+                        <Button
+                            size="sm"
+                            onClick={() => setHideDeleted(h => !h)}
+                            border="2px solid"
+                            borderColor={hideDeleted ? "transparent" : "zombieland.cta1orange"}
+                            bg="rgba(0,0,0,0.3)"
+                            color="zombieland.white"
+                            _hover={{ borderColor: "zombieland.cta1orange" }}
+                        >
+                            {hideDeleted ? "Afficher comptes supprimés" : "Masquer comptes supprimés"}
+                        </Button>
+                    </Flex>
 
                     {/* Loading spinner */}
                     {loading && (
@@ -387,27 +425,34 @@ const AdminReservations = () => {
                     )}
 
                     {error && <Text color="red.400">{error}</Text>}
+
                     <Box mb={10}>
                         {/* Reservations table */}
                         {!loading && (
                             <AdminTable
                                 data={lastReservations}
-                                onRowClick={(r) => navigate(`/admin/members/${r.id_USER}/reservations?reservationId=${r.id_RESERVATION}`)}
+                                onRowClick={(r) => navigate(`/admin/members/${r.id_USER}/reservations`)}
                                 onHeaderClick={(header) => {
                                     const field = headerToField[header as keyof typeof headerToField]
                                     if (field) handleSortChange(field)
                                 }}
+                                currentSortHeader={currentSortHeader}
+                                currentSortDir={sort.direction as "asc" | "desc"}
 
                                 columns={[
                                     {
                                         header: "Nom",
-                                        render: (r) => r.user
-                                            ? `${r.user.firstname} ${r.user.lastname}`
-                                            : "Utilisateur inconnu"
+                                        render: (r) => (
+                                            <Text color={r.user?.deleted_at ? "gray.500" : "inherit"}>
+                                                {r.user ? `${r.user.firstname} ${r.user.lastname}` : "Utilisateur inconnu"}
+                                                {r.user?.deleted_at && <Text as="span" fontSize="10px" color="gray.500" ml={1}>(supprimé)</Text>}
+                                            </Text>
+                                        )
                                     },
                                     {
                                         header: "N° Membre",
-                                        render: (r) => r.id_USER
+                                        render: (r) => r.id_USER,
+                                        hideOnMobile: true
                                     },
                                     {
                                         header: "Date",
@@ -420,7 +465,8 @@ const AdminReservations = () => {
                                     },
                                     {
                                         header: "Billets",
-                                        render: (r) => r.nb_tickets
+                                        render: (r) => r.nb_tickets,
+                                        hideOnMobile: true
                                     },
                                     {
                                         header: "Total",
@@ -430,21 +476,27 @@ const AdminReservations = () => {
                                     {
                                         header: "Statut",
                                         render: (r) => (
-                                            <Badge colorScheme={r.status === "CONFIRMED" ? "green" : "red"}>
-                                                {r.status}
-                                            </Badge>
-                                        )
+                                            <StatusBadge status={r.status} />
+                                        ),
+                                        hideOnMobile: true
                                     },
                                     {
                                         header: "Actions",
                                         render: (r) => (
                                             <Flex gap={3}>
-                                                {r.status === "CONFIRMED" && (
+                                                {r.status === "CONFIRMED" && !r.user?.deleted_at && (
                                                     <Button
                                                         size="sm"
-                                                        bg="#8C6E21"
-                                                        color="white"
-                                                        _hover={{ bg: "#6e5519" }}
+                                                        bgImage={`url(${bgAnnuler})`}
+                                                        bgSize="120%"
+                                                        bgPosition="center"
+                                                        bgRepeat="no-repeat"
+                                                        color="zombieland.white"
+                                                        fontWeight="bold"
+                                                        border="2px solid"
+                                                        borderColor="zombieland.primary"
+                                                        borderRadius="md"
+                                                        _hover={{ opacity: 0.8, borderColor: "zombieland.cta1orange" }}
                                                         onClick={(e) => {
                                                             e.stopPropagation()
                                                             setReservationToCancel(r.id_RESERVATION)
@@ -454,7 +506,7 @@ const AdminReservations = () => {
                                                     </Button>
                                                 )}
                                                 {r.status === "CANCELLED" && (
-                                                    <Text color="red.400" fontWeight="bold">Annulée</Text>
+                                                    <Text></Text>
                                                 )}
                                             </Flex >
                                         )
@@ -487,4 +539,4 @@ const AdminReservations = () => {
     )
 }
 
-export default AdminReservations;
+export default AdminHome;

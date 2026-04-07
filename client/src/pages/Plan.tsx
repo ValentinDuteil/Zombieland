@@ -12,9 +12,9 @@ import { PageBackground } from '../components/PageBackground'
 
 // Park services
 const services = [
-    { number: 1, icon: "🚽", name: "Toilettes" },
-    { number: 2, icon: "🏥", name: "Premiers secours" },
-    { number: 3, icon: "🛍️", name: "Boutique" },
+    { number: 1, icon: "🚽🩸", name: "Toilettes" },
+    { number: 2, icon: "⚰️", name: "Premiers secours" },
+    { number: 3, icon: "🕸️", name: "Boutique" },
 ]
 
 

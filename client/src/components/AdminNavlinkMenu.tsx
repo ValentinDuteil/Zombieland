@@ -1,5 +1,4 @@
 import { VStack, Flex, Box } from "@chakra-ui/react"
-// import { useEffect, useState } from "react"
 import { NavLink } from "react-router-dom"
 
 export default function AdminMenu() {
@@ -20,7 +19,9 @@ export default function AdminMenu() {
             >
                 <SidebarLink to="/admin">Dashboard</SidebarLink>
                 <SidebarLink to="/admin/attractions">Attractions</SidebarLink>
+                <SidebarLink to="/admin/attractions/create">Nouvelle attraction</SidebarLink>
                 <SidebarLink to="/admin/members">Membres</SidebarLink>
+                <SidebarLink to="/register">Nouveau membre</SidebarLink>
                 <SidebarLink to="/admin/reservations">Réservations</SidebarLink>
                 <SidebarLink to="/admin/tarifs">Tarifs</SidebarLink>
             </VStack>
