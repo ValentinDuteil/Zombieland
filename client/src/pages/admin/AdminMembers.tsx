@@ -184,7 +184,7 @@ const AdminMembers = () => {
           </Flex>
 
           {/* Searchbar */}
-          <Flex gap={3} mb={6} wrap="wrap">
+          <Flex direction={{ base: "column", lg: "row" }} justifyContent="center" gap={3} mb={6} wrap="wrap">
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
