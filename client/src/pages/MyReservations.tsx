@@ -48,6 +48,7 @@ function MyReservations() {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
     const [message, setMessage] = useState('')
+    const [cancelError, setCancelError] = useState('')
     const [currentUser, setCurrentUser] = useState<{ role: string } | null>(null)
     const [memberName, setMemberName] = useState<string | null>(null)
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -168,7 +169,8 @@ function MyReservations() {
                 data: { password },
                 withCredentials: true,
             })
-
+            setReservationToCancel(null)
+            setCancelError('')
             // Re-fetch instead of local state update — keeps dashboard in sync
             const resUser = await axiosInstance.get(`${API_URL}/api/auth/me`, { withCredentials: true })
             const userData = resUser.data
@@ -184,11 +186,10 @@ function MyReservations() {
             }
 
         } catch (error) {
-            const message = "Votre annulation n'a pas été prise en compte"
             if (isAxiosError(error)) {
-                setMessage(error.response?.data.message || message)
+                setCancelError("Mot de passe incorrect")
             } else {
-                setMessage(message)
+                setMessage("Votre annulation n'a pas été prise en compte")
             }
         }
     }
@@ -429,14 +430,17 @@ function MyReservations() {
             />
             <ConfirmModal
                 isOpen={reservationToCancel !== null}
-                onClose={() => setReservationToCancel(null)}
+                onClose={() => {
+                    setReservationToCancel(null)
+                    setCancelError('')
+                }}
                 title="Annuler la réservation"
                 message="Voulez-vous vraiment annuler cette réservation ? Cette action est irréversible."
+                errorMessage={cancelError}
                 onConfirm={(password) => {
                     if (reservationToCancel) {
-                        setTimeout(() => { handleCancel(reservationToCancel, password) }, 300)
+                        handleCancel(reservationToCancel, password)
                     }
-                    setReservationToCancel(null)
                 }}
             />
             <InfoModal

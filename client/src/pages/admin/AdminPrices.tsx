@@ -18,6 +18,7 @@ const AdminTarifs = () => {
     const [loading, setLoading] = useState(true)
     const [priceMessage, setPriceMessage] = useState("")
     const [capacityMessage, setCapacityMessage] = useState("")
+    const [confirmError, setConfirmError] = useState('')
     // Modals
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
@@ -36,10 +37,13 @@ const AdminTarifs = () => {
             setPriceMessage("Tarif mis à jour avec succès")
         } catch (err) {
             if (isAxiosError(err)) {
-                setPriceMessage(err.response?.data.message || "Erreur lors de la mise à jour")
+                setConfirmError(err.response?.data.message || "Erreur lors de la mise à jour")
             }
+            return
         }
         setIsConfirmOpen(false)
+        setConfirmError('')
+        setPriceMessage("Tarif mis à jour avec succès")
     }
     //fetch capacity park
     const fetchCapacity = async () => {
@@ -66,13 +70,14 @@ const AdminTarifs = () => {
             setCapacityMessage("Capacité mise à jour avec succès")
         } catch (err) {
             if (isAxiosError(err)) {
-                setCapacityMessage(err.response?.data.message || "Erreur lors de la mise à jour")
+                setConfirmError(err.response?.data.message || "Erreur lors de la mise à jour")
             }
+            return
         }
-
         setIsConfirmOpen(false)
+        setConfirmError('')
+        setCapacityMessage("Capacité mise à jour avec succès")
     }
-
     useEffect(() => {
         const load = async () => {
             await fetchPrice()
@@ -121,7 +126,7 @@ const AdminTarifs = () => {
                     maxW="1000px"
                     mx="auto"
                     w="100%"
-                    minWidth="0" 
+                    minWidth="0"
                 >
                     <Text
                         fontWeight="bold"
@@ -249,13 +254,17 @@ const AdminTarifs = () => {
             <Footer />
             <ConfirmModal
                 isOpen={isConfirmOpen}
-                onClose={() => setIsConfirmOpen(false)}
+                onClose={() => {
+                    setIsConfirmOpen(false)
+                    setConfirmError('')
+                }}
                 title={action === "price" ? "Confirmer la mise à jour du tarif" : "Confirmer la mise à jour de la capacité"}
                 message={action === "price" ? "Voulez-vous vraiment modifier le prix du billet ?" : "Voulez-vous vraiment modifier la capacité du parc ?"}
                 onConfirm={(password) => {
                     if (action === "price") updatePrice(password)
                     if (action === "capacity") updateCapacity(password)
                 }}
+                errorMessage={confirmError}
             />
         </Box>
     )

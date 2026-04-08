@@ -38,6 +38,8 @@ function MyAccount() {
   // State to manage the open/close of the confirmation modal for deletion
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [updateError, setUpdateError] = useState('')
+const [deleteError, setDeleteError] = useState('')
   //What we want only once "on mount" thanks to "[]" at the end of the useEffect
   //Can countain 2 fetches
   useEffect(() => {
@@ -99,8 +101,11 @@ function MyAccount() {
           withCredentials: true //to get the cookie sent from the back, the browser is automatically dealing with
         })
 
-      //only if response is ok we update
+      //only if successfully updated, 
+      //we close the modal and display a success message
       //otherwise displaying an error message
+      setIsUpdateModalOpen(false)
+      setUpdateError('')
       setMessage(' Votre profile a été mis à jour !');
     } catch (error) {
       if (isAxiosError(error)) {
@@ -111,7 +116,7 @@ function MyAccount() {
           })
           setErrors(newErrors)
         } else {
-          setMessage(error.response?.data.message || 'Une erreur est survenue.')
+          setUpdateError(error.response?.data.message || 'Une erreur est survenue.')
         }
       } else {
         setMessage('Une erreur est survenue.')
@@ -129,7 +134,12 @@ function MyAccount() {
       navigate('/register')
 
     } catch (error) {
-      setDeleteMessage('Une erreur est survenue.')
+      const message = 'Une erreur est survenue.'
+      if (isAxiosError(error)) {
+        setDeleteError(error.response?.data.message || message)
+      } else {
+        setDeleteMessage(message)
+      }
     }
   }
 
@@ -450,18 +460,26 @@ function MyAccount() {
 
       <ConfirmModal
         isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
+        onClose={() => {
+          setIsUpdateModalOpen(false)
+          setUpdateError('')
+        }}
         onConfirm={(password) => handleUpdate(password)}
         title="Modifier mon profil"
         message="Es-tu sûr de vouloir modifier tes informations ?"
+        errorMessage={updateError}
       />
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={() => {
+          setIsDeleteModalOpen(false)
+          setDeleteError('')
+        }}
         onConfirm={handleDelete}
         title="Supprimer mon compte"
         message="Êtes-vous sûr de vouloir supprimer votre compte ?"
+        errorMessage={deleteError}
       />
       <Footer />
     </PageBackground>

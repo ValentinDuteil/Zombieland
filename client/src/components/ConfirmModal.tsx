@@ -20,9 +20,10 @@ interface ConfirmModalProps {
   onConfirm: (password: string) => void
   title: string
   message: string
+  errorMessage?: string
 }
 
-function ConfirmModal({ isOpen, onClose, onConfirm, title, message }: ConfirmModalProps) {
+function ConfirmModal({ isOpen, onClose, onConfirm, title, message, errorMessage }: ConfirmModalProps) {
 
   const [isChecked, setIsChecked] = useState(false)
   const [password, setPassword] = useState('')
@@ -33,13 +34,16 @@ function ConfirmModal({ isOpen, onClose, onConfirm, title, message }: ConfirmMod
       return
     }
     onConfirm(password)
-    setIsChecked(false)
-    setPassword('')
-    onClose()
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        setIsChecked(false)
+        setPassword('')
+        onClose()
+      }}>
       <ModalOverlay bg="blackAlpha.800" />
       <ModalContent
         bg="zombieland.bgsecondary"
@@ -84,6 +88,11 @@ function ConfirmModal({ isOpen, onClose, onConfirm, title, message }: ConfirmMod
             _focus={{ borderColor: "zombieland.cta1orange", boxShadow: "0 0 0 1px #B85F00" }}
             _placeholder={{ color: "gray.500" }}
           />
+          {errorMessage && (
+            <Text color="zombieland.warningprimary" fontSize="sm" mb={2}>
+              {errorMessage}
+            </Text>
+          )}
         </ModalBody>
 
         <ModalFooter
