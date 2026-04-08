@@ -101,26 +101,14 @@ export async function updateProfile(req: Request, res: Response, next: NextFunct
   }
   const parsedBody = data.data
 
-  //5 If "MEMBER" → check the current password before updating (security)
-  // "ADMIN" can update without password
-  if (req.user.role !== 'ADMIN') {
-    const currentPassword = req.body.currentPassword
-    // checking user in DB with hashed password, 
-    // because we need to compare the hash with the current password with argon2.verify()
-    const user = await prisma.user.findUnique({
-      where: { id_USER: req.user.id }
-    })
-    if (!user) {
-      throw new NotFoundError('Utilisateur introuvable')
-    }
-    // if the user exist, we compare the clear hash and the current password with argon2.verify()
-    if (user) {
-      const rightPassword = await argon2.verify(user.password, currentPassword)
-      if (!rightPassword) {
-        throw new UnauthorizedError('Mot de passe incorrect')
-      }
-    }
-  }
+  // 5. Always check the current admin/member password before updating
+  const currentPassword = req.body.currentPassword
+  const caller = await prisma.user.findUnique({
+    where: { id_USER: req.user.id }
+  })
+  if (!caller) throw new NotFoundError('Utilisateur introuvable')
+  const rightPassword = await argon2.verify(caller.password, currentPassword)
+  if (!rightPassword) throw new UnauthorizedError('Mot de passe incorrect')
 
   //6. If "MEMBER" tries to change the role → 403
   // only "ADMIN" can change the role

@@ -25,6 +25,8 @@ const AdminMemberEdit = () => {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [updateError, setUpdateError] = useState('')
+  const [deleteError, setDeleteError] = useState('')
 
   useEffect(() => {
     const fetchMember = async () => {
@@ -64,6 +66,8 @@ const AdminMemberEdit = () => {
           withCredentials: true,
 
         })
+      setIsUpdateModalOpen(false)
+      setUpdateError('')
       setMessage('Profil mis à jour !')
 
     } catch (err) {
@@ -77,7 +81,7 @@ const AdminMemberEdit = () => {
           setErrors(newErrors)
         } else {
           // Generic back error
-          setError(err.response?.data.message || 'Une erreur est survenue lors de la mise à jour')
+          setUpdateError(err.response?.data.message || 'Une erreur est survenue lors de la mise à jour')
         }
       } else {
         // Network or unexpected error
@@ -85,6 +89,7 @@ const AdminMemberEdit = () => {
       }
     }
   }
+
 
 
   const handleDelete = async (password: string) => {
@@ -96,8 +101,12 @@ const AdminMemberEdit = () => {
       })
       navigate('/admin/members')
     } catch (error) {
-      setMessage('Une erreur est survenue.')
-
+      const message = 'Une erreur est survenue.'
+      if (isAxiosError(error)) {
+        setDeleteError(error.response?.data.message || message)
+      } else {
+        setMessage(message)
+      }
     }
   }
 
@@ -365,16 +374,26 @@ const AdminMemberEdit = () => {
 
       <ConfirmModal
         isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
+        onClose={() => {
+          setIsUpdateModalOpen(false)
+          setUpdateError('')
+        }}
         onConfirm={(password) => handleUpdate(password)}
         title="Modifier le profil"
-        message="Confirmez avec votre mot de passe admin." />
+        message="Confirmez avec votre mot de passe admin."
+        errorMessage={updateError}
+      />
       <ConfirmModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={() => {
+          setIsDeleteModalOpen(false)
+          setDeleteError('')
+        }}
         onConfirm={handleDelete}
         title="Supprimer le compte"
-        message="Cette action est irréversible." />
+        message="Cette action est irréversible."
+        errorMessage={deleteError}
+      />
     </Box>
   )
 }

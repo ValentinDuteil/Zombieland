@@ -1,5 +1,7 @@
+// Admin page to manage reservations: list, filter by status, and cancel reservations
 import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axiosInstance";
+import { isAxiosError } from "axios";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { API_URL } from "@/config/api";
@@ -12,10 +14,6 @@ import ConfirmModal from "@/components/ConfirmModal";
 import AdminMenu from "@/components/AdminNavlinkMenu";
 import { useNavigate } from "react-router-dom";
 
-
-
-// Admin page to manage reservations: list, filter by status, and cancel reservations
-
 const AdminReservations = () => {
     // State to store the list of reservations from the API
     const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -23,6 +21,7 @@ const AdminReservations = () => {
     const [loading, setLoading] = useState(true);
     // State to store error message if the API call fails
     const [error, setError] = useState<string | null>(null);
+    const [cancelError, setCancelError] = useState('')
     // State to store the id of the reservation to cancel (opens the confirmation modal)
     const [reservationToCancel, setReservationToCancel] = useState<number | null>(null)
     // State to search and filter reservations
@@ -65,8 +64,15 @@ const AdminReservations = () => {
             // Re-fetch pour mettre à jour le state
             const response = await axiosInstance.get(`${API_URL}/api/reservations`, { withCredentials: true })
             setReservations(response.data)
+            setReservationToCancel(null)
+            setCancelError('')
         } catch (error) {
-            setError("Erreur lors de l'annulation")
+            const message = "Erreur lors de l'annulation"
+            if (isAxiosError(error)) {
+                setCancelError(error.response?.data.message || message)
+            } else {
+                setError(message)
+            }
         }
     }
 
@@ -283,19 +289,21 @@ const AdminReservations = () => {
                 {/* Confirmation modal: opens when the admin clicks "Annuler" on a reservation */}
                 <ConfirmModal
                     isOpen={reservationToCancel !== null}
-                    onClose={() => setReservationToCancel(null)}
+                    onClose={() => {
+                        setReservationToCancel(null)
+                        setCancelError('')
+                    }}
                     title="Annuler la réservation"
                     message="Voulez-vous vraiment annuler cette réservation ? Cette action est irréversible."
                     onConfirm={(password) => {
                         if (reservationToCancel) handleCancel(reservationToCancel, password)
-                        setReservationToCancel(null)
                     }}
+                    errorMessage={cancelError}
                 />
             </Flex>
             <Footer />
         </Box>
     )
 }
-
 
 export default AdminReservations
