@@ -13,7 +13,7 @@ import { FaTrash } from 'react-icons/fa'
 import ConfirmModal from "../../components/ConfirmModal"
 import { API_URL } from "@/config/api"
 import axiosInstance from "@/lib/axiosInstance"
-
+import { isAxiosError } from "axios"
 
 const intensityToLabel: Record<string, string> = {
     "LOW": "Acceptable",
@@ -25,6 +25,7 @@ const AdminAttractions = () => {
     const [attractions, setAttractions] = useState<Attraction[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [deleteError, setDeleteError] = useState('')
     const navigate = useNavigate()
     const [attractionToDelete, setAttractionToDelete] = useState<number | null>(null)
 
@@ -38,8 +39,8 @@ const AdminAttractions = () => {
             setAttractions(res.data)
 
         } catch (error) {
-
             setError("Erreur lors de la récupération des attractions")
+
         } finally {
             setLoading(false)
         }
@@ -59,7 +60,12 @@ const AdminAttractions = () => {
             fetchAttractions()
 
         } catch (error) {
-            setError("Erreur lors de la suppression de l'attraction")
+            const message = "Erreur lors de la suppression de l'attraction"
+            if (isAxiosError(error)) {
+                setDeleteError(error.response?.data.message || message)
+            } else {
+                setError(message)
+            }
         }
     }
 
@@ -264,15 +270,17 @@ const AdminAttractions = () => {
             {/* Confirmation modal before deletion */}
             <ConfirmModal
                 isOpen={attractionToDelete !== null}
-                onClose={() => setAttractionToDelete(null)}
+                onClose={() => {
+                    setAttractionToDelete(null)
+                    setDeleteError('')
+                }}
                 title="Supprimer l'attraction"
                 message="Voulez-vous vraiment supprimer cette attraction ? Cette action est irréversible."
                 onConfirm={(password) => {
                     if (attractionToDelete) handleDelete(attractionToDelete, password)
-                    setAttractionToDelete(null)
                 }}
+                errorMessage={deleteError}
             />
-
             <Footer />
         </Box>
     )

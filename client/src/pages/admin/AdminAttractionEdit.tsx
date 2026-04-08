@@ -28,6 +28,7 @@ const AdminAttractionEdit = () => {
     const [loading, setLoading] = useState(true)
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [error, setError] = useState<string | null>(null)
+    const [confirmError, setConfirmError] = useState('')
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [dbImage, setDbImage] = useState<string | null>(null)
@@ -121,7 +122,7 @@ const AdminAttractionEdit = () => {
                     });
                     setErrors(newErrors);
                 } else {
-                    setError(prefix + (err.response?.data.message || "Erreur de modification"));
+                    setConfirmError(prefix + (err.response?.data.message || "Erreur de modification"));
                 }
             }
         }
@@ -331,15 +332,18 @@ const AdminAttractionEdit = () => {
             {/* Confirm modal with password before saving */}
             <ConfirmModal
                 isOpen={isConfirmOpen}
-                onClose={() => setIsConfirmOpen(false)}
+                onClose={() => {
+                    setIsConfirmOpen(false)
+                    setConfirmError('')
+                }}
                 title="Confirmer les modifications"
                 message="Veuillez confirmer les modifications de cette attraction."
                 onConfirm={(password) => {
                     handleSubmit(password)
-                    setIsConfirmOpen(false)
                 }}
+                errorMessage={confirmError}
             />
-
+            
             <Footer />
         </Box>
     )

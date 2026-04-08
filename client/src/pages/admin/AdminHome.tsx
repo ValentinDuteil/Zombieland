@@ -10,6 +10,7 @@ import bgAnnuler from "../../assets/bg-bouton-annuler.webp"
 import barbed from "../../assets/barbed-bg.webp"
 import type { Reservation } from "@/types/Reservations";
 import axiosInstance from "@/lib/axiosInstance";
+import { isAxiosError } from "axios";
 import { API_URL } from "@/config/api";
 import ConfirmModal from "@/components/ConfirmModal";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -25,6 +26,7 @@ const AdminHome = () => {
     const [users, setUsers] = useState(String);
     // State to store the list of reservations from the API
     const [reservations, setReservations] = useState<Reservation[]>([]);
+    const [cancelError, setCancelError] = useState('')
     // State to track loading status while fetching data
     const [loading, setLoading] = useState(true);
     // State to store error message if the API call fails
@@ -72,9 +74,16 @@ const AdminHome = () => {
             const response = await axiosInstance.get(`${API_URL}/api/reservations`, {
                 withCredentials: true
             })
+            setReservationToCancel(null)
+            setCancelError('')
             setReservations(response.data)
         } catch (error) {
-            setError("Erreur lors de l'annulation")
+            const message = "Erreur lors de l'annulation"
+            if (isAxiosError(error)) {
+                setCancelError(error.response?.data.message || message)
+            } else {
+                setError(message)
+            }
         }
     }
 
@@ -525,13 +534,16 @@ const AdminHome = () => {
                 {/* It serves as a confirmation step to prevent accidental cancellations */}
                 <ConfirmModal
                     isOpen={reservationToCancel !== null}
-                    onClose={() => setReservationToCancel(null)}
+                    onClose={() => {
+                        setReservationToCancel(null)
+                        setCancelError('')
+                    }}
                     title="Annuler la réservation"
                     message="Voulez-vous vraiment annuler cette réservation ? Cette action est irréversible."
                     onConfirm={(password) => {
                         if (reservationToCancel) handleCancel(reservationToCancel, password)
-                        setReservationToCancel(null)
                     }}
+                    errorMessage={cancelError}
                 />
             </Flex>
             <Footer />

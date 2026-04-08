@@ -1,9 +1,7 @@
 // Testing users controller
-import { vi, test, expect, beforeEach, it, describe } from 'vitest'
+import { vi, test, expect, beforeEach, describe } from 'vitest'
 import { Request, Response, NextFunction } from 'express'
 import { getAllUsers, getProfile, updateProfile, deleteProfile } from '../../controllers/users.controller.js'
-import request from "supertest"
-import app from '../../app.js'
 import * as argon2 from 'argon2'
 
 
@@ -38,6 +36,9 @@ vi.mock('argon2', () => ({
 // Reset mocks before each test
 beforeEach(() => {
   vi.clearAllMocks()
+
+  // Re-set argon2.verify default after clearAllMocks
+    vi.mocked(argon2.verify).mockResolvedValue(true)
 
   mockCheckToken.mockImplementation(
     (req: Request & { user?: { id: number; role: string } }, res: Response, next: NextFunction) => {
@@ -237,7 +238,9 @@ const res: any = {}
 
   test("should throw if Prisma fails", async () => {
     const error = new Error("DB error")
+    mockPrisma.user.findUnique.mockResolvedValue({ id_USER: 1, password: "hashed" })
     mockPrisma.user.update.mockRejectedValue(error)
+    vi.mocked(argon2.verify).mockResolvedValue(true)
 
     const req: any = {
       user: { id: 1, role: "ADMIN" },
@@ -254,8 +257,6 @@ test("ADMIN can delete any profile", async () => {
   mockPrisma.user.findUnique
     .mockResolvedValueOnce({ id_USER: 2 }) // user to delete
     .mockResolvedValueOnce({ id_USER: 1, password: "hashed" }) // admin
-
-  vi.mocked(argon2.verify).mockResolvedValue(true)
 
   mockPrisma.user.update.mockResolvedValue({}) // soft delete to keep the reservations in DB
 

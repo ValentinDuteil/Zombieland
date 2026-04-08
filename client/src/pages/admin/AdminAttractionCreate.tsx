@@ -15,7 +15,6 @@ import { API_URL } from "@/config/api"
 import axiosInstance from "@/lib/axiosInstance"
 import { isAxiosError } from "axios"
 
-
 const categoryColors: Record<string, string> = {
     LOW: "green",
     MEDIUM: "orange",
@@ -26,6 +25,7 @@ const AdminAttractionCreate = () => {
     const navigate = useNavigate()
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [error, setError] = useState<string | null>("");
+    const [confirmError, setConfirmError] = useState('')
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -66,6 +66,8 @@ const AdminAttractionCreate = () => {
                 });
 
             const data = res.data
+            setIsConfirmOpen(false)
+            setConfirmError('')
 
             // If an image was selected, upload it after creation
             if (fileInputRef.current?.files?.[0]) {
@@ -94,7 +96,7 @@ const AdminAttractionCreate = () => {
                     setErrors(newErrors)
                 } else {
                     // Generic back error
-                    setError(err.response?.data.message || errorMessage)
+                    setConfirmError(err.response?.data.message || errorMessage)
                 }
             } else {
                 // Network or unexpected error
@@ -151,7 +153,6 @@ const AdminAttractionCreate = () => {
                     justifyContent="center"
                     py="100px"
                 >
-
 
                     <Box w="600px" p={10} borderRadius="md">
 
@@ -323,13 +324,16 @@ const AdminAttractionCreate = () => {
             {/* Confirm modal with password before creating */}
             <ConfirmModal
                 isOpen={isConfirmOpen}
-                onClose={() => setIsConfirmOpen(false)}
+                onClose={() => {
+                    setIsConfirmOpen(false)
+                    setConfirmError('')
+                }}
                 title="Créer l'attraction"
                 message="Veuillez confirmer la création de cette attraction."
                 onConfirm={(password) => {
                     handleSubmit(password)
-                    setIsConfirmOpen(false)
                 }}
+                errorMessage={confirmError}
             />
             <Footer />
         </Box>
